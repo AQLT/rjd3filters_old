@@ -1,0 +1,27 @@
+Package: rjdfilters
+Type: Package
+Title: Linear filters 
+Version: 0.0.1
+Authors@R: as.person(c(
+    "Jean Palate <jean.palate@nbb.be> [aut,cre]"
+      ))
+Description: This package provides something.
+Depends:
+    R (>= 3.1.1)
+Imports:
+    rJava (>= 0.9-8),
+   methods
+License: EUPL
+LazyData: TRUE
+Collate:
+    'ts.R'
+    'rslts.R'
+    'procresults.R'
+    'filters.R'
+    'zzz.R'
+Suggests:
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+RoxygenNote: 7.1.0
+Encoding: UTF-8
