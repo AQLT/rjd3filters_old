@@ -103,5 +103,6 @@ xlabel <- function(x, symbol = "pi"){
     if (length(i) > 1) { paste(i[1], "*", symbol, "/", i[2]) }
     else { paste(i, "*", symbol) })
   labels[1] <- "0"
+  labels <- sub("1 * pi", " pi", labels, fixed = TRUE)
   parse(text = labels)
 }

@@ -4,7 +4,9 @@
 \name{retailsa}
 \alias{retailsa}
 \title{Retail sales data}
-\format{A \code{list} of \code{ts} objects from january 1992 to december 2010.}
+\format{
+A \code{list} of \code{ts} objects from january 1992 to december 2010.
+}
 \usage{
 retailsa
 }
