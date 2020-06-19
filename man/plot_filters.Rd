@@ -7,25 +7,42 @@
 \alias{plot_phase}
 \title{Plots}
 \usage{
-plot_coef(x, q = 0, add = FALSE, ...)
+plot_coef(x, q = 0, add = FALSE, legend = FALSE, legend.pos = "topright", ...)
 
-plot_gain(x, q = 0, nxlab = 6, add = FALSE, ...)
+plot_gain(
+  x,
+  q = 0,
+  nxlab = 7,
+  add = FALSE,
+  legend = FALSE,
+  legend.pos = "topright",
+  ...
+)
 
-plot_phase(x, q = 0, nxlab = 6, add = FALSE, ...)
+plot_phase(
+  x,
+  q = 0,
+  nxlab = 6,
+  add = FALSE,
+  legend = FALSE,
+  legend.pos = "topright",
+  ...
+)
 }
 \arguments{
 \item{x}{coefficients, gain or phase}
 
 \item{q}{q}
 
-\item{add}{add to previous plot}
+\item{add}{boolean indicating if the new plot is added to the previous one}
 
-\item{...}{other arguments to \code{plot}}
+\item{legend}{boolean indicating if the legend is printed}
+
+\item{legend.pos}{position of the legend}
+
+\item{...}{other arguments to \code{matplot}}
 
 \item{nxlab}{number of xlab}
-}
-\value{
-
 }
 \description{
 Plots

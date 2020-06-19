@@ -3,69 +3,98 @@
 #' @param x coefficients, gain or phase
 #' @param q q
 #' @param nxlab number of xlab
-#' @param ... other arguments to \code{plot}
-#' @param add add to previous plot
+#' @param ... other arguments to \code{matplot}
+#' @param add boolean indicating if the new plot is added to the previous one
+#' @param legend boolean indicating if the legend is printed
+#' @param legend.pos position of the legend
 #'
-#' @return
 #'
 #' @examples
 #' @name plot_filters
 #' @rdname plot_filters
 #' @importFrom MASS fractions
 #' @export
-plot_coef <- function(x, q = 0, add = FALSE,...){
-  x_values = seq(0, nrow(x)) - (nrow(x) - 1)/2
-  y = x[, sprintf("q=%i",q)]
-  if(!add){
-    plot(y, type = "l",
-         xaxt = "n", xlab = "",
-         ylab = "coefficient", ...)
-    axis(1, at=seq_len(nrow(x)), labels = rownames(x))
-  }else{
-    lines(y, ...)
+plot_coef <- function(x, q = 0, add = FALSE, legend = FALSE,
+                      legend.pos = "topright", ...){
+  col_to_plot <- sprintf("q=%i",q)
+  col_to_plot <- col_to_plot[col_to_plot %in% colnames(x)]
+  if (length(col_to_plot) == 0) {
+    if(!add){
+      plot(1, type="n",xaxt = "n", xlab = "",
+           ylab = "coefficient", xlim=c(1, nrow(x)), ylim=c(0, 1),
+           ...)
+      axis(1, at=seq_len(nrow(x)), labels = rownames(x))
+    }
+    return(invisible(0))
   }
+  matplot(x[, col_to_plot], type = "l",
+          xaxt = "n", xlab = "",
+          ylab = "coefficient", add = add, ...)
+  if(legend)
+    legend(legend.pos,col_to_plot,
+           col = seq_along(col_to_plot), lty=seq_along(col_to_plot), lwd=2)
+  if(!add)
+    axis(1, at=seq_len(nrow(x)), labels = rownames(x))
 }
 #' @name plot_filters
 #' @rdname plot_filters
 #' @export
-plot_gain <- function(x, q = 0, nxlab = 6, add = FALSE,...){
+plot_gain <- function(x, q = 0, nxlab = 7, add = FALSE, legend = FALSE,
+                      legend.pos = "topright", ...){
   x_values = seq(0, 2 * pi, length.out = nrow(x))
-  y = x[,sprintf("q=%i", q)]
+  col_to_plot <- sprintf("q=%i",q)
+  col_to_plot <- col_to_plot[col_to_plot %in% colnames(x)]
+  if (length(col_to_plot) == 0) {
+    if(!add){
+      plot(1, type="n",xaxt = "n", xlab = "",
+           ylab = "gain", xlim=c(0, 2*pi), ylim=c(0, 1),
+           ...)
+      x_lab_at <- seq(0, 2, length.out = nxlab)
+      axis(1, at = x_lab_at * pi, labels = xlabel(x_lab_at))
+    }
+    return(invisible(0))
+  }
+  matplot(x_values,x[, col_to_plot], type = "l",
+          xaxt = "n", xlab = "",
+          ylab = "gain", add = add)
+
+  if(legend)
+    legend(legend.pos,col_to_plot,
+           col = seq_along(col_to_plot), lty=seq_along(col_to_plot), lwd=2)
   if(!add){
-    plot(x_values, y, type = "l",
-         xaxt = "n", xlab = "",
-         ylab = "gain", ...)
     x_lab_at <- seq(0, 2, length.out = nxlab)
     axis(1, at = x_lab_at * pi, labels = xlabel(x_lab_at))
-  }else{
-    lines(x_values, y, ...)
   }
 }
 #' @name plot_filters
 #' @rdname plot_filters
 #' @export
-plot_phase <- function(x, q = 0, nxlab = 6, add = FALSE,...){
+plot_phase <- function(x, q = 0, nxlab = 6, add = FALSE, legend = FALSE,
+                       legend.pos = "topright",...){
   x_values = seq(0, 2 * pi, length.out = nrow(x))
-
-  if(q < ncol(x))
-    y = x[,sprintf("q=%i",q)]
-
-  if(!add){
-    if(q >= ncol(x)){
+  col_to_plot <- sprintf("q=%i",q)
+  col_to_plot <- col_to_plot[col_to_plot %in% colnames(x)]
+  if (length(col_to_plot) == 0) {
+    if(!add){
       plot(1, type="n",xaxt = "n", xlab = "",
            ylab = "phase", xlim=c(0, 2*pi), ylim=c(0, 1),
            ...)
-    }else{
-      plot(x_values, y, type = "l",
-           xaxt = "n", xlab = "",
-           ylab = "phase", ...)
+      x_lab_at <- seq(0, 2, length.out = nxlab)
+      axis(1, at = x_lab_at * pi, labels = xlabel(x_lab_at))
     }
-
+    return(invisible(0))
+  }
+  matplot(x_values,x[, col_to_plot], type = "l",
+          xaxt = "n", xlab = "",
+          ylab = "phase", add = add)
+  if(legend)
+    legend(legend.pos,col_to_plot,
+           col = seq_along(col_to_plot), lty=seq_along(col_to_plot), lwd=2)
+  if(!add){
     x_lab_at <- seq(0, 2, length.out = nxlab)
     axis(1, at = x_lab_at * pi, labels = xlabel(x_lab_at))
-  }else{
-    lines(x_values, y, ...)
   }
+
 }
 
 xlabel <- function(x, symbol = "pi"){
