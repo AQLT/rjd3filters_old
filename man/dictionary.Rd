@@ -7,7 +7,9 @@
 dictionary(object, ...)
 }
 \arguments{
-\item{...}{}
+\item{object}{Java object}
+
+\item{...}{ignored arguments}
 }
 \value{
 

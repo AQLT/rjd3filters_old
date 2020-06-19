@@ -10,7 +10,10 @@ Depends:
     R (>= 3.1.1)
 Imports:
     rJava (>= 0.9-8),
-   methods
+   methods,
+   MASS,
+   graphics,
+   stats
 License: EUPL
 LazyData: TRUE
 Collate:

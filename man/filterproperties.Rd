@@ -2,7 +2,7 @@
 % Please edit documentation in R/filters.R
 \name{filterproperties}
 \alias{filterproperties}
-\title{Title}
+\title{Get properties of local polynomials filters}
 \usage{
 filterproperties(
   horizon,
@@ -14,11 +14,22 @@ filterproperties(
 )
 }
 \arguments{
-\item{ic}{}
+\item{horizon}{horizon of the filter}
+
+\item{degree}{degree of polynomial}
+
+\item{kernel}{kernel uses}
+
+\item{endpoints}{methode for endpoints}
+
+\item{ic}{ic ratio}
 }
 \value{
 
 }
 \description{
-Title
+Get properties of local polynomials filters
+}
+\examples{
+filterproperties(horizon = 3)
 }

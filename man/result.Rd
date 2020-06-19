@@ -7,7 +7,11 @@
 result(object, id, ...)
 }
 \arguments{
-\item{...}{}
+\item{object}{object}
+
+\item{id}{name of variable}
+
+\item{...}{ignored arguments}
 }
 \value{
 

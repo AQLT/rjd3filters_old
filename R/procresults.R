@@ -28,9 +28,9 @@ setClass(
 
 #' Title
 #'
-#' @param object
-#' @param id
-#' @param ...
+#' @param object object
+#' @param id name of variable
+#' @param ... ignored arguments
 #'
 #' @return
 #' @export
@@ -40,8 +40,8 @@ setGeneric(name="result", def = function( object, id, ... ){standardGeneric("res
 
 #' Title
 #'
-#' @param object
-#' @param ...
+#' @param object Java object
+#' @param ... ignored arguments
 #'
 #' @return
 #' @export
@@ -51,7 +51,7 @@ setGeneric(name="dictionary", def = function( object, ... ){standardGeneric("dic
 
 #' Title
 #'
-#' @slot internal jobjRef. 
+#' @slot internal jobjRef.
 #'
 #' @return
 #' @export
@@ -75,7 +75,8 @@ setClass(
 
 #' Title
 #'
-#' @param JD3_ProcResults 
+#' @param JD3_ProcResults
+#' @param object Java object
 #'
 #' @return
 #' @export
@@ -92,8 +93,8 @@ setMethod("dictionary", "JD3_ProcResults", function(object){
 
 #' Title
 #'
-#' @param object JD3_ProcResults. 
-#' @param id character. 
+#' @param object JD3_ProcResults.
+#' @param id character.
 #'
 #' @return
 #' @export

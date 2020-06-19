@@ -2,7 +2,7 @@
 % Please edit documentation in R/filters.R
 \name{localpolynomials}
 \alias{localpolynomials}
-\title{Title}
+\title{Apply local polynomials filters}
 \usage{
 localpolynomials(
   y,
@@ -15,11 +15,21 @@ localpolynomials(
 )
 }
 \arguments{
-\item{ic}{}
+\item{y}{input time-series}
+
+\item{horizon}{horizon of the filter}
+
+\item{degree}{degree of polynomial}
+
+\item{kernel}{kernel uses}
+
+\item{endpoints}{methode for endpoints}
+
+\item{ic}{ic ratio}
 }
 \value{
 
 }
 \description{
-Title
+Apply local polynomials filters
 }

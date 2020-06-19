@@ -7,7 +7,7 @@
 \S4method{dictionary}{JD3_ProcResults}(object)
 }
 \arguments{
-\item{JD3_ProcResults}{}
+\item{object}{Java object}
 }
 \value{
 

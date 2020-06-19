@@ -2,16 +2,22 @@
 % Please edit documentation in R/filters.R
 \name{henderson}
 \alias{henderson}
-\title{Title}
+\title{Apply Henderson linear filter}
 \usage{
 henderson(y, length, musgrave = TRUE, ic = 4.5)
 }
 \arguments{
-\item{ic}{}
+\item{y}{input time-series}
+
+\item{length}{length of the Henderson filter}
+
+\item{musgrave}{boolean indicating if musgrave asymmetric filters should be used}
+
+\item{ic}{ic ratio}
 }
 \value{
 
 }
 \description{
-Title
+Apply Henderson linear filter
 }

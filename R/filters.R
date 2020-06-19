@@ -2,12 +2,12 @@
 #' @import rJava
 NULL
 
-#' Title
+#' Apply Henderson linear filter
 #'
-#' @param y
-#' @param length
-#' @param musgrave
-#' @param ic
+#' @param y input time-series
+#' @param length length of the Henderson filter
+#' @param musgrave boolean indicating if musgrave asymmetric filters should be used
+#' @param ic ic ratio
 #'
 #' @return
 #' @export
@@ -17,39 +17,39 @@ henderson<-function(y, length, musgrave=TRUE, ic=4.5){
   return (.jcall("demetra/saexperimental/r/X11Decomposition", "[D", "henderson", as.numeric(y), as.integer(length), musgrave, ic))
 }
 
-#' Title
+#' Apply local polynomials filters
 #'
-#' @param y
-#' @param horizon
-#' @param degree
-#' @param kernel
-#' @param endpoints
-#' @param ic
+#' @inheritParams henderson
+#' @param horizon horizon of the filter
+#' @param degree degree of polynomial
+#' @param kernel kernel uses
+#' @param endpoints methode for endpoints
 #'
 #' @return
 #' @export
 #'
 #' @examples
-localpolynomials<-function(y, horizon, degree=3, kernel=c("Henderson", "Uniform", "Biweight", "Triweight", "Tricube", "Gaussian", "Triangular", "Parabolic"), endpoints=c("LC", "QL", "CQ", "CC", "DAF"), ic=4.5){
+localpolynomials<-function(y,
+                           horizon,
+                           degree=3,
+                           kernel=c("Henderson", "Uniform", "Biweight", "Triweight", "Tricube", "Gaussian", "Triangular", "Parabolic"), endpoints=c("LC", "QL", "CQ", "CC", "DAF"), ic=4.5){
   d<-2/(sqrt(pi)*ic)
   kernel=match.arg(kernel)
   endpoints=match.arg(endpoints)
-  return (.jcall("demetra/saexperimental/r/LocalPolynomialFilters", "[D", "filter", as.numeric(y), as.integer(horizon), as.integer(degree), kernel, endpoints, d))
+  return (.jcall("demetra/saexperimental/r/LocalPolynomialFilters", "[D", "filter",
+                 as.numeric(y), as.integer(horizon), as.integer(degree), kernel, endpoints, d))
 }
 
 
-#' Title
+#' Get properties of local polynomials filters
 #'
-#' @param horizon
-#' @param degree
-#' @param kernel
-#' @param endpoints
-#' @param ic
+#' @inheritParams localpolynomials
 #'
 #' @return
 #' @export
 #'
 #' @examples
+#' filterproperties(horizon = 3)
 filterproperties <- function(horizon, degree=3,
                            kernel=c("Henderson", "Uniform", "Biweight", "Triweight", "Tricube", "Gaussian", "Triangular", "Parabolic"),
                            endpoints=c("LC", "QL", "CQ", "CC", "DAF"),

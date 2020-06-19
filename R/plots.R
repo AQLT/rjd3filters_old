@@ -11,6 +11,7 @@
 #' @examples
 #' @name plot_filters
 #' @rdname plot_filters
+#' @importFrom MASS fractions
 #' @export
 plot_coef <- function(x, q = 0, add = FALSE,...){
   x_values = seq(0, nrow(x)) - (nrow(x) - 1)/2
