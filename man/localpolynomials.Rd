@@ -28,7 +28,7 @@ localpolynomials(
 \item{ic}{ic ratio}
 }
 \value{
-
+the target signal
 }
 \description{
 Apply local polynomials filters

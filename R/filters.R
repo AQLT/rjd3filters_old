@@ -9,7 +9,7 @@ NULL
 #' @param musgrave boolean indicating if musgrave asymmetric filters should be used
 #' @param ic ic ratio
 #'
-#' @return
+#' @return the target signal
 #' @export
 #'
 #' @examples
@@ -25,7 +25,7 @@ henderson<-function(y, length, musgrave=TRUE, ic=4.5){
 #' @param kernel kernel uses
 #' @param endpoints methode for endpoints
 #'
-#' @return
+#' @return the target signal
 #' @export
 #'
 #' @examples
@@ -45,7 +45,7 @@ localpolynomials<-function(y,
 #'
 #' @inheritParams localpolynomials
 #'
-#' @return
+#' @return \code{list} with coefficients, gain and phase values
 #' @export
 #'
 #' @examples

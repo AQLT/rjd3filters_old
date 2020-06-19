@@ -7,7 +7,7 @@
 result(object, id, ...)
 }
 \arguments{
-\item{object}{object}
+\item{object}{Java object}
 
 \item{id}{name of variable}
 

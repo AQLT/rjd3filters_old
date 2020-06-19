@@ -16,7 +16,7 @@ henderson(y, length, musgrave = TRUE, ic = 4.5)
 \item{ic}{ic ratio}
 }
 \value{
-
+the target signal
 }
 \description{
 Apply Henderson linear filter

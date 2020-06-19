@@ -25,7 +25,7 @@ filterproperties(
 \item{ic}{ic ratio}
 }
 \value{
-
+\code{list} with coefficients, gain and phase values
 }
 \description{
 Get properties of local polynomials filters

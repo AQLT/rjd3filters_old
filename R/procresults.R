@@ -28,7 +28,7 @@ setClass(
 
 #' Title
 #'
-#' @param object object
+#' @param object Java object
 #' @param id name of variable
 #' @param ... ignored arguments
 #'
@@ -75,7 +75,6 @@ setClass(
 
 #' Title
 #'
-#' @param JD3_ProcResults
 #' @param object Java object
 #'
 #' @return

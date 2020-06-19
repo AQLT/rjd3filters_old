@@ -1,5 +1,5 @@
 #' @import rJava
-#' @importFrom graphics axis lines plot
+#' @importFrom graphics axis lines plot matplot
 #' @importFrom stats frequency ts
 NULL
 
