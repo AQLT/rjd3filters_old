@@ -18,7 +18,9 @@ Collate:
     'rslts.R'
     'procresults.R'
     'filters.R'
+    'plots.R'
     'zzz.R'
+URL: https://github.com/palatej/rjdfilters
 Suggests:
     knitr,
     rmarkdown
