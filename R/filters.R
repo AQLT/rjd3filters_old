@@ -32,7 +32,7 @@ henderson<-function(y, length, musgrave=TRUE, ic=4.5){
 localpolynomials<-function(y,
                            horizon,
                            degree=3,
-                           kernel=c("Henderson", "Uniform", "Biweight", "Triweight", "Tricube", "Gaussian", "Triangular", "Parabolic"), endpoints=c("LC", "QL", "CQ", "CC", "DAF"), ic=4.5){
+                           kernel=c("Henderson", "Uniform", "Biweight", "Trapezoidal", "Triweight", "Tricube", "Gaussian", "Triangular", "Parabolic"), endpoints=c("LC", "QL", "CQ", "CC", "DAF"), ic=4.5){
   d<-2/(sqrt(pi)*ic)
   kernel=match.arg(kernel)
   endpoints=match.arg(endpoints)
@@ -51,7 +51,7 @@ localpolynomials<-function(y,
 #' @examples
 #' filterproperties(horizon = 3)
 filterproperties <- function(horizon, degree=3,
-                           kernel=c("Henderson", "Uniform", "Biweight", "Triweight", "Tricube", "Gaussian", "Triangular", "Parabolic"),
+                           kernel=c("Henderson", "Uniform", "Biweight", "Trapezoidal", "Triweight", "Tricube", "Gaussian", "Triangular", "Parabolic"),
                            endpoints=c("LC", "QL", "CQ", "CC", "DAF"),
                            ic=4.5){
   d<-2/(sqrt(pi)*ic)
