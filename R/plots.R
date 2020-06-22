@@ -63,7 +63,7 @@ plot_gain.JD.Filters <- function(x, q = 0, nxlab = 7, add = FALSE, legend = FALS
   if (length(col_to_plot) == 0) {
     if(!add){
       plot(1, type="n",xaxt = "n", xlab = "",
-           ylab = "gain", xlim=c(0, 2*pi), ylim=c(0, 1),
+           ylab = "gain", xlim=c(0, pi), ylim=c(0, 1),
            ...)
       x_lab_at <- seq(0, 1, length.out = nxlab)
       axis(1, at = x_lab_at * pi, labels = xlabel(x_lab_at))
@@ -99,7 +99,7 @@ plot_phase.JD.Filters <- function(x, q = 0, nxlab = 7, add = FALSE, legend = FAL
   if (length(col_to_plot) == 0) {
     if(!add){
       plot(1, type="n",xaxt = "n", xlab = "",
-           ylab = "phase", xlim=c(0, 2*pi), ylim=c(0, 1),
+           ylab = "phase", xlim=c(0, pi), ylim=c(0, 1),
            ...)
       x_lab_at <- seq(0, 1, length.out = nxlab)
       axis(1, at = x_lab_at * pi, labels = xlabel(x_lab_at))
