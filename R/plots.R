@@ -25,7 +25,7 @@ plot_coef <- function(x, q = 0, add = FALSE, legend = FALSE,
 #' @export
 plot_coef.JD.Filters <- function(x, q = 0, nxlab = 7, add = FALSE, legend = FALSE,
                                  legend.pos = "topright", ...){
-  x = f$filters.coef
+  x = x$filters.coef
   col_to_plot <- sprintf("q=%i",q)
   col_to_plot <- col_to_plot[col_to_plot %in% colnames(x)]
   if (length(col_to_plot) == 0) {
