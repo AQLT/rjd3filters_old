@@ -22,7 +22,7 @@ plot_gain(
 plot_phase(
   x,
   q = 0,
-  nxlab = 6,
+  nxlab = 7,
   add = FALSE,
   legend = FALSE,
   legend.pos = "topright",
@@ -46,4 +46,10 @@ plot_phase(
 }
 \description{
 Plots
+}
+\examples{
+filter <- filterproperties(3, endpoints = "DAF", kernel = "Henderson")
+plot_coef(filter, q = c(0,3), legend = TRUE)
+plot_gain(filter, q = c(0,3), legend = TRUE)
+plot_phase(filter, q = c(0,3), legend = TRUE)
 }
