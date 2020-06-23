@@ -72,7 +72,7 @@ plot_gain.JD.Filters <- function(x, q = 0, nxlab = 7, add = FALSE, legend = FALS
   }
   matplot(x_values,x[, col_to_plot], type = "l",
           xaxt = "n", xlab = "",
-          ylab = "gain", add = add)
+          ylab = "gain", add = add, ...)
 
   if(legend)
     legend(legend.pos,col_to_plot,
