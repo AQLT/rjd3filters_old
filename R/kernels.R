@@ -23,7 +23,7 @@ get_kernel <- function(kernel = c("Henderson","Uniform", "Triangular",
   jkernel <- .jcall("jdplus/data/analysis/DiscreteKernel",
                     "Ljava/util/function/IntToDoubleFunction;",
                     tolower(kernel), as.integer(h))
-  coef = sapply(as.integer(seq.int(from = -horizon, to = horizon, by = 1)),
+  coef = sapply(as.integer(seq.int(from = 0, to = horizon, by = 1)),
                 jkernel$applyAsDouble)
   m = horizon
   result <- list(coef = coef, m = m)
