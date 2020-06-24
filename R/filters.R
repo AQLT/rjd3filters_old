@@ -68,23 +68,38 @@ filterproperties <- function(horizon, degree = 3,
   aw<-sapply(0:(horizon-1), function(h){return(proc_data(jprops, paste0("aweights(", h,')')))})
   awg<-sapply(0:(horizon-1), function(h){return(proc_data(jprops, paste0("again(", h,')')))})
   awp<-sapply(0:(horizon-1), function(h){return(proc_data(jprops, paste0("aphase(", h,')')))})
+
+  svariancereduction <- proc_data(jprops, "svariancereduction")
+  avariancereduction <- sapply(0:(horizon-1), function(h){proc_data(jprops, paste0("avariancereduction(", h,')'))})
+  abias0 <- sapply(0:(horizon-1), function(h){proc_data(jprops, paste0("abias0(", h,')'))})
+  abias1 <- sapply(0:(horizon-1), function(h){proc_data(jprops, paste0("abias1(", h,')'))})
+  abias2 <- sapply(0:(horizon-1), function(h){proc_data(jprops, paste0("abias2(", h,')'))})
+
+
   coefs = c(aw,list(sw))
   nbpoints = horizon*2+1
   coefs = sapply(coefs, function(x){
     c(x,rep(0,nbpoints-length(x)))
   })
+
   gain = cbind(awg,swg)
+
+  bias <- rbind(abias0, abias1, abias2)
+  variancereduction <- c(avariancereduction, svariancereduction)
+
   filternames <- sprintf("q=%i", 0:(horizon))
   rownames(coefs) <- sprintf("t%+i", seq(-horizon,horizon))
   rownames(coefs) <- sub("+0", "", rownames(coefs), fixed = TRUE)
-  colnames(gain) <- colnames(coefs) <- filternames
-  colnames(awp) <- filternames[-length(filternames)]
+  colnames(gain) <- colnames(coefs) <- names(variancereduction) <- filternames
+  colnames(awp) <- colnames(bias) <- filternames[-length(filternames)]
 
   return(structure(list(
-    internal=jprops,
+    internal = jprops,
     filters.coef = coefs,
     filters.gain = gain,
-    asymmetricfilter.phase=awp
+    filters.variancereduction = variancereduction,
+    asymmetricfilter.phase = awp,
+    asymmetricfilter.bias = bias
   ),
   class="JD.Filters"))
 }
