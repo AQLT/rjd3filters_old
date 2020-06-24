@@ -37,8 +37,8 @@ plot_coef.JD.Filters <- function(x, q = 0, nxlab = 7, add = FALSE, legend = FALS
     }
     return(invisible(0))
   }
-  matplot(x[, col_to_plot], type = "l",
-          xaxt = "n", xlab = "",
+  matplot(x[,col_to_plot],
+          xaxt = "n", xlab = "", type = "o", pch = 20,
           ylab = "coefficient", add = add, ...)
   if(legend)
     legend(legend.pos,col_to_plot,
