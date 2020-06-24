@@ -21,6 +21,7 @@ Collate:
     'rslts.R'
     'procresults.R'
     'filters.R'
+    'kernels.R'
     'plots.R'
     'zzz.R'
 URL: https://github.com/palatej/rjdfilters
