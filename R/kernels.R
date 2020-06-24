@@ -17,12 +17,12 @@ get_kernel <- function(kernel = c("Henderson","Uniform", "Triangular",
   kernel = match.arg(kernel)
   if(kernel == "Parabolic")
     kernel = "Epanechnikov"
-  h <- horizon
+  h <- as.integer(horizon)
   if(kernel == "Gaussian")
     h <- 4 * horizon
   jkernel <- .jcall("jdplus/data/analysis/DiscreteKernel",
                     "Ljava/util/function/IntToDoubleFunction;",
-                    tolower(kernel), as.integer(h))
+                    tolower(kernel), h)
   coef = sapply(as.integer(seq.int(from = 0, to = horizon, by = 1)),
                 jkernel$applyAsDouble)
   m = horizon
