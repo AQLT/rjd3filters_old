@@ -1,5 +1,8 @@
 #' Get the coefficients of a kernel
 #'
+#' Function to get the coefficient associated to a kernel. Those
+#' coefficients are then used to compute the different filters.
+#'
 #' @inheritParams localpolynomials
 #'
 #' @return \code{tskernel} object (see \link[stats]{kernel}).
