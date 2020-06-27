@@ -9,7 +9,7 @@ filterproperties(
   degree = 3,
   kernel = c("Henderson", "Uniform", "Biweight", "Trapezoidal", "Triweight", "Tricube",
     "Gaussian", "Triangular", "Parabolic"),
-  endpoints = c("LC", "QL", "CQ", "CC", "DAF"),
+  endpoints = c("LC", "QL", "CQ", "CC", "DAF", "CN"),
   ic = 4.5
 )
 }
@@ -29,6 +29,16 @@ filterproperties(
 }
 \description{
 Get properties of local polynomials filters
+}
+\details{
+\itemize{
+\item "LC": Linear-Constant filter $y_t$
+\item "QL": Quadratic-Linear filter
+\item "CQ": Cubic-Quadratic filter
+\item "CC": Constant-Constant filter
+\item "DAF": Direct Asymmetric filter
+\item "CN": Cut and Normalized Filter
+}
 }
 \examples{
 filterproperties(horizon = 3)

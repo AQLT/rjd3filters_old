@@ -14,7 +14,12 @@ NULL
 #'
 #' @examples
 henderson<-function(y, length, musgrave=TRUE, ic=4.5){
-  return (.jcall("demetra/saexperimental/r/X11Decomposition", "[D", "henderson", as.numeric(y), as.integer(length), musgrave, ic))
+  result <- .jcall("demetra/saexperimental/r/X11Decomposition", "[D", "henderson",
+                   as.numeric(y), as.integer(length), musgrave, ic)
+
+  if(is.ts(y))
+    result <- ts(result,start = start(y), frequency = frequency(y))
+  result
 }
 
 #' Apply local polynomials filters
@@ -41,14 +46,24 @@ localpolynomials<-function(y,
   d<-2/(sqrt(pi)*ic)
   kernel=match.arg(kernel)
   endpoints=match.arg(endpoints)
-  return (.jcall("demetra/saexperimental/r/LocalPolynomialFilters", "[D", "filter",
-                 as.numeric(y), as.integer(horizon), as.integer(degree), kernel, endpoints, d))
+  result <- .jcall("demetra/saexperimental/r/LocalPolynomialFilters", "[D", "filter",
+                   as.numeric(y), as.integer(horizon), as.integer(degree), kernel, endpoints, d)
+  if(is.ts(y))
+    result <- ts(result,start = start(y), frequency = frequency(y))
+  result
 }
 
 
 #' Get properties of local polynomials filters
 #'
 #' @inheritParams localpolynomials
+#' @details
+#' * "LC": Linear-Constant filter $y_t$
+#' * "QL": Quadratic-Linear filter
+#' * "CQ": Cubic-Quadratic filter
+#' * "CC": Constant-Constant filter
+#' * "DAF": Direct Asymmetric filter
+#' * "CN": Cut and Normalized Filter
 #'
 #' @return \code{list} with coefficients, gain and phase values
 #' @export
@@ -57,7 +72,7 @@ localpolynomials<-function(y,
 #' filterproperties(horizon = 3)
 filterproperties <- function(horizon, degree = 3,
                            kernel = c("Henderson", "Uniform", "Biweight", "Trapezoidal", "Triweight", "Tricube", "Gaussian", "Triangular", "Parabolic"),
-                           endpoints = c("LC", "QL", "CQ", "CC", "DAF"),
+                           endpoints = c("LC", "QL", "CQ", "CC", "DAF", "CN"),
                            ic = 4.5){
   if(2*horizon < degree)
     stop("You need more observation (2 * horizon + 1) than variables (degree + 1) to estimate the filter.")
