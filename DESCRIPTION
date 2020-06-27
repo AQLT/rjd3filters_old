@@ -21,6 +21,7 @@ Collate:
     'rslts.R'
     'procresults.R'
     'filters.R'
+    'get_properties_function.R'
     'kernels.R'
     'plots.R'
     'zzz.R'
