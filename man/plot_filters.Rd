@@ -16,6 +16,7 @@ plot_gain(
   add = FALSE,
   legend = FALSE,
   legend.pos = "topright",
+  xlim = c(0, pi),
   ...
 )
 
@@ -26,6 +27,8 @@ plot_phase(
   add = FALSE,
   legend = FALSE,
   legend.pos = "topright",
+  xlim = c(0, pi),
+  normalized = TRUE,
   ...
 )
 }
@@ -34,15 +37,19 @@ plot_phase(
 
 \item{q}{q}
 
-\item{add}{boolean indicating if the new plot is added to the previous one}
+\item{add}{boolean indicating if the new plot is added to the previous one.}
 
-\item{legend}{boolean indicating if the legend is printed}
+\item{legend}{boolean indicating if the legend is printed.}
 
-\item{legend.pos}{position of the legend}
+\item{legend.pos}{position of the legend.}
 
 \item{...}{other arguments to \code{matplot}}
 
 \item{nxlab}{number of xlab}
+
+\item{xlim}{vector containing x limits.}
+
+\item{normalized}{boolean indicatif if the phase function is normalized by the frequency.}
 }
 \description{
 Plots
