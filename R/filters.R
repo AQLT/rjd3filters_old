@@ -35,6 +35,9 @@ localpolynomials<-function(y,
                            kernel = c("Henderson", "Uniform", "Biweight", "Trapezoidal", "Triweight", "Tricube", "Gaussian", "Triangular", "Parabolic"),
                            endpoints = c("LC", "QL", "CQ", "CC", "DAF"),
                            ic = 4.5){
+  if(2*horizon < degree)
+    stop("You need more observation (2 * horizon + 1) than variables (degree + 1) to estimate the filter.")
+
   d<-2/(sqrt(pi)*ic)
   kernel=match.arg(kernel)
   endpoints=match.arg(endpoints)
@@ -56,6 +59,8 @@ filterproperties <- function(horizon, degree = 3,
                            kernel = c("Henderson", "Uniform", "Biweight", "Trapezoidal", "Triweight", "Tricube", "Gaussian", "Triangular", "Parabolic"),
                            endpoints = c("LC", "QL", "CQ", "CC", "DAF"),
                            ic = 4.5){
+  if(2*horizon < degree)
+    stop("You need more observation (2 * horizon + 1) than variables (degree + 1) to estimate the filter.")
   d<-2/(sqrt(pi)*ic)
   kernel=match.arg(kernel)
   endpoints=match.arg(endpoints)
@@ -83,23 +88,33 @@ filterproperties <- function(horizon, degree = 3,
   })
 
   gain = cbind(awg,swg)
+  phase = cbind(awp, 0)
 
   bias <- rbind(abias0, abias1, abias2)
+  bias <- cbind(bias,
+                c(sum(sw),
+                  sum(seq(-horizon,horizon) * sw),
+                  sum(seq(-horizon,horizon)^2 * sw)))
   variancereduction <- c(avariancereduction, svariancereduction)
+  diagnostics <- rbind(variancereduction, bias)
+  rownames(diagnostics) <- c("Variance reduction",
+                             "Constant bias",
+                             "Linear bias",
+                             "Quadratic bias")
 
   filternames <- sprintf("q=%i", 0:(horizon))
   rownames(coefs) <- sprintf("t%+i", seq(-horizon,horizon))
   rownames(coefs) <- sub("+0", "", rownames(coefs), fixed = TRUE)
-  colnames(gain) <- colnames(coefs) <- names(variancereduction) <- filternames
-  colnames(awp) <- colnames(bias) <- filternames[-length(filternames)]
+  colnames(gain) <- colnames(coefs) <-
+    colnames(diagnostics) <- colnames(phase) <-
+    filternames
 
   return(structure(list(
     internal = jprops,
     filters.coef = coefs,
     filters.gain = gain,
-    filters.variancereduction = variancereduction,
-    asymmetricfilter.phase = awp,
-    asymmetricfilter.bias = bias
+    filters.phase= phase,
+    filters.diagnostics = diagnostics
   ),
   class="JD.Filters"))
 }
