@@ -53,6 +53,40 @@ localpolynomials<-function(y,
   result
 }
 
+#' Apply asymmetric polynomials filters
+#'
+#' @inheritParams localpolynomials
+#' @param q number of available data for the assymetric filter.
+#'  By default (\code{q = 0}) a real-time filter is used.
+#'
+#' @return the target signal
+#' @export
+#'
+#' @examples
+asymmetric_lp<-function(y,
+                        horizon,
+                        degree = 3,
+                        kernel = c("Henderson", "Uniform", "Biweight", "Trapezoidal", "Triweight", "Tricube", "Gaussian", "Triangular", "Parabolic"),
+                        endpoints = c("LC", "QL", "CQ", "CC", "DAF"),
+                        ic = 4.5,
+                        q = 0){
+  first_date <- time(y)[1] + (horizon*2+q)/frequency(y)
+  last_date <- time(y)[length(y)]-horizon/frequency(y)
+  available_span <- time(ts(0, start =first_date,
+                            end = last_date,
+                            frequency = frequency(y)))
+  ts(sapply(available_span, function(date_fin){
+    res <- localpolynomials(window(y, end = date_fin),
+                            horizon = horizon,
+                            degree = degree,
+                            kernel = kernel,
+                            endpoints = endpoints,
+                            ic = ic)
+    res[length(res) - q]
+  }),start = available_span[1],
+  frequency = frequency(y))
+}
+
 
 #' Get properties of local polynomials filters
 #'

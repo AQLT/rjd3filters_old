@@ -24,6 +24,7 @@ Collate:
     'get_properties_function.R'
     'kernels.R'
     'plots.R'
+    'timeliness.R'
     'zzz.R'
 URL: https://github.com/palatej/rjdfilters
 Suggests:
