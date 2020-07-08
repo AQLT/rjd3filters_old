@@ -2,8 +2,11 @@
 
 export(dictionary)
 export(filterproperties)
+export(fst)
+export(fstfilter)
 export(henderson)
 export(localpolynomials)
+export(mse)
 export(result)
 exportClasses(JD3_Object)
 exportClasses(JD3_ProcResults)
