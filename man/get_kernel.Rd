@@ -7,13 +7,16 @@
 get_kernel(
   kernel = c("Henderson", "Uniform", "Triangular", "Epanechnikov", "Parabolic",
     "Biweight", "Triweight", "Tricube", "Trapezoidal", "Gaussian"),
-  horizon
+  horizon,
+  sd_gauss = 0.25
 )
 }
 \arguments{
 \item{kernel}{kernel uses}
 
 \item{horizon}{horizon of the filter}
+
+\item{sd_gauss}{standard deviation for gaussian kernel. By default 0.25.}
 }
 \value{
 \code{tskernel} object (see \link[stats]{kernel}).

@@ -4,6 +4,7 @@
 #' coefficients are then used to compute the different filters.
 #'
 #' @inheritParams localpolynomials
+#' @param sd_gauss standard deviation for gaussian kernel. By default 0.25.
 #'
 #' @return \code{tskernel} object (see \link[stats]{kernel}).
 #' @export
@@ -13,16 +14,22 @@
 get_kernel <- function(kernel = c("Henderson","Uniform", "Triangular",
                                   "Epanechnikov","Parabolic","Biweight", "Triweight","Tricube",
                                   "Trapezoidal", "Gaussian"),
-                       horizon){
+                       horizon,
+                       sd_gauss = 0.25){
   kernel = match.arg(kernel)
   if(kernel == "Parabolic")
     kernel = "Epanechnikov"
   h <- as.integer(horizon)
-  if(kernel == "Gaussian")
-    h <- 4 * horizon
-  jkernel <- .jcall("jdplus/data/analysis/DiscreteKernel",
-                    "Ljava/util/function/IntToDoubleFunction;",
-                    tolower(kernel), h)
+  if(kernel == "Gaussian"){
+    jkernel <- .jcall("jdplus/data/analysis/DiscreteKernel",
+                      "Ljava/util/function/IntToDoubleFunction;",
+                      tolower(kernel), h, sd_gauss)
+  }else{
+    jkernel <- .jcall("jdplus/data/analysis/DiscreteKernel",
+                      "Ljava/util/function/IntToDoubleFunction;",
+                      tolower(kernel), h)
+  }
+
   coef = sapply(as.integer(seq.int(from = 0, to = horizon, by = 1)),
                 jkernel$applyAsDouble)
   m = horizon
