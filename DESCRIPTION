@@ -1,7 +1,7 @@
 Package: rjdfilters
 Type: Package
 Title: Linear filters 
-Version: 0.0.1
+Version: 0.0.2
 Authors@R: as.person(c(
     "Jean Palate <jean.palate@nbb.be> [aut,cre]"
       ))
@@ -24,7 +24,6 @@ Collate:
     'get_properties_function.R'
     'kernels.R'
     'plots.R'
-    'timeliness.R'
     'zzz.R'
 URL: https://github.com/palatej/rjdfilters
 Suggests:
