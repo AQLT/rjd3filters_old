@@ -75,7 +75,7 @@ asymmetric_lp<-function(y,
   available_span <- time(ts(0, start =first_date,
                             end = last_date,
                             frequency = frequency(y)))
-  ts(sapply(available_span, function(date_fin){
+  ts(sapply(as.numeric(available_span), function(date_fin){
     res <- localpolynomials(window(y, end = date_fin),
                             horizon = horizon,
                             degree = degree,
