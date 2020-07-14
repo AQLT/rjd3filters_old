@@ -1,6 +1,6 @@
 #' Get properties of local polynomials filters
 #'
-#' @param x a \code{"JD.Filters"} object.
+#' @param x a \code{"lp_filter"} object.
 #' @param component the component to extract.
 #' @param ... unused other arguments.
 #'
@@ -20,7 +20,7 @@ get_properties_function <- function(x,
   UseMethod("get_properties_function", x)
 }
 #' @export
-get_properties_function.JD.Filters <- function(x,
+get_properties_function.lp_filter <- function(x,
                                                component = c("Symmetric Gain",
                                                              "Symmetric Phase",
                                                              "Symmetric transfer",
@@ -57,6 +57,35 @@ get_properties_function.JD.Filters <- function(x,
            afunction
          })
 }
+#' @export
+get_properties_function.fst_filter <- function(x,
+                                              component = c("Symmetric Gain",
+                                                            "Symmetric Phase",
+                                                            "Symmetric transfer",
+                                                            "Asymmetric Gain",
+                                                            "Asymmetric Phase",
+                                                            "Asymmetric transfer"), ...){
+  component = match.arg(component)
+  switch(component,
+         "Symmetric Gain" = {
+           get_gain_function(x$internal$getFilter())
+         },
+         "Asymmetric Gain" = {
+           get_gain_function(x$internal$getFilter())
+         },
+         "Symmetric Phase" = {
+           get_phase_function(x$internal$getFilter())
+         },
+         "Asymmetric Phase" = {
+           get_phase_function(x$internal$getFilter())
+         },
+         "Symmetric transfer" = {
+           get_frequencyResponse_function(x$internal$getFilter())
+         },
+         "Asymmetric transfer" = {
+           get_frequencyResponse_function(x$internal$getFilter())
+         })
+}
 get_gain_function <- function(x){
   jgain <- x$gainFunction()$applyAsDouble
   Vectorize(function(x){
@@ -73,6 +102,6 @@ get_frequencyResponse_function <- function(x){
   jfrf <- x$frequencyResponseFunction()$apply
   Vectorize(function(x){
     res <- jfrf(x)
-    res$getRe()+res$getIm()*i
+    complex(real = res$getRe(), imaginary = res$getIm())
   })
 }

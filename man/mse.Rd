@@ -2,13 +2,12 @@
 % Please edit documentation in R/filters.R
 \name{mse}
 \alias{mse}
-\title{Accuracy/smoothness/timeliness criterions through spectral decomposition
-See Wildi/McElroy}
+\title{Accuracy/smoothness/timeliness criterions through spectral decomposition}
 \usage{
 mse(sweights, aweights, density = c("rw", "uniform"), passband = pi/6)
 }
 \arguments{
-\item{sweights}{Weights of the symmetric filter (from 0 to n only).}
+\item{sweights}{Weights of the symmetric filter (from 0 to n or -n to n).}
 
 \item{aweights}{Weights of the asymmetric filter (from -n to m)}
 
@@ -21,5 +20,13 @@ The criterions
 }
 \description{
 Accuracy/smoothness/timeliness criterions through spectral decomposition
+}
+\examples{
+filter <- filterproperties(horizon = 3, kernel = "Henderson", endpoints = "LC")
+sweights <- filter$filters.coef[4:7,"q=3"]
+aweights <- filter$filters.coef[1:4,"q=0"]
+mse(sweights, aweights)
+}
+\references{
 See Wildi/McElroy
 }

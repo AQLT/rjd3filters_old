@@ -55,7 +55,7 @@ plot_phase(
 Plots
 }
 \examples{
-filter <- filterproperties(3, endpoints = "DAF", kernel = "Henderson")
+filter <- filterproperties(6, endpoints = "DAF", kernel = "Henderson")
 plot_coef(filter, q = c(0,3), legend = TRUE)
 plot_gain(filter, q = c(0,3), legend = TRUE)
 plot_phase(filter, q = c(0,3), legend = TRUE)

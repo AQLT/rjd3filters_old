@@ -12,7 +12,7 @@ get_properties_function(
 )
 }
 \arguments{
-\item{x}{a \code{"JD.Filters"} object.}
+\item{x}{a \code{"lp_filter"} object.}
 
 \item{component}{the component to extract.}
 

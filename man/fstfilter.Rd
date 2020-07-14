@@ -40,3 +40,8 @@ Contains the selected filter, its gain and phase, and the values of the 3 criter
 \description{
 Estimation of a filter using the Fidelity-Smoothness-Timeliness criterions
 }
+\examples{
+filter <- fstfilter(lags = 6, leads = 0)
+filter$filter
+filter$criterions
+}

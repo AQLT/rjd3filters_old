@@ -152,8 +152,7 @@ filterproperties <- function(horizon, degree = 3,
                              "Quadratic bias")
 
   filternames <- sprintf("q=%i", 0:(horizon))
-  rownames(coefs) <- sprintf("t%+i", seq(-horizon,horizon))
-  rownames(coefs) <- sub("+0", "", rownames(coefs), fixed = TRUE)
+  rownames(coefs) <- coefficients_names(-horizon, horizon)
   colnames(gain) <- colnames(coefs) <-
     colnames(diagnostics) <- colnames(phase) <-
     filternames
@@ -165,7 +164,12 @@ filterproperties <- function(horizon, degree = 3,
     filters.phase= phase,
     filters.diagnostics = diagnostics
   ),
-  class="JD.Filters"))
+  class="lp_filter"))
+}
+coefficients_names <- function(lb, ub){
+  x <- sprintf("t%+i", seq(-abs(lb),abs(ub)))
+  x <- sub("+0", "", x, fixed = TRUE)
+  x
 }
 
 
@@ -182,9 +186,12 @@ filterproperties <- function(horizon, degree = 3,
 #' @param timeliness.antiphase See Guggemos
 #'
 #' @return Contains the selected filter, its gain and phase, and the values of the 3 criterions
-#' @export
 #'
 #' @examples
+#' filter <- fstfilter(lags = 6, leads = 0)
+#' filter$filter
+#' filter$criterions
+#' @export
 fstfilter<-function(lags, leads, pdegree=2, smoothness.weight=1, smoothness.degree=3, timeliness.weight=0, timeliness.passband=pi/6, timeliness.antiphase=T){
   jobj<-.jcall("demetra/saexperimental/r/FiltersToolkit", "Ldemetra/saexperimental/r/FiltersToolkit$FSTResult;",
                "fstfilter", as.integer(lags), as.integer(leads), as.integer(pdegree), smoothness.weight, as.integer(smoothness.degree),
@@ -195,16 +202,19 @@ fstfilter<-function(lags, leads, pdegree=2, smoothness.weight=1, smoothness.degr
 
 fstresult<-function(jobj){
   filter<-.jcall(jobj,"[D", "weights")
+  names(filter) <- coefficients_names(jobj$lb(), jobj$ub())
   gain<-.jcall(jobj, "[D", "getGain")
   phase<-.jcall(jobj, "[D", "getPhase")
   criterions<-.jcall(jobj, "[D", "getCriterions")
-
-  return(list(
+  names(criterions) <- c("Fidelity", "Smoothness", "Timeliness")
+  structure(list(
+    internal = jobj,
     filter=filter,
     gain=gain,
     phase=phase,
     criterions=criterions
-  ))
+  ),
+  class="fst_filter")
 }
 
 #' FST criterions
@@ -214,32 +224,43 @@ fstresult<-function(jobj){
 #' @param passband Passband threshold for timeliness criterion
 #'
 #' @return
-#' @export
-#'
 #' @examples
+#' filter <- filterproperties(horizon = 6, kernel = "Henderson", endpoints = "LC")
+#' weight <- filter$filters.coef[1:7,"q=0"]
+#' fst(weight, lb = -6)
+#' @export
 fst<-function(weights, lb, passband=pi/6){
   jobj<-.jcall("demetra/saexperimental/r/FiltersToolkit", "Ldemetra/saexperimental/r/FiltersToolkit$FSTResult;", "fst",
                weights, as.integer(lb), passband)
-               return(fstresult(jobj))
-
+  return(fstresult(jobj))
 }
 
 #' Accuracy/smoothness/timeliness criterions through spectral decomposition
-#' See Wildi/McElroy
 #'
-#' @param sweights Weights of the symmetric filter (from 0 to n only).
+#'
+#' @param sweights Weights of the symmetric filter (from 0 to n or -n to n).
 #' @param aweights Weights of the asymmetric filter (from -n to m)
 #' @param density hypothesis on the spectral density
 #' @param passband passband threshold
 #'
 #' @return The criterions
-#' @export
-#'
+#' @references See Wildi/McElroy
 #' @examples
-mse<-function(sweights, aweights, density=c("rw", "uniform"), passband=pi/6 ){
-  spectral=match.arg(spectral)
+#' filter <- filterproperties(horizon = 3, kernel = "Henderson", endpoints = "LC")
+#' sweights <- filter$filters.coef[4:7,"q=3"]
+#' aweights <- filter$filters.coef[1:4,"q=0"]
+#' mse(sweights, aweights)
+#' @export
+mse<-function(sweights, aweights, density=c("rw", "uniform"), passband = pi/6 ){
+  if(length(sweights)>length(aweights)){
+    # we asume sweights were specify from [-n to n] instead of [0,n]
+    n <- (length(sweights)-1)/2
+    sweights <- sweights[-seq_len(n)]
+  }
+  spectral = match.arg(density)
   rslt<-.jcall("demetra/saexperimental/r/FiltersToolkit", "[D", "mseDecomposition",
                  sweights, aweights, spectral, passband)
-  return (list(accuracy=rslt[1], smoothness=rslt[2], timeliness=rslt[3], residual=rslt[4]))
+  return (c(accuracy=rslt[1], smoothness=rslt[2], timeliness=rslt[3], residual=rslt[4]))
 }
+
 

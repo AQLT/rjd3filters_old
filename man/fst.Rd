@@ -19,3 +19,8 @@ fst(weights, lb, passband = pi/6)
 \description{
 FST criterions
 }
+\examples{
+filter <- filterproperties(horizon = 6, kernel = "Henderson", endpoints = "LC")
+weight <- filter$filters.coef[1:7,"q=0"]
+fst(weight, lb = -6)
+}
