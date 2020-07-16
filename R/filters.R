@@ -167,7 +167,7 @@ filterproperties <- function(horizon, degree = 3,
   class="lp_filter"))
 }
 coefficients_names <- function(lb, ub){
-  x <- sprintf("t%+i", seq(-abs(lb),abs(ub)))
+  x <- sprintf("t%+i", seq(lb,ub))
   x <- sub("+0", "", x, fixed = TRUE)
   x
 }
