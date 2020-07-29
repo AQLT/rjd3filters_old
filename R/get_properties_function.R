@@ -107,14 +107,22 @@ get_frequencyResponse_function <- function(x){
 }
 
 #' @export
-diagnostics_matrix <- function(x, lb, passband = pi/6){
+diagnostics_matrix <- function(x, lb, passband = pi/6,
+                               sweight){
   if (lb >=0)
     lb <- -lb
 
   results <- c(sum(x)-1, sum(x*seq(lb,length(x) + lb-1, by = 1)),
                sum(x*seq(lb,length(x) + lb-1, by = 1)^2),
                fst(x, lb, passband = passband)$criterions)
+  if(!missing(sweight)){
+    results <- c(results,
+                 mse(sweight,
+                     na.omit(trailingZeroAsNa(x)))
+    )
+  }
   names(results) <- c("b_c", "b_l", "b_q",
-                      "F_g", "S_g", "T_g")
+                      "F_g", "S_g", "T_g",
+                      c("A_w","S_w","T_w","R_w")[rep(!missing(sweight),4)])
   results
 }
