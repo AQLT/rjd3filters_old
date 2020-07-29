@@ -20,13 +20,17 @@
 #' @importFrom MASS fractions
 #' @export
 plot_coef <- function(x, q = 0, add = FALSE, legend = FALSE,
-                      legend.pos = "topright", ...){
+                      legend.pos = "topright",
+                      zeroAsNa = FALSE, ...){
   UseMethod("plot_coef", x)
 }
 #' @export
 plot_coef.lp_filter<- function(x, q = 0, nxlab = 7, add = FALSE, legend = FALSE,
-                                 legend.pos = "topright", ...){
+                                 legend.pos = "topright",
+                               zeroAsNa = FALSE, ...){
   x = x$filters.coef
+  if(zeroAsNa)
+    x  <- apply(x,2, trailingZeroAsNa)
   col_to_plot <- sprintf("q=%i",q)
   col_to_plot <- col_to_plot[col_to_plot %in% colnames(x)]
   horizon <- (nrow(x)-1)/2
@@ -49,11 +53,14 @@ plot_coef.lp_filter<- function(x, q = 0, nxlab = 7, add = FALSE, legend = FALSE,
     axis(1, at=seq(-horizon, horizon, by = 1), labels = rownames(x))
 }
 #' @export
-plot_coef.fst_filter <- function(x, nxlab = 7, add = FALSE, ...){
+plot_coef.fst_filter <- function(x, nxlab = 7, add = FALSE,
+                                 zeroAsNa = FALSE, ...){
   n <- max(abs(c(x$internal$ub(), x$internal$lb())))
   x_plot <- vector(mode = "double", length = 2*n+1)
   names(x_plot) <- coefficients_names(-n, n)
   x_plot[names(x$filter)] <- x$filter
+  if(zeroAsNa)
+    x_plot <- trailingZeroAsNa(x_plot)
   matplot(seq(-n, n, by = 1), x_plot,
           xaxt = "n", xlab = "", type = "o", pch = 20,
           ylab = "coefficient", add = add, ...)
@@ -173,4 +180,12 @@ xlabel <- function(x, symbol = "pi"){
   labels <- sub("0 * pi", "0", labels, fixed = TRUE)
   labels <- sub("1 * pi", " pi", labels, fixed = TRUE)
   parse(text = labels)
+}
+
+trailingZeroAsNa <- function(x){
+  if(x[length(x)]==0)
+    x [seq(from = tail(which(!sapply(x, function(y) isTRUE(all.equal(y,0)))),1)+1,
+           to = length(x),
+           by = 1)] <- NA
+  x
 }

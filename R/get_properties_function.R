@@ -105,3 +105,16 @@ get_frequencyResponse_function <- function(x){
     complex(real = res$getRe(), imaginary = res$getIm())
   })
 }
+
+#' @export
+diagnostics_matrix <- function(x, lb, passband = pi/6){
+  if (lb >=0)
+    lb <- -lb
+
+  results <- c(sum(x)-1, sum(x*seq(lb,length(x) + lb-1, by = 1)),
+               sum(x*seq(lb,length(x) + lb-1, by = 1)^2),
+               fst(x, lb, passband = passband)$criterions)
+  names(results) <- c("b_c", "b_l", "b_q",
+                      "F_g", "S_g", "T_g")
+  results
+}

@@ -7,7 +7,15 @@
 \alias{plot_phase}
 \title{Plots}
 \usage{
-plot_coef(x, q = 0, add = FALSE, legend = FALSE, legend.pos = "topright", ...)
+plot_coef(
+  x,
+  q = 0,
+  add = FALSE,
+  legend = FALSE,
+  legend.pos = "topright",
+  zeroAsNa = FALSE,
+  ...
+)
 
 plot_gain(
   x,
