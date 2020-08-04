@@ -29,6 +29,8 @@ henderson<-function(y, length, musgrave=TRUE, ic=4.5){
 #' @param degree degree of polynomial
 #' @param kernel kernel uses
 #' @param endpoints methode for endpoints
+#' @param tweight timeliness weight
+#' @param passband passband threshold
 #'
 #' @return the target signal
 #' @export
@@ -39,7 +41,8 @@ localpolynomials<-function(y,
                            degree = 3,
                            kernel = c("Henderson", "Uniform", "Biweight", "Trapezoidal", "Triweight", "Tricube", "Gaussian", "Triangular", "Parabolic"),
                            endpoints = c("LC", "QL", "CQ", "CC", "DAF"),
-                           ic = 4.5){
+                           ic = 4.5,
+                           tweight = 0, passband = pi/12){
   if(2*horizon < degree)
     stop("You need more observation (2 * horizon + 1) than variables (degree + 1) to estimate the filter.")
 
@@ -47,7 +50,8 @@ localpolynomials<-function(y,
   kernel=match.arg(kernel)
   endpoints=match.arg(endpoints)
   result <- .jcall("demetra/saexperimental/r/LocalPolynomialFilters", "[D", "filter",
-                   as.numeric(y), as.integer(horizon), as.integer(degree), kernel, endpoints, d)
+                   as.numeric(y), as.integer(horizon), as.integer(degree), kernel, endpoints, d
+                   , tweight, passband)
   if(is.ts(y))
     result <- ts(result,start = start(y), frequency = frequency(y))
   result
@@ -63,13 +67,15 @@ localpolynomials<-function(y,
 #' @export
 #'
 #' @examples
+#' @importFrom stats is.ts na.omit start time window
 asymmetric_lp<-function(y,
                         horizon,
                         degree = 3,
                         kernel = c("Henderson", "Uniform", "Biweight", "Trapezoidal", "Triweight", "Tricube", "Gaussian", "Triangular", "Parabolic"),
                         endpoints = c("LC", "QL", "CQ", "CC", "DAF"),
                         ic = 4.5,
-                        q = 0){
+                        q = 0,
+                        tweight = 0, passband = pi/12){
   first_date <- time(y)[1] + (horizon*2+q)/frequency(y)
   last_date <- time(y)[length(y)]-horizon/frequency(y)
   available_span <- time(ts(0, start =first_date,
@@ -81,7 +87,9 @@ asymmetric_lp<-function(y,
                             degree = degree,
                             kernel = kernel,
                             endpoints = endpoints,
-                            ic = ic)
+                            ic = ic,
+                            tweight = tweight,
+                            passband = passband)
     res[length(res) - q]
   }),start = available_span[1],
   frequency = frequency(y))
@@ -107,7 +115,8 @@ asymmetric_lp<-function(y,
 filterproperties <- function(horizon, degree = 3,
                            kernel = c("Henderson", "Uniform", "Biweight", "Trapezoidal", "Triweight", "Tricube", "Gaussian", "Triangular", "Parabolic"),
                            endpoints = c("LC", "QL", "CQ", "CC", "DAF", "CN"),
-                           ic = 4.5){
+                           ic = 4.5,
+                           tweight = 0, passband = pi/12){
   if(2*horizon < degree)
     stop("You need more observation (2 * horizon + 1) than variables (degree + 1) to estimate the filter.")
   d<-2/(sqrt(pi)*ic)
@@ -116,7 +125,8 @@ filterproperties <- function(horizon, degree = 3,
   jprops<-.jcall("demetra/saexperimental/r/LocalPolynomialFilters",
                  "Ldemetra/saexperimental/r/FiltersToolkit$FiniteFilters;",
                  "filterProperties", as.integer(horizon),
-                 as.integer(degree), kernel, endpoints, d)
+                 as.integer(degree), kernel, endpoints, d,
+                 tweight, passband)
   sw<-proc_data(jprops, "sweights")
   swg<-proc_data(jprops, "sgain")
   aw<-sapply(0:(horizon-1), function(h){return(proc_data(jprops, paste0("aweights(", h,')')))})
@@ -179,10 +189,10 @@ coefficients_names <- function(lb, ub){
 #' @param leads Leads of the filter (should be positive or 0)
 #' @param pdegree Local polynomials preservation: max degree
 #' @param passband Passband of the filter (only used if tweight is )
-#' @param smoothness.weight Weight for the smoothness criterion (in [0, 1])
+#' @param smoothness.weight Weight for the smoothness criterion (in \eqn{[0, 1]})
 #' @param smoothness.degree Degree of the smoothness criterion (3 for Henderson)
-#' @param timeliness.weight Weight for the Timeliness criterion (in [0, 1[). sweight+tweight should be in [0,1]
-#' @param timeliness.passband Passband for the timeliness criterion (in radians). The phase effect is computed in [0, passband]
+#' @param timeliness.weight Weight for the Timeliness criterion (in \eqn{[0, 1[}). \code{sweight+tweight} should be in \eqn{[0,1]}.
+#' @param timeliness.passband Passband for the timeliness criterion (in radians). The phase effect is computed in \eqn{[0, passband]}.
 #' @param timeliness.antiphase See Guggemos
 #'
 #' @return Contains the selected filter, its gain and phase, and the values of the 3 criterions
@@ -262,5 +272,4 @@ mse<-function(sweights, aweights, density=c("rw", "uniform"), passband = pi/6 ){
                  sweights, aweights, spectral, passband)
   return (c(accuracy=rslt[1], smoothness=rslt[2], timeliness=rslt[3], residual=rslt[4]))
 }
-
 

@@ -12,7 +12,9 @@ asymmetric_lp(
     "Gaussian", "Triangular", "Parabolic"),
   endpoints = c("LC", "QL", "CQ", "CC", "DAF"),
   ic = 4.5,
-  q = 0
+  q = 0,
+  tweight = 0,
+  passband = pi/12
 )
 }
 \arguments{
@@ -30,6 +32,10 @@ asymmetric_lp(
 
 \item{q}{number of available data for the assymetric filter.
 By default (\code{q = 0}) a real-time filter is used.}
+
+\item{tweight}{timeliness weight}
+
+\item{passband}{passband threshold}
 }
 \value{
 the target signal

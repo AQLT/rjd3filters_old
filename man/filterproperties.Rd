@@ -10,7 +10,9 @@ filterproperties(
   kernel = c("Henderson", "Uniform", "Biweight", "Trapezoidal", "Triweight", "Tricube",
     "Gaussian", "Triangular", "Parabolic"),
   endpoints = c("LC", "QL", "CQ", "CC", "DAF", "CN"),
-  ic = 4.5
+  ic = 4.5,
+  tweight = 0,
+  passband = pi/12
 )
 }
 \arguments{
@@ -23,6 +25,10 @@ filterproperties(
 \item{endpoints}{methode for endpoints}
 
 \item{ic}{ic ratio}
+
+\item{tweight}{timeliness weight}
+
+\item{passband}{passband threshold}
 }
 \value{
 \code{list} with coefficients, gain and phase values

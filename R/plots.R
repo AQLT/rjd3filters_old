@@ -19,8 +19,7 @@
 #' @rdname plot_filters
 #' @importFrom MASS fractions
 #' @export
-plot_coef <- function(x, q = 0, add = FALSE, legend = FALSE,
-                      legend.pos = "topright",
+plot_coef <- function(x, nxlab = 7, add = FALSE,
                       zeroAsNa = FALSE, ...){
   UseMethod("plot_coef", x)
 }
@@ -70,8 +69,8 @@ plot_coef.fst_filter <- function(x, nxlab = 7, add = FALSE,
 #' @name plot_filters
 #' @rdname plot_filters
 #' @export
-plot_gain <- function(x, q = 0, nxlab = 7, add = FALSE, legend = FALSE,
-                      legend.pos = "topright", xlim = c(0, pi), ...){
+plot_gain <- function(x, nxlab = 7, add = FALSE,
+                      xlim = c(0, pi), ...){
   UseMethod("plot_gain", x)
 }
 #' @export
@@ -120,8 +119,8 @@ plot_gain.fst_filter<- function(x, nxlab = 7, add = FALSE,
 #' @name plot_filters
 #' @rdname plot_filters
 #' @export
-plot_phase <- function(x, q = 0, nxlab = 7, add = FALSE, legend = FALSE,
-                       legend.pos = "topright", xlim = c(0, pi), normalized = TRUE, ...){
+plot_phase <- function(x, nxlab = 7, add = FALSE,
+                       xlim = c(0, pi), normalized = TRUE, ...){
   UseMethod("plot_phase", x)
 }
 #' @export

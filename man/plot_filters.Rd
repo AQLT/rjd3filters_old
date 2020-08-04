@@ -7,57 +7,30 @@
 \alias{plot_phase}
 \title{Plots}
 \usage{
-plot_coef(
-  x,
-  q = 0,
-  add = FALSE,
-  legend = FALSE,
-  legend.pos = "topright",
-  zeroAsNa = FALSE,
-  ...
-)
+plot_coef(x, nxlab = 7, add = FALSE, zeroAsNa = FALSE, ...)
 
-plot_gain(
-  x,
-  q = 0,
-  nxlab = 7,
-  add = FALSE,
-  legend = FALSE,
-  legend.pos = "topright",
-  xlim = c(0, pi),
-  ...
-)
+plot_gain(x, nxlab = 7, add = FALSE, xlim = c(0, pi), ...)
 
-plot_phase(
-  x,
-  q = 0,
-  nxlab = 7,
-  add = FALSE,
-  legend = FALSE,
-  legend.pos = "topright",
-  xlim = c(0, pi),
-  normalized = TRUE,
-  ...
-)
+plot_phase(x, nxlab = 7, add = FALSE, xlim = c(0, pi), normalized = TRUE, ...)
 }
 \arguments{
 \item{x}{coefficients, gain or phase}
 
-\item{q}{q}
+\item{nxlab}{number of xlab}
 
 \item{add}{boolean indicating if the new plot is added to the previous one.}
 
-\item{legend}{boolean indicating if the legend is printed.}
-
-\item{legend.pos}{position of the legend.}
-
 \item{...}{other arguments to \code{matplot}}
-
-\item{nxlab}{number of xlab}
 
 \item{xlim}{vector containing x limits.}
 
 \item{normalized}{boolean indicatif if the phase function is normalized by the frequency.}
+
+\item{q}{q}
+
+\item{legend}{boolean indicating if the legend is printed.}
+
+\item{legend.pos}{position of the legend.}
 }
 \description{
 Plots

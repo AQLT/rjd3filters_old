@@ -22,13 +22,13 @@ fstfilter(
 
 \item{pdegree}{Local polynomials preservation: max degree}
 
-\item{smoothness.weight}{Weight for the smoothness criterion (in \link{0, 1})}
+\item{smoothness.weight}{Weight for the smoothness criterion (in \eqn{[0, 1]})}
 
 \item{smoothness.degree}{Degree of the smoothness criterion (3 for Henderson)}
 
-\item{timeliness.weight}{Weight for the Timeliness criterion (in [0, 1[). sweight+tweight should be in \link{0,1}}
+\item{timeliness.weight}{Weight for the Timeliness criterion (in \eqn{[0, 1[}). \code{sweight+tweight} should be in \eqn{[0,1]}.}
 
-\item{timeliness.passband}{Passband for the timeliness criterion (in radians). The phase effect is computed in \link{0, passband}}
+\item{timeliness.passband}{Passband for the timeliness criterion (in radians). The phase effect is computed in \eqn{[0, passband]}.}
 
 \item{timeliness.antiphase}{See Guggemos}
 
