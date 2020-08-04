@@ -25,16 +25,18 @@ henderson<-function(y, length, musgrave=TRUE, ic=4.5){
 #' @param kernel
 #' @param endpoints
 #' @param ic
+#' @param tweight
+#' @param passband
 #'
 #' @return
 #' @export
 #'
 #' @examples
-localpolynomials<-function(y, horizon, degree=3, kernel=c("Henderson", "Uniform", "Biweight", "Triweight", "Tricube", "Gaussian", "Triangular", "Parabolic"), endpoints=c("LC", "QL", "CQ", "CC", "DAF"), ic=4.5){
+localpolynomials<-function(y, horizon, degree=3, kernel=c("Henderson", "Uniform", "Biweight", "Triweight", "Tricube", "Gaussian", "Triangular", "Parabolic"), endpoints=c("LC", "QL", "CQ", "CC", "DAF"), ic=4.5, tweight=0, passband=pi/12){
   d<-2/(sqrt(pi)*ic)
   kernel=match.arg(kernel)
   endpoints=match.arg(endpoints)
-  return (.jcall("demetra/saexperimental/r/LocalPolynomialFilters", "[D", "filter", as.numeric(y), as.integer(horizon), as.integer(degree), kernel, endpoints, d))
+  return (.jcall("demetra/saexperimental/r/LocalPolynomialFilters", "[D", "filter", as.numeric(y), as.integer(horizon), as.integer(degree), kernel, endpoints, d, tweight, passband))
 }
 
 
@@ -45,16 +47,18 @@ localpolynomials<-function(y, horizon, degree=3, kernel=c("Henderson", "Uniform"
 #' @param kernel
 #' @param endpoints
 #' @param ic
+#' @param tweight
+#' @param passband
 #'
 #' @return
 #' @export
 #'
 #' @examples
-filterproperties<-function(horizon, degree=3, kernel=c("Henderson", "Uniform", "Biweight", "Triweight", "Tricube", "Gaussian", "Triangular", "Parabolic"), endpoints=c("LC", "QL", "CQ", "CC", "DAF"), ic=4.5){
+filterproperties<-function(horizon, degree=3, kernel=c("Henderson", "Uniform", "Biweight", "Triweight", "Tricube", "Gaussian", "Triangular", "Parabolic"), endpoints=c("LC", "QL", "CQ", "CC", "DAF"), ic=4.5, tweight=0, passband=pi/12){
   d<-2/(sqrt(pi)*ic)
   kernel=match.arg(kernel)
   endpoints=match.arg(endpoints)
-  jprops<-.jcall("demetra/saexperimental/r/LocalPolynomialFilters", "Ldemetra/saexperimental/r/FiltersToolkit$FiniteFilters;", "filterProperties", as.integer(horizon), as.integer(degree), kernel, endpoints, d)
+  jprops<-.jcall("demetra/saexperimental/r/LocalPolynomialFilters", "Ldemetra/saexperimental/r/FiltersToolkit$FiniteFilters;", "filterProperties", as.integer(horizon), as.integer(degree), kernel, endpoints, d, tweight, passband)
   sw<-proc_data(jprops, "sweights")
   swg<-proc_data(jprops, "sgain")
   aw<-sapply(1:horizon, function(h){return(proc_data(jprops, paste0("aweights(", horizon-h,')')))})

@@ -11,11 +11,13 @@ localpolynomials(
   kernel = c("Henderson", "Uniform", "Biweight", "Triweight", "Tricube", "Gaussian",
     "Triangular", "Parabolic"),
   endpoints = c("LC", "QL", "CQ", "CC", "DAF"),
-  ic = 4.5
+  ic = 4.5,
+  tweight = 0,
+  passband = PI/12
 )
 }
 \arguments{
-\item{ic}{}
+\item{passband}{}
 }
 \value{
 
