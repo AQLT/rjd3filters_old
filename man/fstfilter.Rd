@@ -2,7 +2,7 @@
 % Please edit documentation in R/filters.R
 \name{fstfilter}
 \alias{fstfilter}
-\title{Estimation of a filter using the Fidelity-Smoothness-Timeliness criterions}
+\title{Estimation of a filter using the Fidelity-Smoothness-Timeliness criteria}
 \usage{
 fstfilter(
   lags,
@@ -30,18 +30,21 @@ fstfilter(
 
 \item{timeliness.passband}{Passband for the timeliness criterion (in radians). The phase effect is computed in \eqn{[0, passband]}.}
 
-\item{timeliness.antiphase}{See Guggemos}
+\item{timeliness.antiphase}{boolean indicating if the timeliness should be computed analytically (\code{TRUE}) or numerically (\code{TRUE}).}
 
 \item{passband}{Passband of the filter (only used if tweight is )}
 }
 \value{
-Contains the selected filter, its gain and phase, and the values of the 3 criterions
+The selected filter, its gain and phase, and the values of the 3 criteria.
 }
 \description{
-Estimation of a filter using the Fidelity-Smoothness-Timeliness criterions
+Estimation of a filter using the Fidelity-Smoothness-Timeliness criteria
 }
 \examples{
 filter <- fstfilter(lags = 6, leads = 0)
 filter$filter
-filter$criterions
+filter$criteria
+}
+\references{
+Grun-Rehomme, Michel, Fabien Guggemos, and Dominique Ladiray (2018). “Asymmetric Moving Averages Minimizing Phase Shift”. In: Handbook on Seasonal Adjustment.
 }

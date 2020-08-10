@@ -2,7 +2,7 @@
 % Please edit documentation in R/filters.R
 \name{mse}
 \alias{mse}
-\title{Accuracy/smoothness/timeliness criterions through spectral decomposition}
+\title{Accuracy/smoothness/timeliness criteria through spectral decomposition}
 \usage{
 mse(sweights, aweights, density = c("rw", "uniform"), passband = pi/6)
 }
@@ -16,10 +16,10 @@ mse(sweights, aweights, density = c("rw", "uniform"), passband = pi/6)
 \item{passband}{passband threshold}
 }
 \value{
-The criterions
+The criteria
 }
 \description{
-Accuracy/smoothness/timeliness criterions through spectral decomposition
+Accuracy/smoothness/timeliness criteria through spectral decomposition
 }
 \examples{
 filter <- filterproperties(horizon = 3, kernel = "Henderson", endpoints = "LC")
@@ -28,5 +28,5 @@ aweights <- filter$filters.coef[1:4,"q=0"]
 mse(sweights, aweights)
 }
 \references{
-See Wildi/McElroy
+Wildi, Marc and Tucker McElroy (2019). “The trilemma between accuracy, timeliness and smoothness in real-time signal extraction”. In: International Journal of Forecasting 35.3, pp. 1072–1084.
 }

@@ -47,5 +47,6 @@ Get properties of local polynomials filters
 }
 }
 \examples{
-filterproperties(horizon = 3)
+henderson_f <- filterproperties(horizon = 6, kernel = "Henderson")
+plot_coef(henderson_f)
 }

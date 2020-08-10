@@ -114,7 +114,7 @@ diagnostics_matrix <- function(x, lb, passband = pi/6,
 
   results <- c(sum(x)-1, sum(x*seq(lb,length(x) + lb-1, by = 1)),
                sum(x*seq(lb,length(x) + lb-1, by = 1)^2),
-               fst(x, lb, passband = passband)$criterions)
+               fst(x, lb, passband = passband)$criteria)
   if(!missing(sweight)){
     results <- c(results,
                  mse(sweight,

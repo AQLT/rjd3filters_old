@@ -12,7 +12,6 @@ NULL
 #' @return the target signal
 #' @export
 #'
-#' @examples
 henderson<-function(y, length, musgrave=TRUE, ic=4.5){
   result <- .jcall("demetra/saexperimental/r/X11Decomposition", "[D", "henderson",
                    as.numeric(y), as.integer(length), musgrave, ic)
@@ -35,7 +34,6 @@ henderson<-function(y, length, musgrave=TRUE, ic=4.5){
 #' @return the target signal
 #' @export
 #'
-#' @examples
 localpolynomials<-function(y,
                            horizon,
                            degree = 3,
@@ -66,7 +64,6 @@ localpolynomials<-function(y,
 #' @return the target signal
 #' @export
 #'
-#' @examples
 #' @importFrom stats is.ts na.omit start time window
 asymmetric_lp<-function(y,
                         horizon,
@@ -111,7 +108,8 @@ asymmetric_lp<-function(y,
 #' @export
 #'
 #' @examples
-#' filterproperties(horizon = 3)
+#' henderson_f <- filterproperties(horizon = 6, kernel = "Henderson")
+#' plot_coef(henderson_f)
 filterproperties <- function(horizon, degree = 3,
                            kernel = c("Henderson", "Uniform", "Biweight", "Trapezoidal", "Triweight", "Tricube", "Gaussian", "Triangular", "Parabolic"),
                            endpoints = c("LC", "QL", "CQ", "CC", "DAF", "CN"),
@@ -133,11 +131,11 @@ filterproperties <- function(horizon, degree = 3,
   awg<-sapply(0:(horizon-1), function(h){return(proc_data(jprops, paste0("again(", h,')')))})
   awp<-sapply(0:(horizon-1), function(h){return(proc_data(jprops, paste0("aphase(", h,')')))})
 
-  svariancereduction <- proc_data(jprops, "svariancereduction")
-  avariancereduction <- sapply(0:(horizon-1), function(h){proc_data(jprops, paste0("avariancereduction(", h,')'))})
-  abias0 <- sapply(0:(horizon-1), function(h){proc_data(jprops, paste0("abias0(", h,')'))})
-  abias1 <- sapply(0:(horizon-1), function(h){proc_data(jprops, paste0("abias1(", h,')'))})
-  abias2 <- sapply(0:(horizon-1), function(h){proc_data(jprops, paste0("abias2(", h,')'))})
+  # svariancereduction <- proc_data(jprops, "svariancereduction")
+  # avariancereduction <- sapply(0:(horizon-1), function(h){proc_data(jprops, paste0("avariancereduction(", h,')'))})
+  # abias0 <- sapply(0:(horizon-1), function(h){proc_data(jprops, paste0("abias0(", h,')'))})
+  # abias1 <- sapply(0:(horizon-1), function(h){proc_data(jprops, paste0("abias1(", h,')'))})
+  # abias2 <- sapply(0:(horizon-1), function(h){proc_data(jprops, paste0("abias2(", h,')'))})
 
 
   coefs = c(aw,list(sw))
@@ -149,30 +147,28 @@ filterproperties <- function(horizon, degree = 3,
   gain = cbind(awg,swg)
   phase = cbind(awp, 0)
 
-  bias <- rbind(abias0, abias1, abias2)
-  bias <- cbind(bias,
-                c(sum(sw),
-                  sum(seq(-horizon,horizon) * sw),
-                  sum(seq(-horizon,horizon)^2 * sw)))
-  variancereduction <- c(avariancereduction, svariancereduction)
-  diagnostics <- rbind(variancereduction, bias)
-  rownames(diagnostics) <- c("Variance reduction",
-                             "Constant bias",
-                             "Linear bias",
-                             "Quadratic bias")
+#   bias <- rbind(abias0, abias1, abias2)
+#   bias <- cbind(bias,
+#                 c(sum(sw),
+#                   sum(seq(-horizon,horizon) * sw),
+#                   sum(seq(-horizon,horizon)^2 * sw)))
+#   variancereduction <- c(avariancereduction, svariancereduction)
+#   diagnostics <- rbind(variancereduction, bias)
+#   rownames(diagnostics) <- c("Variance reduction",
+#                              "Constant bias",
+#                              "Linear bias",
+#                              "Quadratic bias")
 
   filternames <- sprintf("q=%i", 0:(horizon))
   rownames(coefs) <- coefficients_names(-horizon, horizon)
-  colnames(gain) <- colnames(coefs) <-
-    colnames(diagnostics) <- colnames(phase) <-
+  colnames(gain) <- colnames(coefs) <- colnames(phase) <-
     filternames
 
   return(structure(list(
     internal = jprops,
     filters.coef = coefs,
     filters.gain = gain,
-    filters.phase= phase,
-    filters.diagnostics = diagnostics
+    filters.phase= phase
   ),
   class="lp_filter"))
 }
@@ -183,7 +179,7 @@ coefficients_names <- function(lb, ub){
 }
 
 
-#' Estimation of a filter using the Fidelity-Smoothness-Timeliness criterions
+#' Estimation of a filter using the Fidelity-Smoothness-Timeliness criteria
 #'
 #' @param lags Lags of the filter (should be positive)
 #' @param leads Leads of the filter (should be positive or 0)
@@ -193,14 +189,15 @@ coefficients_names <- function(lb, ub){
 #' @param smoothness.degree Degree of the smoothness criterion (3 for Henderson)
 #' @param timeliness.weight Weight for the Timeliness criterion (in \eqn{[0, 1[}). \code{sweight+tweight} should be in \eqn{[0,1]}.
 #' @param timeliness.passband Passband for the timeliness criterion (in radians). The phase effect is computed in \eqn{[0, passband]}.
-#' @param timeliness.antiphase See Guggemos
+#' @param timeliness.antiphase boolean indicating if the timeliness should be computed analytically (\code{TRUE}) or numerically (\code{TRUE}).
 #'
-#' @return Contains the selected filter, its gain and phase, and the values of the 3 criterions
+#' @return The selected filter, its gain and phase, and the values of the 3 criteria.
 #'
+#' @references Grun-Rehomme, Michel, Fabien Guggemos, and Dominique Ladiray (2018). “Asymmetric Moving Averages Minimizing Phase Shift”. In: Handbook on Seasonal Adjustment.
 #' @examples
 #' filter <- fstfilter(lags = 6, leads = 0)
 #' filter$filter
-#' filter$criterions
+#' filter$criteria
 #' @export
 fstfilter<-function(lags, leads, pdegree=2, smoothness.weight=1, smoothness.degree=3, timeliness.weight=0, timeliness.passband=pi/6, timeliness.antiphase=T){
   jobj<-.jcall("demetra/saexperimental/r/FiltersToolkit", "Ldemetra/saexperimental/r/FiltersToolkit$FSTResult;",
@@ -215,37 +212,42 @@ fstresult<-function(jobj){
   names(filter) <- coefficients_names(jobj$lb(), jobj$ub())
   gain<-.jcall(jobj, "[D", "getGain")
   phase<-.jcall(jobj, "[D", "getPhase")
-  criterions<-.jcall(jobj, "[D", "getCriterions")
-  names(criterions) <- c("Fidelity", "Smoothness", "Timeliness")
+  criteria<-.jcall(jobj, "[D", "getCriterions")
+  names(criteria) <- c("Fidelity", "Smoothness", "Timeliness")
   structure(list(
     internal = jobj,
     filter=filter,
     gain=gain,
     phase=phase,
-    criterions=criterions
+    criteria=criteria
   ),
   class="fst_filter")
 }
 
-#' FST criterions
+#' FST criteria
+#'
+#' Compute the Fidelity, Smoothness and Timeliness (FST) criteria
 #'
 #' @param weights Weights of the filter (from lower bound to upper bound)
-#' @param lb Lower bound (usually negative)
+#' @param lb Lower bound
 #' @param passband Passband threshold for timeliness criterion
 #'
-#' @return
+#' @references Grun-Rehomme, Michel, Fabien Guggemos, and Dominique Ladiray (2018). “Asymmetric Moving Averages Minimizing Phase Shift”. In: Handbook on Seasonal Adjustment.
+#' @return The values of the 3 criteria, the gain and phase of the associated filter.
 #' @examples
 #' filter <- filterproperties(horizon = 6, kernel = "Henderson", endpoints = "LC")
 #' weight <- filter$filters.coef[1:7,"q=0"]
 #' fst(weight, lb = -6)
 #' @export
 fst<-function(weights, lb, passband=pi/6){
+  if (lb >=0)
+    lb <- -lb
   jobj<-.jcall("demetra/saexperimental/r/FiltersToolkit", "Ldemetra/saexperimental/r/FiltersToolkit$FSTResult;", "fst",
                weights, as.integer(lb), passband)
   return(fstresult(jobj))
 }
 
-#' Accuracy/smoothness/timeliness criterions through spectral decomposition
+#' Accuracy/smoothness/timeliness criteria through spectral decomposition
 #'
 #'
 #' @param sweights Weights of the symmetric filter (from 0 to n or -n to n).
@@ -253,8 +255,8 @@ fst<-function(weights, lb, passband=pi/6){
 #' @param density hypothesis on the spectral density
 #' @param passband passband threshold
 #'
-#' @return The criterions
-#' @references See Wildi/McElroy
+#' @return The criteria
+#' @references Wildi, Marc and Tucker McElroy (2019). “The trilemma between accuracy, timeliness and smoothness in real-time signal extraction”. In: International Journal of Forecasting 35.3, pp. 1072–1084.
 #' @examples
 #' filter <- filterproperties(horizon = 3, kernel = "Henderson", endpoints = "LC")
 #' sweights <- filter$filters.coef[4:7,"q=3"]
@@ -267,9 +269,11 @@ mse<-function(sweights, aweights, density=c("rw", "uniform"), passband = pi/6 ){
     n <- (length(sweights)-1)/2
     sweights <- sweights[-seq_len(n)]
   }
+  aweights <- na.omit(trailingZeroAsNa(aweights))
   spectral = match.arg(density)
   rslt<-.jcall("demetra/saexperimental/r/FiltersToolkit", "[D", "mseDecomposition",
                  sweights, aweights, spectral, passband)
-  return (c(accuracy=rslt[1], smoothness=rslt[2], timeliness=rslt[3], residual=rslt[4]))
+  c(accuracy = rslt[1], smoothness = rslt[2],
+    timeliness = rslt[3], residual = rslt[4])
 }
 

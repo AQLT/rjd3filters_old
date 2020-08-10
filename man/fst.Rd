@@ -2,25 +2,28 @@
 % Please edit documentation in R/filters.R
 \name{fst}
 \alias{fst}
-\title{FST criterions}
+\title{FST criteria}
 \usage{
 fst(weights, lb, passband = pi/6)
 }
 \arguments{
 \item{weights}{Weights of the filter (from lower bound to upper bound)}
 
-\item{lb}{Lower bound (usually negative)}
+\item{lb}{Lower bound}
 
 \item{passband}{Passband threshold for timeliness criterion}
 }
 \value{
-
+The values of the 3 criteria, the gain and phase of the associated filter.
 }
 \description{
-FST criterions
+Compute the Fidelity, Smoothness and Timeliness (FST) criteria
 }
 \examples{
 filter <- filterproperties(horizon = 6, kernel = "Henderson", endpoints = "LC")
 weight <- filter$filters.coef[1:7,"q=0"]
 fst(weight, lb = -6)
+}
+\references{
+Grun-Rehomme, Michel, Fabien Guggemos, and Dominique Ladiray (2018). “Asymmetric Moving Averages Minimizing Phase Shift”. In: Handbook on Seasonal Adjustment.
 }

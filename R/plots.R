@@ -9,6 +9,7 @@
 #' @param legend boolean indicating if the legend is printed.
 #' @param legend.pos position of the legend.
 #' @param normalized boolean indicatif if the phase function is normalized by the frequency.
+#' @param zeroAsNa boolean indicating if the trailing zero of the coefficients should be plotted (\code{FALSE}) or removed (\code{TRUE}).
 #'
 #' @examples
 #' filter <- filterproperties(6, endpoints = "DAF", kernel = "Henderson")
@@ -23,10 +24,12 @@ plot_coef <- function(x, nxlab = 7, add = FALSE,
                       zeroAsNa = FALSE, ...){
   UseMethod("plot_coef", x)
 }
+#' @name plot_filters
+#' @rdname plot_filters
 #' @export
-plot_coef.lp_filter<- function(x, q = 0, nxlab = 7, add = FALSE, legend = FALSE,
-                                 legend.pos = "topright",
-                               zeroAsNa = FALSE, ...){
+plot_coef.lp_filter<- function(x, nxlab = 7, add = FALSE,
+                               zeroAsNa = FALSE, q = 0, legend = FALSE,
+                               legend.pos = "topright", ...){
   x = x$filters.coef
   if(zeroAsNa)
     x  <- apply(x,2, trailingZeroAsNa)
@@ -51,6 +54,8 @@ plot_coef.lp_filter<- function(x, q = 0, nxlab = 7, add = FALSE, legend = FALSE,
   if(!add)
     axis(1, at=seq(-horizon, horizon, by = 1), labels = rownames(x))
 }
+#' @name plot_filters
+#' @rdname plot_filters
 #' @export
 plot_coef.fst_filter <- function(x, nxlab = 7, add = FALSE,
                                  zeroAsNa = FALSE, ...){
@@ -73,9 +78,12 @@ plot_gain <- function(x, nxlab = 7, add = FALSE,
                       xlim = c(0, pi), ...){
   UseMethod("plot_gain", x)
 }
+#' @name plot_filters
+#' @rdname plot_filters
 #' @export
-plot_gain.lp_filter<- function(x, q = 0, nxlab = 7, add = FALSE, legend = FALSE,
-                      legend.pos = "topright", xlim = c(0, pi), ...){
+plot_gain.lp_filter<- function(x, nxlab = 7, add = FALSE,
+                               xlim = c(0, pi), q = 0, legend = FALSE,
+                               legend.pos = "topright", ...){
   x = x$filters.gain
   x_values = seq(0, pi, length.out = nrow(x))
   col_to_plot <- sprintf("q=%i",q)
@@ -102,6 +110,8 @@ plot_gain.lp_filter<- function(x, q = 0, nxlab = 7, add = FALSE, legend = FALSE,
     axis(1, at = x_lab_at * pi, labels = xlabel(x_lab_at))
   }
 }
+#' @name plot_filters
+#' @rdname plot_filters
 #' @export
 plot_gain.fst_filter<- function(x, nxlab = 7, add = FALSE,
                                 xlim = c(0, pi), ...){
@@ -123,9 +133,12 @@ plot_phase <- function(x, nxlab = 7, add = FALSE,
                        xlim = c(0, pi), normalized = TRUE, ...){
   UseMethod("plot_phase", x)
 }
+#' @name plot_filters
+#' @rdname plot_filters
 #' @export
-plot_phase.lp_filter<- function(x, q = 0, nxlab = 7, add = FALSE, legend = FALSE,
-                       legend.pos = "topright", xlim = c(0, pi), normalized = TRUE, ...){
+plot_phase.lp_filter<- function(x, nxlab = 7, add = FALSE,
+                                xlim = c(0, pi), normalized = TRUE,
+                                q = 0, legend = FALSE, legend.pos = "topright", ...){
   x = x$filters.phase
   x_values = seq(0, pi, length.out = nrow(x))
   if(normalized){
@@ -155,6 +168,8 @@ plot_phase.lp_filter<- function(x, q = 0, nxlab = 7, add = FALSE, legend = FALSE
   }
 
 }
+#' @name plot_filters
+#' @rdname plot_filters
 #' @export
 plot_phase.fst_filter<- function(x, nxlab = 7, add = FALSE,
                                  xlim = c(0, pi), normalized = TRUE, ...){

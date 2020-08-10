@@ -3,15 +3,61 @@
 \name{plot_filters}
 \alias{plot_filters}
 \alias{plot_coef}
+\alias{plot_coef.lp_filter}
+\alias{plot_coef.fst_filter}
 \alias{plot_gain}
+\alias{plot_gain.lp_filter}
+\alias{plot_gain.fst_filter}
 \alias{plot_phase}
+\alias{plot_phase.lp_filter}
+\alias{plot_phase.fst_filter}
 \title{Plots}
 \usage{
 plot_coef(x, nxlab = 7, add = FALSE, zeroAsNa = FALSE, ...)
 
+\method{plot_coef}{lp_filter}(
+  x,
+  nxlab = 7,
+  add = FALSE,
+  zeroAsNa = FALSE,
+  q = 0,
+  legend = FALSE,
+  legend.pos = "topright",
+  ...
+)
+
+\method{plot_coef}{fst_filter}(x, nxlab = 7, add = FALSE, zeroAsNa = FALSE, ...)
+
 plot_gain(x, nxlab = 7, add = FALSE, xlim = c(0, pi), ...)
 
+\method{plot_gain}{lp_filter}(
+  x,
+  nxlab = 7,
+  add = FALSE,
+  xlim = c(0, pi),
+  q = 0,
+  legend = FALSE,
+  legend.pos = "topright",
+  ...
+)
+
+\method{plot_gain}{fst_filter}(x, nxlab = 7, add = FALSE, xlim = c(0, pi), ...)
+
 plot_phase(x, nxlab = 7, add = FALSE, xlim = c(0, pi), normalized = TRUE, ...)
+
+\method{plot_phase}{lp_filter}(
+  x,
+  nxlab = 7,
+  add = FALSE,
+  xlim = c(0, pi),
+  normalized = TRUE,
+  q = 0,
+  legend = FALSE,
+  legend.pos = "topright",
+  ...
+)
+
+\method{plot_phase}{fst_filter}(x, nxlab = 7, add = FALSE, xlim = c(0, pi), normalized = TRUE, ...)
 }
 \arguments{
 \item{x}{coefficients, gain or phase}
@@ -20,17 +66,19 @@ plot_phase(x, nxlab = 7, add = FALSE, xlim = c(0, pi), normalized = TRUE, ...)
 
 \item{add}{boolean indicating if the new plot is added to the previous one.}
 
+\item{zeroAsNa}{boolean indicating if the trailing zero of the coefficients should be plotted (\code{FALSE}) or removed (\code{TRUE}).}
+
 \item{...}{other arguments to \code{matplot}}
-
-\item{xlim}{vector containing x limits.}
-
-\item{normalized}{boolean indicatif if the phase function is normalized by the frequency.}
 
 \item{q}{q}
 
 \item{legend}{boolean indicating if the legend is printed.}
 
 \item{legend.pos}{position of the legend.}
+
+\item{xlim}{vector containing x limits.}
+
+\item{normalized}{boolean indicatif if the phase function is normalized by the frequency.}
 }
 \description{
 Plots
