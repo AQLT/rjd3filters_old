@@ -2,85 +2,30 @@
 #' @import rJava
 NULL
 
-#' Title
-#'
-#' @slot internal jobjRef.
-#'
-#' @return
-#' @export
-#'
-#' @examples
 setClass(
   Class="JD3_Object",
   representation = representation(internal = "jobjRef" )
 )
 
-#' Title
-#'
-#' @return
-#' @export
-#'
-#' @examples
 setClass(
   Class="JD3_ProcResults",
   contains = "JD3_Object"
 )
 
-#' Title
-#'
-#' @param object Java object
-#' @param id name of variable
-#' @param ... ignored arguments
-#'
-#' @return
-#' @export
-#'
-#' @examples
 setGeneric(name="result", def = function( object, id, ... ){standardGeneric("result")})
 
-#' Title
-#'
-#' @param object Java object
-#' @param ... ignored arguments
-#'
-#' @return
-#' @export
-#'
-#' @examples
 setGeneric(name="dictionary", def = function( object, ... ){standardGeneric("dictionary")})
 
-#' Title
-#'
-#' @slot internal jobjRef.
-#'
-#' @return
-#' @export
-#'
-#' @examples
 setClass(
   Class="JD3_Object",
   representation = representation(internal = "jobjRef" )
 )
 
-#' Title
-#'
-#' @return
-#' @export
-#'
-#' @examples
 setClass(
   Class="JD3_ProcResults",
   contains = "JD3_Object"
 )
 
-#' Title
-#'
-#' @param object Java object
-#'
-#' @return
-#' @export
-#'
-#' @examples
 setMethod("dictionary", "JD3_ProcResults", function(object){
   if (is.null(object@internal)){
     NULL
@@ -90,15 +35,6 @@ setMethod("dictionary", "JD3_ProcResults", function(object){
 
 })
 
-#' Title
-#'
-#' @param object JD3_ProcResults.
-#' @param id character.
-#'
-#' @return
-#' @export
-#'
-#' @examples
 setMethod("result", signature = c(object="JD3_ProcResults", id="character"), function(object, id){
   if (is.null(object@internal)){
     NULL
