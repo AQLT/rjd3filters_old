@@ -197,9 +197,15 @@ xlabel <- function(x, symbol = "pi"){
 }
 
 trailingZeroAsNa <- function(x){
-  if(x[length(x)]==0)
-    x [seq(from = tail(which(!sapply(x, function(y) isTRUE(all.equal(y,0)))),1)+1,
-           to = length(x),
-           by = 1)] <- NA
+  i <- length(x)
+  while (x[i] == 0 && i > 0) {
+    x[i] <- NA
+    i <- i - 1
+  }
   x
+  # if(x[length(x)]==0)
+  #   x [seq(from = tail(which(!sapply(x, function(y) isTRUE(all.equal(y,0)))),1)+1,
+  #          to = length(x),
+  #          by = 1)] <- NA
+  # x
 }
