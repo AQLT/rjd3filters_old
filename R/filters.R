@@ -259,8 +259,8 @@ fst<-function(weights, lb, passband=pi/6){
 #' @references Wildi, Marc and Tucker McElroy (2019). “The trilemma between accuracy, timeliness and smoothness in real-time signal extraction”. In: International Journal of Forecasting 35.3, pp. 1072–1084.
 #' @examples
 #' filter <- filterproperties(horizon = 3, kernel = "Henderson", endpoints = "LC")
-#' sweights <- filter$filters.coef[4:7,"q=3"]
-#' aweights <- filter$filters.coef[1:4,"q=0"]
+#' sweights <- filter$filters.coef[,"q=3"]
+#' aweights <- filter$filters.coef[,"q=0"]
 #' mse(sweights, aweights)
 #' @export
 mse<-function(sweights, aweights, density=c("rw", "uniform"), passband = pi/6 ){
@@ -269,75 +269,43 @@ mse<-function(sweights, aweights, density=c("rw", "uniform"), passband = pi/6 ){
     n <- (length(sweights)-1)/2
     sweights <- sweights[-seq_len(n)]
   }
-  aweights <- na.omit(trailingZeroAsNa(aweights))
   spectral = match.arg(density)
-
   rslt<-.jcall("demetra/saexperimental/r/FiltersToolkit", "[D", "mseDecomposition",
                sweights, aweights, spectral, passband)
-  c(accuracy = rslt[1], smoothness = rslt[2],
-    timeliness = rslt[3], residual = rslt[4])
-
-  # # Début modifs Alain
-  #
-  # jsymf <- .jcall("jdplus/math/linearfilters/SymmetricFilter",
-  #        "Ljdplus/math/linearfilters/SymmetricFilter;",
-  #        "ofInternal", sweights)
-  # # sym_frf <- get_frequencyResponse_function(jsymf)
-  #
-  # jasymf <- .jcall("jdplus/math/linearfilters/FiniteFilter",
-  #                  "Ljdplus/math/linearfilters/FiniteFilter;",
-  #                  "of", aweights,as.integer(-length(sweights) + 1))
-  # # asym_frf <- get_gain_function(jasymf)
-  #
-  # res <- .jcall("jdplus/dfa/MSEDecomposition",
-  #        "Ljdplus/dfa/MSEDecomposition;",
-  #        "of", .jnull("java/util/function/DoubleUnaryOperator"),
-  #        .jcast(jsymf$frequencyResponseFunction(), "java/util/function/DoubleFunction"),
-  #        .jcast(jasymf$frequencyResponseFunction(), "java/util/function/DoubleFunction"),
-  #        passband)
-  # c(accuracy = res$getAccuracy(), smoothness = res$getSmoothness(),
-  #   timeliness = res$getTimeliness(), residual = res$getResidual())
-#
-#   if (spectral == "rw"){
-#     density_f <- function(x){
-#       1/(2-2*cos(x))
-#     }
-#   }else{
-#     density_f <- function(x){
-#       1
-#     }
-#   }
-#
-#   f <- function(x){
-#     fr = sym_frf(x); fra = asym_frf(x)
-#     diff <- abs(fr - fra)^2
-#     diff * density_f(x)
-#   }
-#   DoubleUnaryOperator f=x->frfProxy.apply(x).minus(frfTarget.apply(x)).absSquare()*sp.applyAsDouble(x);
-#   double total=2*NumericalIntegration.integrate(f, 0, Math.PI);
-#
-#   f <- function(x){
-#     fr = sym_frf(x); fra = asym_frf(x)
-#     dg=abs(fr)-abs(fra);
-#     dg * dg  * density_f(x)
-#   }
-#    accuracy=2*integrate(f, 0, passband);
-#    smoothness=2*integrate(f, passband, pi);
-#
-#
-#   f <- function(x){
-#     fr = sym_frf(x); fra = asym_frf(x)
-#     g = Mod(fr); ga = Mod(fra)
-#     p = -Arg(fr); pa = -Arg(fra)
-#     s = sin((p-pa)/2)
-#     g*ga*s*s * density_f(x)
-#   }
-#
-#   timeliness=8*integrate(f, 0, passband)
-#   residual=total-accuracy-smoothness-timeliness;
-
-  # Fins modifs Alain
-
-
+  return (c(accuracy=rslt[1], smoothness=rslt[2], timeliness=rslt[3], residual=rslt[4]))
 }
+# mse2<-function(sweights, aweights, density=c("rw", "uniform"), passband = pi/6 ){
+#   if(length(sweights)>length(aweights)){
+#     # we asume sweights were specify from [-n to n] instead of [0,n]
+#     n <- (length(sweights)-1)/2
+#     sweights <- sweights[-seq_len(n)]
+#   }
+#   aweights <- na.omit(trailingZeroAsNa(aweights))
+#   spectral = match.arg(density)
+#
+#   rslt<-.jcall("demetra/saexperimental/r/FiltersToolkit", "[D", "mseDecomposition",
+#                sweights, aweights, spectral, passband)
+#   return (c(accuracy=rslt[1], smoothness=rslt[2], timeliness=rslt[3], residual=rslt[4]))
+#
+#   # Début modifs Alain
+#
+#   jsymf <- .jcall("jdplus/math/linearfilters/SymmetricFilter",
+#          "Ljdplus/math/linearfilters/SymmetricFilter;",
+#          "ofInternal", sweights)
+#   # sym_frf <- get_frequencyResponse_function(jsymf)
+#
+#   jasymf <- .jcall("jdplus/math/linearfilters/FiniteFilter",
+#                    "Ljdplus/math/linearfilters/FiniteFilter;",
+#                    "of", aweights,as.integer(-length(sweights) + 1))
+#   # asym_frf <- get_gain_function(jasymf)
+#
+#   res <- .jcall("jdplus/dfa/MSEDecomposition",
+#          "Ljdplus/dfa/MSEDecomposition;",
+#          "of", .jnull("java/util/function/DoubleUnaryOperator"),
+#          .jcast(jsymf$frequencyResponseFunction(), "java/util/function/DoubleFunction"),
+#          .jcast(jasymf$frequencyResponseFunction(), "java/util/function/DoubleFunction"),
+#          passband)
+#   c(accuracy = res$getAccuracy(), smoothness = res$getSmoothness(),
+#     timeliness = res$getTimeliness(), residual = res$getResidual())
+# }
 
