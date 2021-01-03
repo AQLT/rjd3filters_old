@@ -21,3 +21,9 @@ the target signal
 \description{
 Apply Henderson linear filter
 }
+\examples{
+y <- retailsa$AllOtherGenMerchandiseStores
+trend <- henderson(y, length = 13)
+plot(y)
+lines(trend, col = "red")
+}

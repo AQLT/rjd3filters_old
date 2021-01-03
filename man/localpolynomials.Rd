@@ -39,3 +39,12 @@ the target signal
 \description{
 Apply local polynomials filters
 }
+\examples{
+y <- retailsa$AllOtherGenMerchandiseStores
+trend <- localpolynomials(y, horizon = 6)
+plot(y)
+lines(trend, col = "red")
+}
+\references{
+Proietti, Tommaso and Alessandra Luati (2008). “Real time estimation in local polynomial regression, with application to trend-cycle analysis”.
+}

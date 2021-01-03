@@ -11,7 +11,7 @@
 \alias{plot_phase}
 \alias{plot_phase.lp_filter}
 \alias{plot_phase.fst_filter}
-\title{Plots}
+\title{Plots filters properties}
 \usage{
 plot_coef(x, nxlab = 7, add = FALSE, zeroAsNa = FALSE, ...)
 
@@ -81,10 +81,10 @@ plot_phase(x, nxlab = 7, add = FALSE, xlim = c(0, pi), normalized = TRUE, ...)
 \item{normalized}{boolean indicatif if the phase function is normalized by the frequency.}
 }
 \description{
-Plots
+Functions to plot the coefficients, the gain and the phase functions.
 }
 \examples{
-filter <- filterproperties(6, endpoints = "DAF", kernel = "Henderson")
+filter <- lpp_properties(6, endpoints = "DAF", kernel = "Henderson")
 plot_coef(filter, q = c(0,3), legend = TRUE)
 plot_gain(filter, q = c(0,3), legend = TRUE)
 plot_phase(filter, q = c(0,3), legend = TRUE)
