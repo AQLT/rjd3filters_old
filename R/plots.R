@@ -1,4 +1,6 @@
-#' Plots
+#' Plots filters properties
+#'
+#' Functions to plot the coefficients, the gain and the phase functions.
 #'
 #' @param x coefficients, gain or phase
 #' @param q q
@@ -12,7 +14,7 @@
 #' @param zeroAsNa boolean indicating if the trailing zero of the coefficients should be plotted (\code{FALSE}) or removed (\code{TRUE}).
 #'
 #' @examples
-#' filter <- filterproperties(6, endpoints = "DAF", kernel = "Henderson")
+#' filter <- lpp_properties(6, endpoints = "DAF", kernel = "Henderson")
 #' plot_coef(filter, q = c(0,3), legend = TRUE)
 #' plot_gain(filter, q = c(0,3), legend = TRUE)
 #' plot_phase(filter, q = c(0,3), legend = TRUE)
@@ -208,4 +210,17 @@ trailingZeroAsNa <- function(x){
   #          to = length(x),
   #          by = 1)] <- NA
   # x
+}
+removeTrailingZeroOrNA <- function(x){
+  i <- length(x)
+  remove_i <- NULL
+  while ((is.na(x[i]) || (x[i] == 0)) && i > 0) {
+    remove_i <- c(i, remove_i)
+    i <- i - 1
+  }
+  if(is.null(remove_i)){
+    x
+  } else{
+    x[-remove_i]
+  }
 }
