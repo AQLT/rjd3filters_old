@@ -20,6 +20,7 @@ Applies linear filtering to a univariate time series or to each series separatel
 For a time series \eqn{x} the asymmetric moving average is applied.
 If \eqn{coef} is of length \eqn{q}, the result \eqn{y} is equal at time \eqn{t} to:
 \deqn{y[t] = x[t-lags] * coef[1] + x[t-lags+1] * coef[1] + ... + x[t-lags+q] * coef[q]}
+It extends the function \code{\link[stats]{filter}} that would add \code{NA} at the end of the time series.
 }
 \examples{
 lags <- 6
@@ -34,4 +35,7 @@ fst_ma <- jasym_filter(y, fst_coef, lags)
 lpp_ma <- jasym_filter(y, lpp_coef, lags)
 
 plot(ts.union(y, fst_ma, lpp_ma), plot.type = "single", col = c("black","red","blue"))
+}
+\seealso{
+\code{\link{jfilter}}
 }
