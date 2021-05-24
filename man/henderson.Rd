@@ -7,16 +7,16 @@
 henderson(y, length, musgrave = TRUE, ic = 4.5)
 }
 \arguments{
-\item{y}{input time-series}
+\item{y}{input time-series?}
 
-\item{length}{length of the Henderson filter}
+\item{length}{length of the Henderson filter.}
 
-\item{musgrave}{boolean indicating if musgrave asymmetric filters should be used}
+\item{musgrave}{boolean indicating if musgrave asymmetric filters should be used.}
 
-\item{ic}{ic ratio}
+\item{ic}{ic ratio.}
 }
 \value{
-the target signal
+the target signal.
 }
 \description{
 Apply Henderson linear filter

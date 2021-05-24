@@ -4,12 +4,12 @@ NULL
 
 #' Apply Henderson linear filter
 #'
-#' @param y input time-series
-#' @param length length of the Henderson filter
-#' @param musgrave boolean indicating if musgrave asymmetric filters should be used
-#' @param ic ic ratio
+#' @param y input time-series?
+#' @param length length of the Henderson filter.
+#' @param musgrave boolean indicating if musgrave asymmetric filters should be used.
+#' @param ic ic ratio.
 #'
-#' @return the target signal
+#' @return the target signal.
 #' @examples
 #' y <- retailsa$AllOtherGenMerchandiseStores
 #' trend <- henderson(y, length = 13)
@@ -29,12 +29,12 @@ henderson<-function(y, length, musgrave=TRUE, ic=4.5){
 #' Apply local polynomials filters
 #'
 #' @inheritParams henderson
-#' @param horizon horizon of the filter
-#' @param degree degree of polynomial
-#' @param kernel kernel uses
-#' @param endpoints methode for endpoints
-#' @param tweight timeliness weight
-#' @param passband passband threshold
+#' @param horizon horizon (bandwidth) of the symmetric filter .
+#' @param degree degree of polynomial.
+#' @param kernel kernel uses.
+#' @param endpoints methode for endpoints.
+#' @param tweight timeliness weight.
+#' @param passband passband threshold.
 #'
 #' @return the target signal
 #' @examples
@@ -43,8 +43,8 @@ henderson<-function(y, length, musgrave=TRUE, ic=4.5){
 #' plot(y)
 #' lines(trend, col = "red")
 #' @references Proietti, Tommaso and Alessandra Luati (2008). “Real time estimation in local polynomial regression, with application to trend-cycle analysis”.
+#' @seealso \code{\link{lpp_properties}}
 #' @export
-#'
 localpolynomials<-function(y,
                            horizon,
                            degree = 3,
@@ -83,6 +83,7 @@ localpolynomials<-function(y,
 #' henderson_f <- lpp_properties(horizon = 6, kernel = "Henderson")
 #' plot_coef(henderson_f)
 #' @references Proietti, Tommaso and Alessandra Luati (2008). “Real time estimation in local polynomial regression, with application to trend-cycle analysis”.
+#' @seealso \code{\link{localpolynomials}}
 #' @export
 lpp_properties <- function(horizon, degree = 3,
                            kernel = c("Henderson", "Uniform", "Biweight", "Trapezoidal", "Triweight", "Tricube", "Gaussian", "Triangular", "Parabolic"),

@@ -4,14 +4,14 @@
 \alias{mse}
 \title{Accuracy/smoothness/timeliness criteria through spectral decomposition}
 \usage{
-mse(sweights, aweights, density = c("rw", "uniform"), passband = pi/6)
+mse(sweights, aweights, density = c("uniform", "rw"), passband = pi/6)
 }
 \arguments{
 \item{sweights}{Weights of the symmetric filter (from 0 to n or -n to n).}
 
-\item{aweights}{Weights of the asymmetric filter (from -n to m)}
+\item{aweights}{Weights of the asymmetric filter (from -n to m).}
 
-\item{density}{hypothesis on the spectral density}
+\item{density}{hypothesis on the spectral density: \code{"uniform"} (= white woise, the default) or  \code{"rw"} (= random walk).}
 
 \item{passband}{passband threshold.}
 }

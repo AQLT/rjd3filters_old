@@ -17,21 +17,21 @@ localpolynomials(
 )
 }
 \arguments{
-\item{y}{input time-series}
+\item{y}{input time-series?}
 
-\item{horizon}{horizon of the filter}
+\item{horizon}{horizon (bandwidth) of the symmetric filter .}
 
-\item{degree}{degree of polynomial}
+\item{degree}{degree of polynomial.}
 
-\item{kernel}{kernel uses}
+\item{kernel}{kernel uses.}
 
-\item{endpoints}{methode for endpoints}
+\item{endpoints}{methode for endpoints.}
 
-\item{ic}{ic ratio}
+\item{ic}{ic ratio.}
 
-\item{tweight}{timeliness weight}
+\item{tweight}{timeliness weight.}
 
-\item{passband}{passband threshold}
+\item{passband}{passband threshold.}
 }
 \value{
 the target signal
@@ -47,4 +47,7 @@ lines(trend, col = "red")
 }
 \references{
 Proietti, Tommaso and Alessandra Luati (2008). “Real time estimation in local polynomial regression, with application to trend-cycle analysis”.
+}
+\seealso{
+\code{\link{lpp_properties}}
 }

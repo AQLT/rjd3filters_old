@@ -30,7 +30,7 @@ fstfilter(
 
 \item{timeliness.passband}{Passband for the timeliness criterion (in radians). The phase effect is computed in \eqn{[0, passband]}.}
 
-\item{timeliness.antiphase}{boolean indicating if the timeliness should be computed analytically (\code{TRUE}) or numerically (\code{TRUE}).}
+\item{timeliness.antiphase}{boolean indicating if the timeliness should be computed analytically (\code{TRUE}) or numerically (\code{FALSE}).}
 
 \item{passband}{Passband of the filter (only used if tweight is positive).}
 }

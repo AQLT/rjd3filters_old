@@ -8,7 +8,7 @@
 #' @param smoothness.degree Degree of the smoothness criterion (3 for Henderson).
 #' @param timeliness.weight Weight for the Timeliness criterion (in \eqn{[0, 1[}). \code{sweight+tweight} should be in \eqn{[0,1]}.
 #' @param timeliness.passband Passband for the timeliness criterion (in radians). The phase effect is computed in \eqn{[0, passband]}.
-#' @param timeliness.antiphase boolean indicating if the timeliness should be computed analytically (\code{TRUE}) or numerically (\code{TRUE}).
+#' @param timeliness.antiphase boolean indicating if the timeliness should be computed analytically (\code{TRUE}) or numerically (\code{FALSE}).
 #'
 #' @return The selected filter, its gain and phase, and the values of the 3 criteria.
 #'
@@ -72,8 +72,8 @@ fst<-function(weights, lags, passband=pi/6){
 #'
 #'
 #' @param sweights Weights of the symmetric filter (from 0 to n or -n to n).
-#' @param aweights Weights of the asymmetric filter (from -n to m)
-#' @param density hypothesis on the spectral density
+#' @param aweights Weights of the asymmetric filter (from -n to m).
+#' @param density hypothesis on the spectral density: \code{"uniform"} (= white woise, the default) or  \code{"rw"} (= random walk).
 #' @param passband passband threshold.
 #'
 #' @return The criteria
@@ -84,7 +84,7 @@ fst<-function(weights, lags, passband=pi/6){
 #' mse(sweights, aweights)
 #' @references Wildi, Marc and McElroy, Tucker (2019). “The trilemma between accuracy, timeliness and smoothness in real-time signal extraction”. In: International Journal of Forecasting 35.3, pp. 1072–1084.
 #' @export
-mse<-function(sweights, aweights, density=c("rw", "uniform"), passband = pi/6){
+mse<-function(sweights, aweights, density=c("uniform", "rw"), passband = pi/6){
   if(length(sweights)>length(aweights)){
     # we asume sweights were specify from [-n to n] instead of [0,n]
     n <- (length(sweights)-1)/2
