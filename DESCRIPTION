@@ -19,8 +19,6 @@ Description: This package provides functions to build and apply symmetric
   It is based on Java libraries developped around 'JDemetra+' (<https://github.com/jdemetra/jdemetra-app>), 
   the seasonal adjustment software officially recommended to the members 
   of the European Statistical System (ESS) and the European System of Central Banks.
-
-- the Reproducing Kernel Hilbert Space (RKHS) .
 Depends:
     R (>= 3.1.1)
 Imports:
