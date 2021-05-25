@@ -10,7 +10,6 @@
 #' @export
 rkhs_filter <- function(horizon = 6, degree = 2,
                         kernel = c("BiWeight", "Henderson", "Epanechnikov", "Triangular", "Uniform", "TriWeight", "TriCube"),
-                        # optimalbw = FALSE,
                         asymmetricCriterion = c("Undefined", "FrequencyResponse", "Accuracy", "Smoothness", "Timeliness"),
                         density = c("uniform", "rw"),
                         passband = 2*pi/12){
@@ -37,7 +36,14 @@ rkhs_filter <- function(horizon = 6, degree = 2,
                         "of",tspec)
   sfilter = rkhs_filter$symmetricFilter()
   afilter = rkhs_filter$endPointsFilters()
-
+  # reverse the order of the asymmetric filters
+  afilter <- lapply(rev(seq_along(afilter)),
+                  function(i){
+                    afilter[[i]]
+                  }
+  )
+  afilter <- .jarray(afilter,
+                   "jdplus/math/linearfilters/FiniteFilter")
   builder <- .jcall("demetra/saexperimental/r/FiltersToolkit$FiniteFilters",
                     "Ldemetra/saexperimental/r/FiltersToolkit$FiniteFilters$FiniteFiltersBuilder;",
                     "builder")
@@ -47,9 +53,9 @@ rkhs_filter <- function(horizon = 6, degree = 2,
 
   sw<-proc_data(jprops, "sweights")
   swg<-proc_data(jprops, "sgain")
-  aw<-sapply((horizon-1):0, function(h){return(proc_data(jprops, paste0("aweights(", h,')')))})
-  awg<-sapply((horizon-1):0, function(h){return(proc_data(jprops, paste0("again(", h,')')))})
-  awp<-sapply((horizon-1):0, function(h){return(proc_data(jprops, paste0("aphase(", h,')')))})
+  aw<-sapply(0:(horizon-1), function(h){return(proc_data(jprops, paste0("aweights(", h,')')))})
+  awg<-sapply(0:(horizon-1), function(h){return(proc_data(jprops, paste0("again(", h,')')))})
+  awp<-sapply(0:(horizon-1), function(h){return(proc_data(jprops, paste0("aphase(", h,')')))})
 
   coefs = c(aw,list(sw))
   nbpoints = horizon*2+1
@@ -64,7 +70,6 @@ rkhs_filter <- function(horizon = 6, degree = 2,
   rownames(coefs) <- coefficients_names(-horizon, horizon)
   colnames(gain) <- colnames(coefs) <- colnames(phase) <-
     filternames
-
   return(structure(list(
     internal = jprops,
     filters.coef = coefs,
