@@ -3,8 +3,9 @@
 
 # rjdfilters
 
-rjdfilters is R package on linear filters. It allows to create symmetric
-and asymmetric moving averages with:
+rjdfilters is R package on linear filters for real-time trend-cycle
+estimates. It allows to create symmetric and asymmetric moving averages
+with:
 
 -   local polynomial filters, as defined by Proietti and Luati (2008);
 
