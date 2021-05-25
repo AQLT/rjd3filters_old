@@ -16,7 +16,7 @@
 #' leads <- 2
 #' y <- retailsa$DrinkingPlaces
 #' fst_coef <- fstfilter(lags = lags, leads = leads, smoothness.weight = 0.3, timeliness.weight = 0.3)
-#' fst_coef <- fst_coef$filter
+#' fst_coef <- fst_coef$filters.coef
 #' lpp_coef <- lpp_properties(horizon = lags, kernel = "Henderson", endpoints = "LC")
 #' lpp_coef <- lpp_coef$filters.coef[,"q=2"]
 #'

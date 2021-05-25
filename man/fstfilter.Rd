@@ -42,7 +42,7 @@ Estimation of a filter using the Fidelity-Smoothness-Timeliness criteria
 }
 \examples{
 filter <- fstfilter(lags = 6, leads = 0)
-filter$filter
+filter$filters.coef
 filter$criteria
 }
 \references{

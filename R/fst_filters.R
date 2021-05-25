@@ -14,7 +14,7 @@
 #'
 #' @examples
 #' filter <- fstfilter(lags = 6, leads = 0)
-#' filter$filter
+#' filter$filters.coef
 #' filter$criteria
 #' @references Grun-Rehomme, Michel, Fabien Guggemos, and Dominique Ladiray (2018). “Asymmetric Moving Averages Minimizing Phase Shift”. In: Handbook on Seasonal Adjustment.
 #' @export
@@ -37,9 +37,9 @@ fstresult<-function(jobj){
   names(criteria) <- c("Fidelity", "Smoothness", "Timeliness")
   structure(list(
     internal = jobj,
-    filter=filter,
-    gain=gain,
-    phase=phase,
+    filters.coef=filter,
+    filters.gain=gain,
+    filters.phase=phase,
     criteria=criteria
   ),
   class="fst_filter")
