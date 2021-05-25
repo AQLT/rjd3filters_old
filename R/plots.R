@@ -14,7 +14,7 @@
 #' @param zeroAsNa boolean indicating if the trailing zero of the coefficients should be plotted (\code{FALSE}) or removed (\code{TRUE}).
 #'
 #' @examples
-#' filter <- lpp_properties(6, endpoints = "DAF", kernel = "Henderson")
+#' filter <- lp_filter(6, endpoints = "DAF", kernel = "Henderson")
 #' plot_coef(filter, q = c(0,3), legend = TRUE)
 #' plot_gain(filter, q = c(0,3), legend = TRUE)
 #' plot_phase(filter, q = c(0,3), legend = TRUE)
@@ -83,7 +83,7 @@ plot_coef.fst_filter <- function(x, nxlab = 7, add = FALSE,
   n <- max(abs(c(x$internal$ub(), x$internal$lb())))
   x_plot <- vector(mode = "double", length = 2*n+1)
   names(x_plot) <- coefficients_names(-n, n)
-  x_plot[names(x$filter)] <- x$filter
+  x_plot[names(x$filters.coef)] <- x$filters.coef
   if(zeroAsNa)
     x_plot <- trailingZeroAsNa(x_plot)
   matplot(seq(-n, n, by = 1), x_plot,

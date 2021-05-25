@@ -28,11 +28,20 @@ rkhs_filter(
 
 \item{passband}{passband threshold.}
 }
+\value{
+An object of class \code{"rkhs_filter"}, which is a list of 4 elements:\itemize{
+\item{\code{"internal"}}{Java object used for internal functions}
+\item{\code{"filters.coef"}}{The coefficients of the selected filter}
+\item{\code{"filters.gain"}}{The gain function between 0 and pi (601 observations)}
+\item{\code{"filters.phase"}}{The phase function between 0 and pi (601 observations)}
+}
+}
 \description{
 Estimation of a filter using Reproducing Kernel Hilbert Space (RKHS)
 }
 \examples{
 rkhs <- rkhs_filter(horizon = 6, asymmetricCriterion = "Timeliness")
+plot_coef(rkhs)
 }
 \references{
 Dagum, Estela Bee and Silvia Bianconcini (2008). “The Henderson Smoother in Reproducing Kernel Hilbert Space”. In: Journal of Business & Economic Statistics 26, pp. 536–545. URL: \url{https://ideas.repec.org/a/bes/jnlbes/v26y2008p536-545.html}.

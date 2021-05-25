@@ -20,7 +20,7 @@ The values of the 3 criteria, the gain and phase of the associated filter.
 Compute the Fidelity, Smoothness and Timeliness (FST) criteria
 }
 \examples{
-filter <- lpp_properties(horizon = 6, kernel = "Henderson", endpoints = "LC")
+filter <- lp_filter(horizon = 6, kernel = "Henderson", endpoints = "LC")
 weight <- filter$filters.coef[1:7,"q=0"]
 fst(weight, lags = -6)
 }

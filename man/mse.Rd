@@ -22,7 +22,7 @@ The criteria
 Accuracy/smoothness/timeliness criteria through spectral decomposition
 }
 \examples{
-filter <- lpp_properties(horizon = 3, kernel = "Henderson", endpoints = "LC")
+filter <- lp_filter(horizon = 3, kernel = "Henderson", endpoints = "LC")
 sweights <- filter$filters.coef[,"q=3"]
 aweights <- filter$filters.coef[,"q=0"]
 mse(sweights, aweights)

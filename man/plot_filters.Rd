@@ -121,7 +121,7 @@ plot_phase(x, nxlab = 7, add = FALSE, xlim = c(0, pi), normalized = FALSE, ...)
 Functions to plot the coefficients, the gain and the phase functions.
 }
 \examples{
-filter <- lpp_properties(6, endpoints = "DAF", kernel = "Henderson")
+filter <- lp_filter(6, endpoints = "DAF", kernel = "Henderson")
 plot_coef(filter, q = c(0,3), legend = TRUE)
 plot_gain(filter, q = c(0,3), legend = TRUE)
 plot_phase(filter, q = c(0,3), legend = TRUE)

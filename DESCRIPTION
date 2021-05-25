@@ -41,6 +41,7 @@ Collate:
     'jasym_filter.R'
     'kernels.R'
     'plots.R'
+    'print.R'
     'zzz.R'
 URL: https://github.com/palatej/rjdfilters
 Suggests:

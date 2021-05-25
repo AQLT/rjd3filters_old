@@ -21,8 +21,8 @@
 #' @inheritParams jfilter
 #' @examples
 #' y <- retailsa$AllOtherGenMerchandiseStores
-#' ql <- lpp_properties(horizon = 6, kernel = "Henderson", endpoints = "QL")$filters.coef
-#' lc <- lpp_properties(horizon = 6, kernel = "Henderson", endpoints = "LC")$filters.coef
+#' ql <- lp_filter(horizon = 6, kernel = "Henderson", endpoints = "QL")$filters.coef
+#' lc <- lp_filter(horizon = 6, kernel = "Henderson", endpoints = "LC")$filters.coef
 #' f_ql <- implicit_forecast(y, ql)
 #' f_lc <- implicit_forecast(y, lc)
 #'

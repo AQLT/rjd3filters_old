@@ -5,7 +5,7 @@
 #' @param ... unused other arguments.
 #'
 #' @examples
-#' filter <- lpp_properties(3, kernel = "Henderson")
+#' filter <- lp_filter(3, kernel = "Henderson")
 #' sgain <- get_properties_function(filter, "Symmetric Gain")
 #' plot(sgain, xlim= c(0, pi/12))
 #' @export

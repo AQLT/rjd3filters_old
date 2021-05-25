@@ -10,15 +10,21 @@
 #' @param timeliness.passband Passband for the timeliness criterion (in radians). The phase effect is computed in \eqn{[0, passband]}.
 #' @param timeliness.antiphase boolean indicating if the timeliness should be computed analytically (\code{TRUE}) or numerically (\code{FALSE}).
 #'
-#' @return The selected filter, its gain and phase, and the values of the 3 criteria.
+#' @return An object of class \code{"fst_filter"}, which is a list of 5 elements:\itemize{
+#' \item{\code{"internal"}}{Java object used for internal functions}
+#' \item{\code{"filters.coef"}}{The coefficients of the selected filter}
+#' \item{\code{"filters.gain"}}{The gain function between 0 and pi (601 observations)}
+#' \item{\code{"filters.phase"}}{The phase function between 0 and pi (601 observations)}
+#' \item{\code{"criteria"}}{The value of the tree criteria}
+#' }
 #'
 #' @examples
-#' filter <- fstfilter(lags = 6, leads = 0)
+#' filter <- fst_filter(lags = 6, leads = 0)
 #' filter$filters.coef
 #' filter$criteria
 #' @references Grun-Rehomme, Michel, Fabien Guggemos, and Dominique Ladiray (2018). “Asymmetric Moving Averages Minimizing Phase Shift”. In: Handbook on Seasonal Adjustment.
 #' @export
-fstfilter<-function(lags, leads, pdegree=2,
+fst_filter<-function(lags, leads, pdegree=2,
                     smoothness.weight=1, smoothness.degree=3, timeliness.weight=0,
                     timeliness.passband=pi/6, timeliness.antiphase=TRUE){
   jobj<-.jcall("demetra/saexperimental/r/FiltersToolkit", "Ldemetra/saexperimental/r/FiltersToolkit$FSTResult;",
@@ -55,7 +61,7 @@ fstresult<-function(jobj){
 #'
 #' @return The values of the 3 criteria, the gain and phase of the associated filter.
 #' @examples
-#' filter <- lpp_properties(horizon = 6, kernel = "Henderson", endpoints = "LC")
+#' filter <- lp_filter(horizon = 6, kernel = "Henderson", endpoints = "LC")
 #' weight <- filter$filters.coef[1:7,"q=0"]
 #' fst(weight, lags = -6)
 #' @references Grun-Rehomme, Michel, Fabien Guggemos, and Dominique Ladiray (2018). “Asymmetric Moving Averages Minimizing Phase Shift”. In: Handbook on Seasonal Adjustment.
@@ -78,7 +84,7 @@ fst<-function(weights, lags, passband=pi/6){
 #'
 #' @return The criteria
 #' @examples
-#' filter <- lpp_properties(horizon = 3, kernel = "Henderson", endpoints = "LC")
+#' filter <- lp_filter(horizon = 3, kernel = "Henderson", endpoints = "LC")
 #' sweights <- filter$filters.coef[,"q=3"]
 #' aweights <- filter$filters.coef[,"q=0"]
 #' mse(sweights, aweights)

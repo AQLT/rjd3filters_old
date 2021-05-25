@@ -15,9 +15,9 @@
 #' lags <- 6
 #' leads <- 2
 #' y <- retailsa$DrinkingPlaces
-#' fst_coef <- fstfilter(lags = lags, leads = leads, smoothness.weight = 0.3, timeliness.weight = 0.3)
+#' fst_coef <- fst_filter(lags = lags, leads = leads, smoothness.weight = 0.3, timeliness.weight = 0.3)
 #' fst_coef <- fst_coef$filters.coef
-#' lpp_coef <- lpp_properties(horizon = lags, kernel = "Henderson", endpoints = "LC")
+#' lpp_coef <- lp_filter(horizon = lags, kernel = "Henderson", endpoints = "LC")
 #' lpp_coef <- lpp_coef$filters.coef[,"q=2"]
 #'
 #' fst_ma <- jasym_filter(y, fst_coef, lags)
@@ -25,7 +25,7 @@
 #'
 #' plot(ts.union(y, fst_ma, lpp_ma), plot.type = "single", col = c("black","red","blue"))
 #' @seealso \code{\link{jfilter}}
-#' @inheritParams fstfilter
+#' @inheritParams fst_filter
 #' @export
 jasym_filter <- function(y, coefs, lags){
   UseMethod("jasym_filter", y)
@@ -104,7 +104,7 @@ jasym_filter.matrix <- function(y, coefs, lags){
 #' @examples
 #' y <- retailsa$AllOtherGenMerchandiseStores
 #'
-#' lpp_ma <- lpp_properties(horizon = 6)$filters.coef
+#' lpp_ma <- lp_filter(horizon = 6)$filters.coef
 #' trend <- jfilter(y, lpp_ma)
 #' # This is equivalent to:
 #' trend <- localpolynomials(y, horizon = 6)

@@ -28,7 +28,7 @@ time series \eqn{y[n-1]} (one future point known)...
 \examples{
 y <- retailsa$AllOtherGenMerchandiseStores
 
-lpp_ma <- lpp_properties(horizon = 6)$filters.coef
+lpp_ma <- lp_filter(horizon = 6)$filters.coef
 trend <- jfilter(y, lpp_ma)
 # This is equivalent to:
 trend <- localpolynomials(y, horizon = 6)
