@@ -26,12 +26,9 @@ plot_coef <- function(x, nxlab = 7, add = FALSE,
                       zeroAsNa = FALSE, ...){
   UseMethod("plot_coef", x)
 }
-#' @name plot_filters
-#' @rdname plot_filters
-#' @export
-plot_coef.lp_filter<- function(x, nxlab = 7, add = FALSE,
-                               zeroAsNa = FALSE, q = 0, legend = FALSE,
-                               legend.pos = "topright", ...){
+plot_coef_default <- function(x, nxlab = 7, add = FALSE,
+                              zeroAsNa = FALSE, q = 0, legend = FALSE,
+                              legend.pos = "topright", ...){
   x = x$filters.coef
   if(zeroAsNa)
     x  <- apply(x,2, trailingZeroAsNa)
@@ -59,6 +56,28 @@ plot_coef.lp_filter<- function(x, nxlab = 7, add = FALSE,
 #' @name plot_filters
 #' @rdname plot_filters
 #' @export
+plot_coef.lp_filter <- function(x, nxlab = 7, add = FALSE,
+                                zeroAsNa = FALSE, q = 0, legend = FALSE,
+                                legend.pos = "topright", ...){
+  plot_coef_default(x = x,
+                    nxlab = nxlab, add = add,
+                    zeroAsNa = zeroAsNa, q = q, legend = legend,
+                    legend.pos = legend.pos, ...)
+}
+#' @name plot_filters
+#' @rdname plot_filters
+#' @export
+plot_coef.rkhs_filter <- function(x, nxlab = 7, add = FALSE,
+                                zeroAsNa = FALSE, q = 0, legend = FALSE,
+                                legend.pos = "topright", ...){
+  plot_coef_default(x = x,
+                    nxlab = nxlab, add = add,
+                    zeroAsNa = zeroAsNa, q = q, legend = legend,
+                    legend.pos = legend.pos, ...)
+}
+#' @name plot_filters
+#' @rdname plot_filters
+#' @export
 plot_coef.fst_filter <- function(x, nxlab = 7, add = FALSE,
                                  zeroAsNa = FALSE, ...){
   n <- max(abs(c(x$internal$ub(), x$internal$lb())))
@@ -80,12 +99,9 @@ plot_gain <- function(x, nxlab = 7, add = FALSE,
                       xlim = c(0, pi), ...){
   UseMethod("plot_gain", x)
 }
-#' @name plot_filters
-#' @rdname plot_filters
-#' @export
-plot_gain.lp_filter<- function(x, nxlab = 7, add = FALSE,
-                               xlim = c(0, pi), q = 0, legend = FALSE,
-                               legend.pos = "topright", ...){
+plot_gain_default <- function(x, nxlab = 7, add = FALSE,
+                              xlim = c(0, pi), q = 0, legend = FALSE,
+                              legend.pos = "topright", ...){
   x = x$filters.gain
   x_values = seq(0, pi, length.out = nrow(x))
   col_to_plot <- sprintf("q=%i",q)
@@ -115,6 +131,28 @@ plot_gain.lp_filter<- function(x, nxlab = 7, add = FALSE,
 #' @name plot_filters
 #' @rdname plot_filters
 #' @export
+plot_gain.lp_filter <- function(x, nxlab = 7, add = FALSE,
+                                xlim = c(0, pi), q = 0, legend = FALSE,
+                                legend.pos = "topright", ...){
+  plot_gain_default(x = x,
+                    nxlab = nxlab, add = add,
+                    xlim = xlim, q = q, legend = legend,
+                    legend.pos = legend.pos, ...)
+}
+#' @name plot_filters
+#' @rdname plot_filters
+#' @export
+plot_gain.rkhs_filter <- function(x, nxlab = 7, add = FALSE,
+                                  xlim = c(0, pi), q = 0, legend = FALSE,
+                                  legend.pos = "topright", ...){
+  plot_gain_default(x = x,
+                    nxlab = nxlab, add = add,
+                    xlim = xlim, q = q, legend = legend,
+                    legend.pos = legend.pos, ...)
+}
+#' @name plot_filters
+#' @rdname plot_filters
+#' @export
 plot_gain.fst_filter<- function(x, nxlab = 7, add = FALSE,
                                 xlim = c(0, pi), ...){
   x = x$gain
@@ -135,12 +173,9 @@ plot_phase <- function(x, nxlab = 7, add = FALSE,
                        xlim = c(0, pi), normalized = TRUE, ...){
   UseMethod("plot_phase", x)
 }
-#' @name plot_filters
-#' @rdname plot_filters
-#' @export
-plot_phase.lp_filter<- function(x, nxlab = 7, add = FALSE,
-                                xlim = c(0, pi), normalized = TRUE,
-                                q = 0, legend = FALSE, legend.pos = "topright", ...){
+plot_phase_default <- function(x, nxlab = 7, add = FALSE,
+                               xlim = c(0, pi), normalized = TRUE,
+                               q = 0, legend = FALSE, legend.pos = "topright", ...){
   x = x$filters.phase
   x_values = seq(0, pi, length.out = nrow(x))
   if(normalized){
@@ -168,6 +203,30 @@ plot_phase.lp_filter<- function(x, nxlab = 7, add = FALSE,
     x_lab_at <- seq(xlim[1]/pi, xlim[2]/pi, length.out = nxlab)
     axis(1, at = x_lab_at * pi, labels = xlabel(x_lab_at))
   }
+
+}
+#' @name plot_filters
+#' @rdname plot_filters
+#' @export
+plot_phase.lp_filter <- function(x, nxlab = 7, add = FALSE,
+                                 xlim = c(0, pi), normalized = TRUE,
+                                 q = 0, legend = FALSE, legend.pos = "topright", ...){
+  plot_phase_default(x = x,
+                     nxlab = nxlab, add = add,
+                     xlim = xlim, q = q, legend = legend,
+                     legend.pos = legend.pos, ...)
+
+}
+#' @name rkhs_filters
+#' @rdname rkhs_filters
+#' @export
+plot_phase.lp_filter <- function(x, nxlab = 7, add = FALSE,
+                                 xlim = c(0, pi), normalized = TRUE,
+                                 q = 0, legend = FALSE, legend.pos = "topright", ...){
+  plot_phase_default(x = x,
+                     nxlab = nxlab, add = add,
+                     xlim = xlim, q = q, legend = legend,
+                     legend.pos = legend.pos, ...)
 
 }
 #' @name plot_filters

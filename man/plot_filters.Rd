@@ -4,9 +4,11 @@
 \alias{plot_filters}
 \alias{plot_coef}
 \alias{plot_coef.lp_filter}
+\alias{plot_coef.rkhs_filter}
 \alias{plot_coef.fst_filter}
 \alias{plot_gain}
 \alias{plot_gain.lp_filter}
+\alias{plot_gain.rkhs_filter}
 \alias{plot_gain.fst_filter}
 \alias{plot_phase}
 \alias{plot_phase.lp_filter}
@@ -26,11 +28,33 @@ plot_coef(x, nxlab = 7, add = FALSE, zeroAsNa = FALSE, ...)
   ...
 )
 
+\method{plot_coef}{rkhs_filter}(
+  x,
+  nxlab = 7,
+  add = FALSE,
+  zeroAsNa = FALSE,
+  q = 0,
+  legend = FALSE,
+  legend.pos = "topright",
+  ...
+)
+
 \method{plot_coef}{fst_filter}(x, nxlab = 7, add = FALSE, zeroAsNa = FALSE, ...)
 
 plot_gain(x, nxlab = 7, add = FALSE, xlim = c(0, pi), ...)
 
 \method{plot_gain}{lp_filter}(
+  x,
+  nxlab = 7,
+  add = FALSE,
+  xlim = c(0, pi),
+  q = 0,
+  legend = FALSE,
+  legend.pos = "topright",
+  ...
+)
+
+\method{plot_gain}{rkhs_filter}(
   x,
   nxlab = 7,
   add = FALSE,
