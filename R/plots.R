@@ -170,11 +170,11 @@ plot_gain.fst_filter<- function(x, nxlab = 7, add = FALSE,
 #' @rdname plot_filters
 #' @export
 plot_phase <- function(x, nxlab = 7, add = FALSE,
-                       xlim = c(0, pi), normalized = TRUE, ...){
+                       xlim = c(0, pi), normalized = FALSE, ...){
   UseMethod("plot_phase", x)
 }
 plot_phase_default <- function(x, nxlab = 7, add = FALSE,
-                               xlim = c(0, pi), normalized = TRUE,
+                               xlim = c(0, pi), normalized = FALSE,
                                q = 0, legend = FALSE, legend.pos = "topright", ...){
   x = x$filters.phase
   x_values = seq(0, pi, length.out = nrow(x))
@@ -209,23 +209,25 @@ plot_phase_default <- function(x, nxlab = 7, add = FALSE,
 #' @rdname plot_filters
 #' @export
 plot_phase.lp_filter <- function(x, nxlab = 7, add = FALSE,
-                                 xlim = c(0, pi), normalized = TRUE,
+                                 xlim = c(0, pi), normalized = FALSE,
                                  q = 0, legend = FALSE, legend.pos = "topright", ...){
   plot_phase_default(x = x,
                      nxlab = nxlab, add = add,
-                     xlim = xlim, q = q, legend = legend,
+                     xlim = xlim, normalized = normalized,
+                     q = q, legend = legend,
                      legend.pos = legend.pos, ...)
 
 }
-#' @name rkhs_filters
-#' @rdname rkhs_filters
+#' @name plot_filters
+#' @rdname plot_filters
 #' @export
-plot_phase.lp_filter <- function(x, nxlab = 7, add = FALSE,
-                                 xlim = c(0, pi), normalized = TRUE,
+plot_phase.rkhs_filter <- function(x, nxlab = 7, add = FALSE,
+                                 xlim = c(0, pi), normalized = FALSE,
                                  q = 0, legend = FALSE, legend.pos = "topright", ...){
   plot_phase_default(x = x,
                      nxlab = nxlab, add = add,
-                     xlim = xlim, q = q, legend = legend,
+                     xlim = xlim, normalized = normalized,
+                     q = q, legend = legend,
                      legend.pos = legend.pos, ...)
 
 }
@@ -233,7 +235,7 @@ plot_phase.lp_filter <- function(x, nxlab = 7, add = FALSE,
 #' @rdname plot_filters
 #' @export
 plot_phase.fst_filter<- function(x, nxlab = 7, add = FALSE,
-                                 xlim = c(0, pi), normalized = TRUE, ...){
+                                 xlim = c(0, pi), normalized = FALSE, ...){
   x = x$phase
   x_values = seq(0, pi, length.out = length(x))
   if(normalized){
