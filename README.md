@@ -42,12 +42,14 @@ boundaries.
 library(rjdfilters)
 #> Java requirements fullfilled, found version 1.8.0_241
 y <- window(retailsa$AllOtherGenMerchandiseStores,start = 2000)
-musgrave <- lpp_properties(horizon = 6, kernel = "Henderson",endpoints = "LC")$filters.coef
+musgrave <- lp_filter(horizon = 6, kernel = "Henderson",endpoints = "LC")$filters.coef
 
 # we put a large weight on the timeliness criteria
-fst_notimeliness <- lapply(0:6, function(q) fstfilter(lags = 6, leads = q,
-                                                      smoothness.weight = 1/1000,
-                                                      timeliness.weight = 1-1/1000)$filter)
+fst_notimeliness <- lapply(0:6,
+                           function(q) fst_filter(lags = 6, leads = q,
+                                                 smoothness.weight = 1/1000,
+                                                 timeliness.weight = 1-1/1000,
+                                                 pdegree = 2)$filters.coef)
 # RKHS filters minimizing timeliness
 rkhs_timeliness <- rkhs_filter(horizon = 6, asymmetricCriterion = "Timeliness")$filters.coef
 
@@ -109,6 +111,11 @@ plot(window(ts.union(y, trend_musgrave_q0,trend_fst_q0,trend_rkhs_q0),
 
 ## Bibliography
 
+Dagum, Estela Bee and Silvia Bianconcini (2008). “The Henderson Smoother
+in Reproducing Kernel Hilbert Space”. In: *Journal of Business &
+Economic Statistics 26*, pp. 536–545. URL:
+<https://ideas.repec.org/a/bes/jnlbes/v26y2008p536-545.html>.
+
 Grun-Rehomme, Michel, Fabien Guggemos, and Dominique Ladiray (2018).
 “Asymmetric Moving Averages Minimizing Phase Shift”. In: *Handbook on
 Seasonal Adjustment*. URL:
@@ -116,16 +123,10 @@ Seasonal Adjustment*. URL:
 
 Proietti, Tommaso and Alessandra Luati (Dec. 2008). “Real time
 estimation in local polynomial regression, with application to
-trend-cycle analysis”. In: *Ann. Appl. Stat.* 2.4, pp. 1523–1553. DOI:
-10.1214/08-AOAS195. URL: <https://doi.org/10.1214/08-AOAS195>.
+trend-cycle analysis”. In: *Ann. Appl. Stat.* 2.4, pp. 1523–1553. URL:
+<https://doi.org/10.1214/08-AOAS195>.
 
 Wildi, Marc and Tucker McElroy (2019). “The trilemma between accuracy,
 timeliness and smoothness in real-time signal extraction”. In:
 *International Journal of Forecasting* 35.3, pp. 1072–1084. URL:
-<https://EconPapers.repec.org/RePEc:eee:intfor:v:35:y:2019:i:3:p:1072->
-1084.
-
-Dagum, Estela Bee and Silvia Bianconcini (2008). “The Henderson Smoother
-in Reproducing Kernel Hilbert Space”. In: *Journal of Business &
-Economic Statistics 26*, pp. 536–545. URL:
-<https://ideas.repec.org/a/bes/jnlbes/v26y2008p536-545.html>.
+<https://EconPapers.repec.org/RePEc:eee:intfor:v:35:y:2019:i:3:p:1072-1084>.
