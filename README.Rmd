@@ -60,6 +60,8 @@ trend_rkhs <- jfilter(y, rkhs_timeliness)
 plot(ts.union(y, trend_musgrave,trend_fst,trend_rkhs),plot.type = "single",
      col = c("black","orange", "lightblue", "red"),
      main = "Filtered time series", ylab=NULL)
+legend("topleft", legend = c("y","Musgrave", "FST", "RKHS"),
+       col= c("black","orange", "lightblue", "red"), lty = 1)
 ```
 
 The last estimates can also be analysed with the `implicit_forecast` function that retreive the implicit forecasts corresponding to the asymmetric filters (i.e. : the forecasts needed to have the same end-points estimates but using the symmetric filter).
@@ -84,29 +86,45 @@ lines(ts(c(tail(y,1), f_fst), frequency = frequency(y), start = end(y)),
       col = "lightblue", lty = 2)
 lines(ts(c(tail(y,1), f_rkhs), frequency = frequency(y), start = end(y)),
       col = "red", lty = 2)
+legend("topleft", legend = c("y","Musgrave", "FST", "RKHS", "Forecasts"),
+       col= c("black","orange", "lightblue", "red", "black"),
+       lty = c(1, 1, 1, 1, 2))
 ```
 
 The real-time estimates (when no future points are available) can also be compared:
 
 ```{r plot-q0, eval = TRUE}
 trend_henderson<- jasym_filter(y, musgrave[,"q=6"], lags = 6)
-trend_musgrave_q0 <- jasym_filter(y, musgrave[,1], lags = 6)
+trend_musgrave_q0 <- jasym_filter(y, musgrave[,"q=0"], lags = 6)
 trend_fst_q0 <- jasym_filter(y, fst_notimeliness[[1]], lags = 6)
-trend_rkhs_q0 <- jasym_filter(y, rkhs_timeliness[,1], lags = 6)
+trend_rkhs_q0 <- jasym_filter(y, rkhs_timeliness[,"q=0"], lags = 6)
 plot(window(ts.union(y, trend_musgrave_q0,trend_fst_q0,trend_rkhs_q0),
             start = 2007),
      plot.type = "single",
      col = c("black","orange", "lightblue", "red"),
      main = "Real time estimates of the trend", ylab=NULL)
+legend("topleft", legend = c("y","Musgrave", "FST", "RKHS"),
+       col= c("black","orange", "lightblue", "red"), lty = 1)
 ```
+
+Different quality criteria from Grun-Rehomme *et al* (2018) and Wildi and McElroy(2019) can also be computed with the function `diagnostic_matrix()`:
+```{r diagnostic-table, eval = TRUE}
+q_0_coefs = list(Musgrave = musgrave[,"q=0"],
+                 fst_notimeliness = fst_notimeliness[[1]],
+                 rkhs_timeliness = rkhs_timeliness[,"q=0"])
+
+sapply(q_0_coefs, diagnostic_matrix,
+       lags = 6, sweight = musgrave[,"q=6"])
+```
+
 
 ## Bibliography
 
 Dagum, Estela Bee and Silvia Bianconcini (2008). “The Henderson Smoother in Reproducing Kernel Hilbert Space”. In: *Journal of Business & Economic Statistics 26*, pp. 536–545. URL: [https://ideas.repec.org/a/bes/jnlbes/v26y2008p536-545.html](https://ideas.repec.org/a/bes/jnlbes/v26y2008p536-545.html).
 
-Grun-Rehomme, Michel, Fabien Guggemos, and Dominique Ladiray (2018). “Asymmetric Moving Averages Minimizing Phase Shift”. In: *Handbook on Seasonal Adjustment*. URL: [https://ec.europa.eu/eurostat/web/products-manuals-and-guidelines/-/KS-GQ-18-001](https://ec.europa.eu/eurostat/web/products-manuals-and-guidelines/-/KS-GQ-18-001).
+Grun-Rehomme, Michel, Fabien Guggemos, and Dominique Ladiray (2018). “Asymmetric Moving Averages Minimizing Phase Shift”. In: *Handbook on Seasonal Adjustment*. URL: https://ec.europa.eu/eurostat/web/products-manuals-and-guidelines/-/KS-GQ-18-001.
 
-Proietti, Tommaso and Alessandra Luati (Dec. 2008). “Real time estimation in local polynomial regression, with application to trend-cycle analysis”. In: *Ann. Appl. Stat.* 2.4, pp. 1523–1553. URL: [https://doi.org/10.1214/08-AOAS195](https://doi.org/10.1214/08-AOAS195).
+Proietti, Tommaso and Alessandra Luati (Dec. 2008). “Real time estimation in local polynomial regression, with application to trend-cycle analysis”. In: *Ann. Appl. Stat.* 2.4, pp. 1523–1553. URL: https://doi.org/10.1214/08-AOAS195.
 
-Wildi, Marc and Tucker McElroy (2019). “The trilemma between accuracy, timeliness and smoothness in real-time signal extraction”. In: *International Journal of Forecasting* 35.3, pp. 1072–1084. URL: [https://EconPapers.repec.org/RePEc:eee:intfor:v:35:y:2019:i:3:p:1072-1084](https://EconPapers.repec.org/RePEc:eee:intfor:v:35:y:2019:i:3:p:1072-1084).
+Wildi, Marc and Tucker McElroy (2019). “The trilemma between accuracy, timeliness and smoothness in real-time signal extraction”. In: *International Journal of Forecasting* 35.3, pp. 1072–1084. URL: [https://EconPapers.repec.org/RePEc:eee:intfor:v<wbr>:35:y:2019:i:3:p:1072-1084](https://EconPapers.repec.org/RePEc:eee:intfor:v:35:y:2019:i:3:p:1072-1084).
 

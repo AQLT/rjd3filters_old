@@ -59,6 +59,8 @@ trend_rkhs <- jfilter(y, rkhs_timeliness)
 plot(ts.union(y, trend_musgrave,trend_fst,trend_rkhs),plot.type = "single",
      col = c("black","orange", "lightblue", "red"),
      main = "Filtered time series", ylab=NULL)
+legend("topleft", legend = c("y","Musgrave", "FST", "RKHS"),
+       col= c("black","orange", "lightblue", "red"), lty = 1)
 ```
 
 <img src="man/figures/README-plot-global-1.png" style="display: block; margin: auto;" />
@@ -88,6 +90,9 @@ lines(ts(c(tail(y,1), f_fst), frequency = frequency(y), start = end(y)),
       col = "lightblue", lty = 2)
 lines(ts(c(tail(y,1), f_rkhs), frequency = frequency(y), start = end(y)),
       col = "red", lty = 2)
+legend("topleft", legend = c("y","Musgrave", "FST", "RKHS", "Forecasts"),
+       col= c("black","orange", "lightblue", "red", "black"),
+       lty = c(1, 1, 1, 1, 2))
 ```
 
 <img src="man/figures/README-plot-forecast-1.png" style="display: block; margin: auto;" />
@@ -97,17 +102,43 @@ be compared:
 
 ``` r
 trend_henderson<- jasym_filter(y, musgrave[,"q=6"], lags = 6)
-trend_musgrave_q0 <- jasym_filter(y, musgrave[,1], lags = 6)
+trend_musgrave_q0 <- jasym_filter(y, musgrave[,"q=0"], lags = 6)
 trend_fst_q0 <- jasym_filter(y, fst_notimeliness[[1]], lags = 6)
-trend_rkhs_q0 <- jasym_filter(y, rkhs_timeliness[,1], lags = 6)
+trend_rkhs_q0 <- jasym_filter(y, rkhs_timeliness[,"q=0"], lags = 6)
 plot(window(ts.union(y, trend_musgrave_q0,trend_fst_q0,trend_rkhs_q0),
             start = 2007),
      plot.type = "single",
      col = c("black","orange", "lightblue", "red"),
      main = "Real time estimates of the trend", ylab=NULL)
+legend("topleft", legend = c("y","Musgrave", "FST", "RKHS"),
+       col= c("black","orange", "lightblue", "red"), lty = 1)
 ```
 
 <img src="man/figures/README-plot-q0-1.png" style="display: block; margin: auto;" />
+
+Different quality criteria from Grun-Rehomme *et al* (2018) and Wildi
+and McElroy(2019) can also be computed with the function
+`diagnostic_matrix()`:
+
+``` r
+q_0_coefs = list(Musgrave = musgrave[,"q=0"],
+                 fst_notimeliness = fst_notimeliness[[1]],
+                 rkhs_timeliness = rkhs_timeliness[,"q=0"])
+
+sapply(q_0_coefs, diagnostic_matrix,
+       lags = 6, sweight = musgrave[,"q=6"])
+#>         Musgrave fst_notimeliness rkhs_timeliness
+#> b_c  0.000000000     2.220446e-16     0.000000000
+#> b_l -0.575984377    -1.554312e-15    -0.611459167
+#> b_q -1.144593858     1.554312e-15     0.027626749
+#> F_g  0.357509832     9.587810e-01     0.381135700
+#> S_g  1.137610871     2.402400e+00     1.207752284
+#> T_g  0.034088260     4.676398e-04     0.023197411
+#> A_w  0.008306348     1.823745e-02     0.003677964
+#> S_w  0.449956378     3.575634e+00     0.628156109
+#> T_w  0.061789932     7.940547e-04     0.043540181
+#> R_w  0.299548665     1.721377e-01     0.219948644
+```
 
 ## Bibliography
 
@@ -129,4 +160,4 @@ trend-cycle analysis”. In: *Ann. Appl. Stat.* 2.4, pp. 1523–1553. URL:
 Wildi, Marc and Tucker McElroy (2019). “The trilemma between accuracy,
 timeliness and smoothness in real-time signal extraction”. In:
 *International Journal of Forecasting* 35.3, pp. 1072–1084. URL:
-<https://EconPapers.repec.org/RePEc:eee:intfor:v:35:y:2019:i:3:p:1072-1084>.
+[https://EconPapers.repec.org/RePEc:eee:intfor:v<wbr>:35:y:2019:i:3:p:1072-1084](https://EconPapers.repec.org/RePEc:eee:intfor:v:35:y:2019:i:3:p:1072-1084).
