@@ -40,18 +40,18 @@ boundaries.
 
 ``` r
 library(rjdfilters)
-#> Java requirements fullfilled, found version 1.8.0_241
 y <- window(retailsa$AllOtherGenMerchandiseStores,start = 2000)
-musgrave <- lp_filter(horizon = 6, kernel = "Henderson",endpoints = "LC")$filters.coef
+musgrave_filter <- lp_filter(horizon = 6, kernel = "Henderson",endpoints = "LC")
+musgrave <- musgrave_filter$filters.coef
 
 # we put a large weight on the timeliness criteria
-fst_notimeliness <- lapply(0:6,
-                           function(q) fst_filter(lags = 6, leads = q,
-                                                 smoothness.weight = 1/1000,
-                                                 timeliness.weight = 1-1/1000,
-                                                 pdegree = 2)$filters.coef)
+fst_notimeliness_filter <- lapply(0:6, fst_filter,
+                                  lags = 6, smoothness.weight = 1/1000,
+                                  timeliness.weight = 1-1/1000, pdegree =2)
+fst_notimeliness <- lapply(fst_notimeliness_filter, function (x) x$filters.coef)
 # RKHS filters minimizing timeliness
-rkhs_timeliness <- rkhs_filter(horizon = 6, asymmetricCriterion = "Timeliness")$filters.coef
+rkhs_timeliness_filter <- rkhs_filter(horizon = 6, asymmetricCriterion = "Timeliness")
+rkhs_timeliness <- rkhs_timeliness_filter$filters.coef
 
 trend_musgrave <- jfilter(y, musgrave)
 trend_fst <- jfilter(y, fst_notimeliness)
@@ -116,6 +116,8 @@ legend("topleft", legend = c("y","Musgrave", "FST", "RKHS"),
 
 <img src="man/figures/README-plot-q0-1.png" style="display: block; margin: auto;" />
 
+### Comparison of the filters
+
 Different quality criteria from Grun-Rehomme *et al* (2018) and Wildi
 and McElroy(2019) can also be computed with the function
 `diagnostic_matrix()`:
@@ -139,6 +141,37 @@ sapply(q_0_coefs, diagnostic_matrix,
 #> T_w  0.061789932     7.940547e-04     0.043540181
 #> R_w  0.299548665     1.721377e-01     0.219948644
 ```
+
+The filters can also be compared by plotting there coefficients
+(`plot_coef`), gain function (`plot_gain`) and phase function
+(`plot_phase`):
+
+``` r
+def.par <- par(no.readonly = TRUE)
+par(mai = c(0.3, 0.3, 0.2, 0))
+layout(matrix(c(1,1,2,3), 2, 2, byrow = TRUE))
+
+plot_coef(fst_notimeliness_filter[[1]], col = "lightblue")
+plot_coef(musgrave_filter, q = 0,add = TRUE, col = "orange")
+plot_coef(rkhs_timeliness_filter, q = 0,add = TRUE, col = "red")
+legend("topleft", legend = c("Musgrave", "FST", "RKHS"),
+       col= c("orange", "lightblue", "red"), lty = 1)
+
+plot_gain(fst_notimeliness_filter[[1]], col = "lightblue")
+plot_gain(musgrave_filter, q = 0, col = "orange",add = TRUE)
+plot_gain(rkhs_timeliness_filter, q = 0,add = TRUE, col = "red")
+legend("topright", legend = c("Musgrave", "FST", "RKHS"),
+       col= c("orange", "lightblue", "red"), lty = 1)
+
+plot_phase(fst_notimeliness_filter[[1]], col = "lightblue")
+plot_phase(musgrave_filter, q = 0, col = "orange",add = TRUE)
+plot_phase(rkhs_timeliness_filter, q = 0,add = TRUE, col = "red")
+legend("topright", legend = c("Musgrave", "FST", "RKHS"),
+       col= c("orange", "lightblue", "red"), lty = 1)
+par(def.par)
+```
+
+<img src="man/figures/README-diagnostic-plots-1.png" style="display: block; margin: auto;" />
 
 ## Bibliography
 
