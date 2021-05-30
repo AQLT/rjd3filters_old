@@ -155,7 +155,7 @@ plot_gain.rkhs_filter <- function(x, nxlab = 7, add = FALSE,
 #' @export
 plot_gain.fst_filter<- function(x, nxlab = 7, add = FALSE,
                                 xlim = c(0, pi), ...){
-  x = x$gain
+  x = x$filters.gain
   x_values = seq(0, pi, length.out = length(x))
 
   matplot(x_values, x, type = "l",
@@ -236,7 +236,7 @@ plot_phase.rkhs_filter <- function(x, nxlab = 7, add = FALSE,
 #' @export
 plot_phase.fst_filter<- function(x, nxlab = 7, add = FALSE,
                                  xlim = c(0, pi), normalized = FALSE, ...){
-  x = x$phase
+  x = x$filters.phase
   x_values = seq(0, pi, length.out = length(x))
   if(normalized){
     x[-1] <- x[-1] / x_values[-1]
