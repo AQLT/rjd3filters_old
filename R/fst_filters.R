@@ -3,7 +3,6 @@
 #' @param lags Lags of the filter (should be positive).
 #' @param leads Leads of the filter (should be positive or 0).
 #' @param pdegree Local polynomials preservation: max degree.
-#' @param passband Passband of the filter (only used if tweight is positive).
 #' @param smoothness.weight Weight for the smoothness criterion (in \eqn{[0, 1]}).
 #' @param smoothness.degree Degree of the smoothness criterion (3 for Henderson).
 #' @param timeliness.weight Weight for the Timeliness criterion (in \eqn{[0, 1[}). \code{sweight+tweight} should be in \eqn{[0,1]}.

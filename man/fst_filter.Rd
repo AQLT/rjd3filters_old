@@ -31,8 +31,6 @@ fst_filter(
 \item{timeliness.passband}{Passband for the timeliness criterion (in radians). The phase effect is computed in \eqn{[0, passband]}.}
 
 \item{timeliness.antiphase}{boolean indicating if the timeliness should be computed analytically (\code{TRUE}) or numerically (\code{FALSE}).}
-
-\item{passband}{Passband of the filter (only used if tweight is positive).}
 }
 \value{
 An object of class \code{"fst_filter"}, which is a list of 5 elements:\itemize{
