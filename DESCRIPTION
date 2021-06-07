@@ -35,6 +35,7 @@ Collate:
     'rslts.R'
     'procresults.R'
     'filters.R'
+    'finiteFilters2R.R'
     'fst_filters.R'
     'get_properties_function.R'
     'implicit_forecast.R'
