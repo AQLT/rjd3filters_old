@@ -46,7 +46,7 @@ henderson<-function(y, length, musgrave=TRUE, ic=4.5){
 #' @seealso \code{\link{lp_filter}}
 #' @export
 localpolynomials<-function(y,
-                           horizon,
+                           horizon = 6,
                            degree = 3,
                            kernel = c("Henderson", "Uniform", "Biweight", "Trapezoidal", "Triweight", "Tricube", "Gaussian", "Triangular", "Parabolic"),
                            endpoints = c("LC", "QL", "CQ", "CC", "DAF"),
@@ -91,11 +91,11 @@ localpolynomials<-function(y,
 #' \item{\code{"filters.phase"}}{The phase function between 0 and pi (601 observations)}
 #' }
 #' @export
-lp_filter <- function(horizon, degree = 3,
-                           kernel = c("Henderson", "Uniform", "Biweight", "Trapezoidal", "Triweight", "Tricube", "Gaussian", "Triangular", "Parabolic"),
-                           endpoints = c("LC", "QL", "CQ", "CC", "DAF", "CN"),
-                           ic = 4.5,
-                           tweight = 0, passband = pi/12){
+lp_filter <- function(horizon = 6, degree = 3,
+                      kernel = c("Henderson", "Uniform", "Biweight", "Trapezoidal", "Triweight", "Tricube", "Gaussian", "Triangular", "Parabolic"),
+                      endpoints = c("LC", "QL", "CQ", "CC", "DAF", "CN"),
+                      ic = 4.5,
+                      tweight = 0, passband = pi/12){
   if(2*horizon < degree)
     stop("You need more observation (2 * horizon + 1) than variables (degree + 1) to estimate the filter.")
   d<-2/(sqrt(pi)*ic)

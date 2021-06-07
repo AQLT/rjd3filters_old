@@ -6,7 +6,7 @@
 \usage{
 localpolynomials(
   y,
-  horizon,
+  horizon = 6,
   degree = 3,
   kernel = c("Henderson", "Uniform", "Biweight", "Trapezoidal", "Triweight", "Tricube",
     "Gaussian", "Triangular", "Parabolic"),

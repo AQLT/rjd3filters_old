@@ -9,10 +9,12 @@ rkhs_filter(
   degree = 2,
   kernel = c("BiWeight", "Henderson", "Epanechnikov", "Triangular", "Uniform",
     "TriWeight", "TriCube"),
-  asymmetricCriterion = c("Undefined", "FrequencyResponse", "Accuracy", "Smoothness",
-    "Timeliness"),
+  asymmetricCriterion = c("Timeliness", "FrequencyResponse", "Accuracy", "Smoothness",
+    "Undefined"),
   density = c("uniform", "rw"),
-  passband = 2 * pi/12
+  passband = 2 * pi/12,
+  optimalbw = TRUE,
+  bw = horizon + 1
 )
 }
 \arguments{
@@ -27,6 +29,11 @@ rkhs_filter(
 \item{density}{hypothesis on the spectral density: \code{"uniform"} (= white woise, the default) or  \code{"rw"} (= random walk).}
 
 \item{passband}{passband threshold.}
+
+\item{optimalbw}{boolean indicating if the bandwith should be choosen by optimisation (with if \code{asymmetricCriterion} parameter).
+If \code{optimalbw = FALSE} then the bandwith specified in \code{bw} will be  used.}
+
+\item{bw}{the bandwidth to use if \code{optimalbw = FALSE}.}
 }
 \value{
 An object of class \code{"rkhs_filter"}, which is a list of 4 elements:\itemize{

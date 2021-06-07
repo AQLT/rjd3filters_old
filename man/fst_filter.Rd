@@ -5,8 +5,8 @@
 \title{Estimation of a filter using the Fidelity-Smoothness-Timeliness criteria}
 \usage{
 fst_filter(
-  lags,
-  leads,
+  lags = 6,
+  leads = 0,
   pdegree = 2,
   smoothness.weight = 1,
   smoothness.degree = 3,

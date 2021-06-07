@@ -23,9 +23,9 @@
 #' filter$criteria
 #' @references Grun-Rehomme, Michel, Fabien Guggemos, and Dominique Ladiray (2018). “Asymmetric Moving Averages Minimizing Phase Shift”. In: Handbook on Seasonal Adjustment.
 #' @export
-fst_filter<-function(lags, leads, pdegree=2,
-                    smoothness.weight=1, smoothness.degree=3, timeliness.weight=0,
-                    timeliness.passband=pi/6, timeliness.antiphase=TRUE){
+fst_filter<-function(lags = 6, leads = 0, pdegree = 2,
+                    smoothness.weight = 1, smoothness.degree = 3, timeliness.weight = 0,
+                    timeliness.passband = pi/6, timeliness.antiphase = TRUE){
   jobj<-.jcall("demetra/saexperimental/r/FiltersToolkit", "Ldemetra/saexperimental/r/FiltersToolkit$FSTResult;",
                "fstfilter", as.integer(lags), as.integer(leads), as.integer(pdegree), smoothness.weight, as.integer(smoothness.degree),
                timeliness.weight, timeliness.passband, as.logical(timeliness.antiphase))
