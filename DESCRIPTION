@@ -43,6 +43,7 @@ Collate:
     'kernels.R'
     'plots.R'
     'print.R'
+    'x11.R'
     'zzz.R'
 URL: https://github.com/palatej/rjdfilters
 Suggests:

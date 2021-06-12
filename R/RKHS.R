@@ -80,27 +80,27 @@ rkhs_filter_optimalbw <- function(horizon = 6, degree = 2,
                                   density = c("uniform", "rw"),
                                   passband = 2*pi/12){
 
-  tspec = .jnew("jdplus/rkhs/RKHSFilterSpec")
   kernel = match.arg(kernel)
   asymmetricCriterion = match.arg(asymmetricCriterion)
   spectral = match.arg(density)
+
+  KernelOption = J("jdplus.filters.KernelOption")
+  AsymmetricCriterion= J("jdplus.filters.AsymmetricCriterion")
+  SpectralDensity = J("jdplus/filters/SpectralDensity")
+
+  tspec = new(J("jdplus.rkhs.RKHSFilterSpec"))
+
   tspec$setFilterLength(as.integer(horizon))
   tspec$setPolynomialDegree(as.integer(degree))
-  tspec$setKernel(.jcall("jdplus/filters/KernelOption",
-                         "Ljdplus/filters/KernelOption;",
-                         "valueOf", kernel))
+  tspec$setKernel(KernelOption$valueOf(kernel))
+
   # tspec$setOptimalBandWidth(optimalbw); # Ne semble rien changer
-  tspec$setAsymmetricBandWith(.jcall("jdplus/filters/AsymmetricCriterion", "Ljdplus/filters/AsymmetricCriterion;",
-                                     "valueOf",asymmetricCriterion));
-  if(spectral=="rw"){
-    tspec$setDensity(.jcall("jdplus/filters/SpectralDensity", "Ljdplus/filters/SpectralDensity;",
-                            "valueOf","RandomWalk"));
-  } else{
-    tspec$setDensity(.jcall("jdplus/filters/SpectralDensity", "Ljdplus/filters/SpectralDensity;",
-                            "valueOf","WhiteNoise"))
-  }
-  rkhs_filter <- .jcall("jdplus/rkhs/RKHSFilterFactory","Ljdplus/filters/ISymmetricFiltering;",
-                        "of",tspec)
+  tspec$setAsymmetricBandWith(AsymmetricCriterion$valueOf(asymmetricCriterion));
+  tspec$setDensity(SpectralDensity$valueOf(switch(spectral,
+                                                  rw="RandomWalk",
+                                                  "WhiteNoise")))
+  rkhs_filter <- J("jdplus.rkhs.RKHSFilterFactory")$of(tspec)
+
   sfilter = rkhs_filter$symmetricFilter()
   afilter = rkhs_filter$endPointsFilters()
   # reverse the order of the asymmetric filters
