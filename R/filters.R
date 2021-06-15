@@ -2,152 +2,118 @@
 #' @import rJava
 NULL
 
-#' Title
+#' Apply Henderson linear filter
 #'
-#' @param y
-#' @param length
-#' @param musgrave
-#' @param ic
+#' @param y input time-series?
+#' @param length length of the Henderson filter.
+#' @param musgrave boolean indicating if musgrave asymmetric filters should be used.
+#' @param ic ic ratio.
 #'
-#' @return
-#' @export
-#'
+#' @return the target signal.
 #' @examples
+#' y <- retailsa$AllOtherGenMerchandiseStores
+#' trend <- henderson(y, length = 13)
+#' plot(y)
+#' lines(trend, col = "red")
+#' @importFrom stats is.ts na.omit start
+#' @export
 henderson<-function(y, length, musgrave=TRUE, ic=4.5){
-  return (.jcall("demetra/saexperimental/r/X11Decomposition", "[D", "henderson", as.numeric(y), as.integer(length), musgrave, ic))
+  result <- .jcall("demetra/saexperimental/r/X11Decomposition", "[D", "henderson",
+                   as.numeric(y), as.integer(length), musgrave, ic)
+
+  if(is.ts(y))
+    result <- ts(result,start = start(y), frequency = frequency(y))
+  result
 }
 
-#' Title
+#' Apply local polynomials filters
 #'
-#' @param y
-#' @param horizon
-#' @param degree
-#' @param kernel
-#' @param endpoints
-#' @param ic
-#' @param tweight
-#' @param passband
+#' @inheritParams henderson
+#' @param horizon horizon (bandwidth) of the symmetric filter .
+#' @param degree degree of polynomial.
+#' @param kernel kernel uses.
+#' @param endpoints methode for endpoints.
+#' @param tweight timeliness weight.
+#' @param passband passband threshold.
 #'
-#' @return
-#' @export
-#'
+#' @return the target signal
 #' @examples
-localpolynomials<-function(y, horizon, degree=3, kernel=c("Henderson", "Uniform", "Biweight", "Triweight", "Tricube", "Gaussian", "Triangular", "Parabolic"), endpoints=c("LC", "QL", "CQ", "CC", "DAF"), ic=4.5, tweight=0, passband=pi/12){
+#' y <- retailsa$AllOtherGenMerchandiseStores
+#' trend <- localpolynomials(y, horizon = 6)
+#' plot(y)
+#' lines(trend, col = "red")
+#' @references Proietti, Tommaso and Alessandra Luati (2008). “Real time estimation in local polynomial regression, with application to trend-cycle analysis”.
+#' @seealso \code{\link{lp_filter}}
+#' @export
+localpolynomials<-function(y,
+                           horizon = 6,
+                           degree = 3,
+                           kernel = c("Henderson", "Uniform", "Biweight", "Trapezoidal", "Triweight", "Tricube", "Gaussian", "Triangular", "Parabolic"),
+                           endpoints = c("LC", "QL", "CQ", "CC", "DAF"),
+                           ic = 4.5,
+                           tweight = 0, passband = pi/12){
+  if(2*horizon < degree)
+    stop("You need more observation (2 * horizon + 1) than variables (degree + 1) to estimate the filter.")
+
   d<-2/(sqrt(pi)*ic)
   kernel=match.arg(kernel)
   endpoints=match.arg(endpoints)
-  return (.jcall("demetra/saexperimental/r/LocalPolynomialFilters", "[D", "filter", as.numeric(y), as.integer(horizon), as.integer(degree), kernel, endpoints, d, tweight, passband))
+  result <- .jcall("demetra/saexperimental/r/LocalPolynomialFilters", "[D", "filter",
+                   as.numeric(y), as.integer(horizon), as.integer(degree), kernel, endpoints, d
+                   , tweight, passband)
+  if(is.ts(y))
+    result <- ts(result,start = start(y), frequency = frequency(y))
+  result
 }
 
-
-#' Title
+#' Get properties of local polynomials filters
 #'
-#' @param horizon
-#' @param degree
-#' @param kernel
-#' @param endpoints
-#' @param ic
-#' @param tweight
-#' @param passband
+#' @inheritParams localpolynomials
+#' @details
+#' * "LC": Linear-Constant filter
+#' * "QL": Quadratic-Linear filter
+#' * "CQ": Cubic-Quadratic filter
+#' * "CC": Constant-Constant filter
+#' * "DAF": Direct Asymmetric filter
+#' * "CN": Cut and Normalized Filter
 #'
-#' @return
-#' @export
+#' @return \code{list} with coefficients, gain and phase values
 #'
 #' @examples
-filterproperties<-function(horizon, degree=3, kernel=c("Henderson", "Uniform", "Biweight", "Triweight", "Tricube", "Gaussian", "Triangular", "Parabolic"), endpoints=c("LC", "QL", "CQ", "CC", "DAF"), ic=4.5, tweight=0, passband=pi/12){
+#' henderson_f <- lp_filter(horizon = 6, kernel = "Henderson")
+#' plot_coef(henderson_f)
+#' @references Proietti, Tommaso and Alessandra Luati (2008). “Real time estimation in local polynomial regression, with application to trend-cycle analysis”.
+#' @seealso \code{\link{lp_filter}}
+#' @return An object of class \code{"rkhs_filter"}, which is a list of 4 elements:\itemize{
+#' \item{\code{"internal"}}{Java object used for internal functions}
+#' \item{\code{"filters.coef"}}{The coefficients of the selected filter}
+#' \item{\code{"filters.gain"}}{The gain function between 0 and pi (601 observations)}
+#' \item{\code{"filters.phase"}}{The phase function between 0 and pi (601 observations)}
+#' }
+#' @export
+lp_filter <- function(horizon = 6, degree = 3,
+                      kernel = c("Henderson", "Uniform", "Biweight", "Trapezoidal", "Triweight", "Tricube", "Gaussian", "Triangular", "Parabolic"),
+                      endpoints = c("LC", "QL", "CQ", "CC", "DAF", "CN"),
+                      ic = 4.5,
+                      tweight = 0, passband = pi/12){
+  if(2*horizon < degree)
+    stop("You need more observation (2 * horizon + 1) than variables (degree + 1) to estimate the filter.")
   d<-2/(sqrt(pi)*ic)
   kernel=match.arg(kernel)
   endpoints=match.arg(endpoints)
-  jprops<-.jcall("demetra/saexperimental/r/LocalPolynomialFilters", "Ldemetra/saexperimental/r/FiltersToolkit$FiniteFilters;", "filterProperties", as.integer(horizon), as.integer(degree), kernel, endpoints, d, tweight, passband)
-  sw<-proc_data(jprops, "sweights")
-  swg<-proc_data(jprops, "sgain")
-  aw<-sapply(1:horizon, function(h){return(proc_data(jprops, paste0("aweights(", horizon-h,')')))})
-  awg<-sapply(1:horizon, function(h){return(proc_data(jprops, paste0("again(", horizon-h,')')))})
-  awp<-sapply(1:horizon, function(h){return(proc_data(jprops, paste0("aphase(", horizon-h,')')))})
-  return(structure(list(
-    internal=jprops,
-    symmetricFilter=sw,
-    symmetricfilter.gain=swg,
-    asymmetricFilters=aw,
-    asymmetricfilter.gain=awg,
-    asymmetricfilter.phase=awp
-    ),
-    class="JD.Filters"))
+  jprops<-.jcall("demetra/saexperimental/r/LocalPolynomialFilters",
+                 "Ldemetra/saexperimental/r/FiltersToolkit$FiniteFilters;",
+                 "filterProperties", as.integer(horizon),
+                 as.integer(degree), kernel, endpoints, d,
+                 tweight, passband)
+
+  return(structure(FiniteFilters2R(jprops, horizon),
+  class="lp_filter"))
 }
-
-
-#' Estimation of a filter using the Fidelity-Smoothness-Timeliness criterions
-#'
-#' @param lags Lags of the filter (should be positive)
-#' @param leads Leads of the filter (should be positive or 0)
-#' @param pdegree Local polynomials preservation: max degree
-#' @param passband Passband of the filter (only used if tweight is )
-#' @param smoothness.weight Weight for the smoothness criterion (in [0, 1])
-#' @param smoothness.degree Degree of the smoothness criterion (3 for Henderson)
-#' @param timeliness.weight Weight for the Timeliness criterion (in [0, 1[). sweight+tweight should be in [0,1]
-#' @param timeliness.passband Passband for the timeliness criterion (in radians). The phase effect is computed in [0, passband]
-#' @param timeliness.antiphase See Guggemos
-#'
-#' @return Contains the selected filter, its gain and phase, and the values of the 3 criterions
-#' @export
-#'
-#' @examples
-fstfilter<-function(lags, leads, pdegree=2, smoothness.weight=1, smoothness.degree=3, timeliness.weight=0, timeliness.passband=pi/6, timeliness.antiphase=T){
-  jobj<-.jcall("demetra/saexperimental/r/FiltersToolkit", "Ldemetra/saexperimental/r/FiltersToolkit$FSTResult;",
-               "fstfilter", as.integer(lags), as.integer(leads), as.integer(pdegree), smoothness.weight, as.integer(smoothness.degree),
-              timeliness.weight, timeliness.passband, as.logical(timeliness.antiphase))
-  return(fstresult(jobj))
-
-}
-
-fstresult<-function(jobj){
-  filter<-.jcall(jobj,"[D", "weights")
-  gain<-.jcall(jobj, "[D", "getGain")
-  phase<-.jcall(jobj, "[D", "getPhase")
-  criterions<-.jcall(jobj, "[D", "getCriterions")
-
-  return(list(
-    filter=filter,
-    gain=gain,
-    phase=phase,
-    criterions=criterions
-  ))
-}
-
-#' FST criterions
-#'
-#' @param weights Weights of the filter (from lower bound to upper bound)
-#' @param lb Lower bound (usually negative)
-#' @param passband Passband threshold for timeliness criterion
-#'
-#' @return
-#' @export
-#'
-#' @examples
-fst<-function(weights, lb, passband=pi/6){
-  jobj<-.jcall("demetra/saexperimental/r/FiltersToolkit", "Ldemetra/saexperimental/r/FiltersToolkit$FSTResult;", "fst",
-               weights, as.integer(lb), passband)
-               return(fstresult(jobj))
-
-}
-
-#' Accuracy/smoothness/timeliness criterions through spectral decomposition
-#' See Wildi/McElroy
-#'
-#' @param sweights Weights of the symmetric filter (from 0 to n only).
-#' @param aweights Weights of the asymmetric filter (from -n to m)
-#' @param density hypothesis on the spectral density
-#' @param passband passband threshold
-#'
-#' @return The criterions
-#' @export
-#'
-#' @examples
-mse<-function(sweights, aweights, density=c("rw", "uniform"), passband=pi/6 ){
-  spectral=match.arg(spectral)
-  rslt<-.jcall("demetra/saexperimental/r/FiltersToolkit", "[D", "mseDecomposition",
-                 sweights, aweights, spectral, passband)
-  return (list(accuracy=rslt[1], smoothness=rslt[2], timeliness=rslt[3], residual=rslt[4]))
+coefficients_names <- function(lb, ub){
+  x <- sprintf("t%+i", seq(lb,ub))
+  x <- sub("+0", "", x, fixed = TRUE)
+  x
 }
 
 

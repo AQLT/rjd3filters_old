@@ -1,4 +1,6 @@
 #' @import rJava
+#' @importFrom graphics axis lines plot matplot
+#' @importFrom stats frequency ts
 NULL
 
 jd_clobj <- NULL
@@ -16,10 +18,22 @@ jd_clobj <- NULL
   if (jversion < "1.8.0") {
     stop(paste("Your java version is ", jversion,
                ".  Need 1.8.0 or higher.", sep=""))
-  } else {
-    cat("Java requirements fullfilled, found version ",jversion,"\n")
   }
 
   # often used while calling java
   jd_clobj <<- .jcall("java/lang/Class", "Ljava/lang/Class;", "forName", "java.lang.Object")
 }
+
+.onAttach <- function( libname , pkgname ){
+  jversion <- .jcall('java.lang.System','S','getProperty','java.version')
+  packageStartupMessage("Java requirements fullfilled, found version ",jversion)
+}
+
+
+#' Retail sales data
+#'
+#' A dataset containing monthly retailed sales
+#'
+#' @docType data
+#' @format A \code{list} of \code{ts} objects from january 1992 to december 2010.
+"retailsa"

@@ -1,31 +1,36 @@
+---
+output: github_document
+---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  fig.align="center"
+)
+```
+
 # rjdfilters
 
-rjdfilters is R package on linear filters for real-time trend-cycle
-estimates. It allows to create symmetric and asymmetric moving averages
-with:
+rjdfilters is R package on linear filters for real-time trend-cycle estimates.
+It allows to create symmetric and asymmetric moving averages with:
 
--   local polynomial filters, as defined by Proietti and Luati (2008);
+- local polynomial filters, as defined by Proietti and Luati (2008);
 
--   the FST approach of Grun-Rehomme, Guggemos, and Ladiray (2018),
-    based on the optimization of the three criteria Fidelity, Smoothness
-    and Timeliness;
+- the FST approach  of Grun-Rehomme, Guggemos, and Ladiray (2018), based on the optimization of the three criteria Fidelity, Smoothness and Timeliness;
 
--   the Reproducing Kernel Hilbert Space (RKHS) of Dagum and Bianconcini
-    (2008).
+- the Reproducing Kernel Hilbert Space (RKHS) of Dagum and Bianconcini (2008).
 
-Some quality criteria defined by Wildi and McElroy (2019) can also be
-computed.
+Some quality criteria defined by Wildi and McElroy (2019) can also be computed.
 
 ## Installation
 
-rjdfilters relies on the
-[rJava](https://CRAN.R-project.org/package=rJava) package and Java SE 8
-or later version is required.
+rjdfilters relies on the [rJava](https://CRAN.R-project.org/package=rJava) package and Java SE 8 or later version is required.
 
-``` r
+```{r, eval = FALSE}
 # Install development version from GitHub
 # install.packages("devtools")
 devtools::install_github("palatej/rjdfilters")
@@ -33,12 +38,9 @@ devtools::install_github("palatej/rjdfilters")
 
 ## Basic example
 
-In this example we use the same symmetric moving average (Henderson),
-but we use three different methods to compute asymmetric filters. As a
-consequence, the filtered time series is the same, except at the
-boundaries.
+In this example we use the same symmetric moving average (Henderson), but we use three different methods to compute asymmetric filters. As a consequence, the filtered time series is the same, except at the boundaries.
 
-``` r
+```{r plot-global, message = FALSE}
 library(rjdfilters)
 y <- window(retailsa$AllOtherGenMerchandiseStores,start = 2000)
 musgrave_filter <- lp_filter(horizon = 6, kernel = "Henderson",endpoints = "LC")
@@ -63,14 +65,9 @@ legend("topleft", legend = c("y","Musgrave", "FST", "RKHS"),
        col= c("black","orange", "lightblue", "red"), lty = 1)
 ```
 
-<img src="man/figures/README-plot-global-1.png" style="display: block; margin: auto;" />
+The last estimates can also be analysed with the `implicit_forecast` function that retreive the implicit forecasts corresponding to the asymmetric filters (i.e. : the forecasts needed to have the same end-points estimates but using the symmetric filter).
 
-The last estimates can also be analysed with the `implicit_forecast`
-function that retreive the implicit forecasts corresponding to the
-asymmetric filters (i.e. : the forecasts needed to have the same
-end-points estimates but using the symmetric filter).
-
-``` r
+```{r plot-forecast}
 f_musgrave <- implicit_forecast(y, musgrave)
 f_fst <- implicit_forecast(y, fst_notimeliness)
 f_rkhs <- implicit_forecast(y, rkhs_timeliness)
@@ -95,12 +92,9 @@ legend("topleft", legend = c("y","Musgrave", "FST", "RKHS", "Forecasts"),
        lty = c(1, 1, 1, 1, 2))
 ```
 
-<img src="man/figures/README-plot-forecast-1.png" style="display: block; margin: auto;" />
+The real-time estimates (when no future points are available) can also be compared:
 
-The real-time estimates (when no future points are available) can also
-be compared:
-
-``` r
+```{r plot-q0, eval = TRUE}
 trend_henderson<- jasym_filter(y, musgrave[,"q=6"], lags = 6)
 trend_musgrave_q0 <- jasym_filter(y, musgrave[,"q=0"], lags = 6)
 trend_fst_q0 <- jasym_filter(y, fst_notimeliness[[1]], lags = 6)
@@ -114,39 +108,21 @@ legend("topleft", legend = c("y","Musgrave", "FST", "RKHS"),
        col= c("black","orange", "lightblue", "red"), lty = 1)
 ```
 
-<img src="man/figures/README-plot-q0-1.png" style="display: block; margin: auto;" />
-
 ### Comparison of the filters
 
-Different quality criteria from Grun-Rehomme *et al* (2018) and Wildi
-and McElroy(2019) can also be computed with the function
-`diagnostic_matrix()`:
-
-``` r
+Different quality criteria from Grun-Rehomme *et al* (2018) and Wildi and McElroy(2019) can also be computed with the function `diagnostic_matrix()`:
+```{r diagnostic-table, eval = TRUE}
 q_0_coefs = list(Musgrave = musgrave[,"q=0"],
                  fst_notimeliness = fst_notimeliness[[1]],
                  rkhs_timeliness = rkhs_timeliness[,"q=0"])
 
 sapply(q_0_coefs, diagnostic_matrix,
        lags = 6, sweight = musgrave[,"q=6"])
-#>         Musgrave fst_notimeliness rkhs_timeliness
-#> b_c  0.000000000     2.220446e-16     0.000000000
-#> b_l -0.575984377    -1.554312e-15    -0.611459167
-#> b_q -1.144593858     1.554312e-15     0.027626749
-#> F_g  0.357509832     9.587810e-01     0.381135700
-#> S_g  1.137610871     2.402400e+00     1.207752284
-#> T_g  0.034088260     4.676398e-04     0.023197411
-#> A_w  0.008306348     1.823745e-02     0.003677964
-#> S_w  0.449956378     3.575634e+00     0.628156109
-#> T_w  0.061789932     7.940547e-04     0.043540181
-#> R_w  0.299548665     1.721377e-01     0.219948644
 ```
 
-The filters can also be compared by plotting there coefficients
-(`plot_coef`), gain function (`plot_gain`) and phase function
-(`plot_phase`):
+The filters can also be compared by plotting there coefficients (`plot_coef`), gain function (`plot_gain`) and phase function (`plot_phase`):
 
-``` r
+```{r, diagnostic-plots, eval = FALSE}
 def.par <- par(no.readonly = TRUE)
 par(mai = c(0.3, 0.3, 0.2, 0))
 layout(matrix(c(1,1,2,3), 2, 2, byrow = TRUE))
@@ -171,26 +147,16 @@ legend("topright", legend = c("Musgrave", "FST", "RKHS"),
 par(def.par)
 ```
 
-<img src="man/figures/README-diagnostic-plots-1.png" style="display: block; margin: auto;" />
+```{r, diagnostic-plots, eval = TRUE, echo=FALSE}
+```
 
 ## Bibliography
 
-Dagum, Estela Bee and Silvia Bianconcini (2008). “The Henderson Smoother
-in Reproducing Kernel Hilbert Space”. In: *Journal of Business &
-Economic Statistics 26*, pp. 536–545. URL:
-<https://ideas.repec.org/a/bes/jnlbes/v26y2008p536-545.html>.
+Dagum, Estela Bee and Silvia Bianconcini (2008). “The Henderson Smoother in Reproducing Kernel Hilbert Space”. In: *Journal of Business & Economic Statistics 26*, pp. 536–545. URL: [https://ideas.repec.org/a/bes/jnlbes/v26y2008p536-545.html](https://ideas.repec.org/a/bes/jnlbes/v26y2008p536-545.html).
 
-Grun-Rehomme, Michel, Fabien Guggemos, and Dominique Ladiray (2018).
-“Asymmetric Moving Averages Minimizing Phase Shift”. In: *Handbook on
-Seasonal Adjustment*. URL:
-<https://ec.europa.eu/eurostat/web/products-manuals-and-guidelines/-/KS-GQ-18-001>.
+Grun-Rehomme, Michel, Fabien Guggemos, and Dominique Ladiray (2018). “Asymmetric Moving Averages Minimizing Phase Shift”. In: *Handbook on Seasonal Adjustment*. URL: https://ec.europa.eu/eurostat/web/products-manuals-and-guidelines/-/KS-GQ-18-001.
 
-Proietti, Tommaso and Alessandra Luati (Dec. 2008). “Real time
-estimation in local polynomial regression, with application to
-trend-cycle analysis”. In: *Ann. Appl. Stat.* 2.4, pp. 1523–1553. URL:
-<https://doi.org/10.1214/08-AOAS195>.
+Proietti, Tommaso and Alessandra Luati (Dec. 2008). “Real time estimation in local polynomial regression, with application to trend-cycle analysis”. In: *Ann. Appl. Stat.* 2.4, pp. 1523–1553. URL: https://doi.org/10.1214/08-AOAS195.
 
-Wildi, Marc and Tucker McElroy (2019). “The trilemma between accuracy,
-timeliness and smoothness in real-time signal extraction”. In:
-*International Journal of Forecasting* 35.3, pp. 1072–1084. URL:
-[https://EconPapers.repec.org/RePEc:eee:intfor:v<wbr>:35:y:2019:i:3:p:1072-1084](https://EconPapers.repec.org/RePEc:eee:intfor:v:35:y:2019:i:3:p:1072-1084).
+Wildi, Marc and Tucker McElroy (2019). “The trilemma between accuracy, timeliness and smoothness in real-time signal extraction”. In: *International Journal of Forecasting* 35.3, pp. 1072–1084. URL: [https://EconPapers.repec.org/RePEc:eee:intfor:v<wbr>:35:y:2019:i:3:p:1072-1084](https://EconPapers.repec.org/RePEc:eee:intfor:v:35:y:2019:i:3:p:1072-1084).
+

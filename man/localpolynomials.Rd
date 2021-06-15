@@ -2,26 +2,52 @@
 % Please edit documentation in R/filters.R
 \name{localpolynomials}
 \alias{localpolynomials}
-\title{Title}
+\title{Apply local polynomials filters}
 \usage{
 localpolynomials(
   y,
-  horizon,
+  horizon = 6,
   degree = 3,
-  kernel = c("Henderson", "Uniform", "Biweight", "Triweight", "Tricube", "Gaussian",
-    "Triangular", "Parabolic"),
+  kernel = c("Henderson", "Uniform", "Biweight", "Trapezoidal", "Triweight", "Tricube",
+    "Gaussian", "Triangular", "Parabolic"),
   endpoints = c("LC", "QL", "CQ", "CC", "DAF"),
   ic = 4.5,
   tweight = 0,
-  passband = PI/12
+  passband = pi/12
 )
 }
 \arguments{
-\item{passband}{}
+\item{y}{input time-series?}
+
+\item{horizon}{horizon (bandwidth) of the symmetric filter .}
+
+\item{degree}{degree of polynomial.}
+
+\item{kernel}{kernel uses.}
+
+\item{endpoints}{methode for endpoints.}
+
+\item{ic}{ic ratio.}
+
+\item{tweight}{timeliness weight.}
+
+\item{passband}{passband threshold.}
 }
 \value{
-
+the target signal
 }
 \description{
-Title
+Apply local polynomials filters
+}
+\examples{
+y <- retailsa$AllOtherGenMerchandiseStores
+trend <- localpolynomials(y, horizon = 6)
+plot(y)
+lines(trend, col = "red")
+}
+\references{
+Proietti, Tommaso and Alessandra Luati (2008). “Real time estimation in local polynomial regression, with application to trend-cycle analysis”.
+}
+\seealso{
+\code{\link{lp_filter}}
 }
