@@ -125,7 +125,7 @@ proc_data<-function(rslt, name){
     return (.jcall(s, "D", "doubleValue"))
   else if (.jinstanceof(s, "demetra/math/matrices/MatrixType"))
     return(matrix_jd2r(.jcast(s,"demetra/math/matrices/MatrixType")))
-  else if (.jinstanceof(s, "[Ldemetra/data/ParameterEstimation;")){
+  else if (.jinstanceof(s, "[Ldemetra/likelihood/ParametersEstimation;")){
     p<-.jcastToArray(s)
     len<-length(p)
     all<-array(0, dim=c(len,2))
@@ -135,7 +135,7 @@ proc_data<-function(rslt, name){
     }
     return (all)
   }
-  else if (.jinstanceof(s, "demetra/data/ParameterEstimation")){
+  else if (.jinstanceof(s, "demetra/likelihood/ParametersEstimation")){
     desc<-.jcall(s, "S", "getDescription")
     val<-.jcall(s, "D", "getValue")
     e<-.jcall(s, "D", "getStandardError")
