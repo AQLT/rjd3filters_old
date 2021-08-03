@@ -2,10 +2,10 @@
 #'
 #' Functions to plot the coefficients, the gain and the phase functions.
 #'
-#' @param x coefficients, gain or phase
-#' @param q q
-#' @param nxlab number of xlab
-#' @param ... other arguments to \code{matplot}
+#' @param x coefficients, gain or phase.
+#' @param q q.
+#' @param nxlab number of xlab.
+#' @param ... other arguments to \code{matplot}.
 #' @param add boolean indicating if the new plot is added to the previous one.
 #' @param xlim vector containing x limits.
 #' @param legend boolean indicating if the legend is printed.

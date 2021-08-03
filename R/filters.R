@@ -29,7 +29,7 @@ henderson<-function(y, length, musgrave=TRUE, ic=4.5){
 #' Apply local polynomials filters
 #'
 #' @inheritParams henderson
-#' @param horizon horizon (bandwidth) of the symmetric filter .
+#' @param horizon horizon (bandwidth) of the symmetric filter.
 #' @param degree degree of polynomial.
 #' @param kernel kernel uses.
 #' @param endpoints methode for endpoints.
