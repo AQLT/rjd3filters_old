@@ -97,17 +97,17 @@ plot_phase(x, nxlab = 7, add = FALSE, xlim = c(0, pi), normalized = FALSE, ...)
 \method{plot_phase}{fst_filter}(x, nxlab = 7, add = FALSE, xlim = c(0, pi), normalized = FALSE, ...)
 }
 \arguments{
-\item{x}{coefficients, gain or phase}
+\item{x}{coefficients, gain or phase.}
 
-\item{nxlab}{number of xlab}
+\item{nxlab}{number of xlab.}
 
 \item{add}{boolean indicating if the new plot is added to the previous one.}
 
 \item{zeroAsNa}{boolean indicating if the trailing zero of the coefficients should be plotted (\code{FALSE}) or removed (\code{TRUE}).}
 
-\item{...}{other arguments to \code{matplot}}
+\item{...}{other arguments to \code{matplot}.}
 
-\item{q}{q}
+\item{q}{q.}
 
 \item{legend}{boolean indicating if the legend is printed.}
 

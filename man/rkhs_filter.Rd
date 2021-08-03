@@ -7,18 +7,20 @@
 rkhs_filter(
   horizon = 6,
   degree = 2,
-  kernel = c("BiWeight", "Henderson", "Epanechnikov", "Triangular", "Uniform",
-    "TriWeight", "TriCube"),
+  kernel = c("Biweight", "Henderson", "Epanechnikov", "Triangular", "Uniform",
+    "Triweight"),
   asymmetricCriterion = c("Timeliness", "FrequencyResponse", "Accuracy", "Smoothness",
     "Undefined"),
   density = c("uniform", "rw"),
   passband = 2 * pi/12,
   optimalbw = TRUE,
-  bw = horizon + 1
+  optimal.minBandwidth = horizon,
+  optimal.maxBandwidth = 3 * horizon,
+  bandwidth = horizon + 1
 )
 }
 \arguments{
-\item{horizon}{horizon (bandwidth) of the symmetric filter .}
+\item{horizon}{horizon (bandwidth) of the symmetric filter.}
 
 \item{degree}{degree of polynomial.}
 
@@ -30,10 +32,13 @@ rkhs_filter(
 
 \item{passband}{passband threshold.}
 
-\item{optimalbw}{boolean indicating if the bandwith should be choosen by optimisation (with if \code{asymmetricCriterion} parameter).
-If \code{optimalbw = FALSE} then the bandwith specified in \code{bw} will be  used.}
+\item{optimalbw}{boolean indicating if the bandwith should be choosen by optimisation (between \code{optimal.minBandwidth} and
+\code{optimal.minBandwidth} using the criteria \code{asymmetricCriterion}).
+If \code{optimalbw = FALSE} then the bandwith specified in \code{bandwidth} will be  used.}
 
-\item{bw}{the bandwidth to use if \code{optimalbw = FALSE}.}
+\item{optimal.minBandwidth, optimal.maxBandwidth}{the range used for the optimal bandwith selection.}
+
+\item{bandwidth}{the bandwidth to use if \code{optimalbw = FALSE}.}
 }
 \value{
 An object of class \code{"rkhs_filter"}, which is a list of 4 elements:\itemize{
