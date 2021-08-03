@@ -4,9 +4,11 @@
 #' @inheritParams localpolynomials
 #' @inheritParams mse
 #' @param asymmetricCriterion the criteria used to compute the optimal bandwidth. If \code{"Undefined"}, \eqn{m+1} is used.
-#' @param optimalbw boolean indicating if the bandwith should be choosen by optimisation (with if \code{asymmetricCriterion} parameter).
-#' If \code{optimalbw = FALSE} then the bandwith specified in \code{bw} will be  used.
-#' @param bw the bandwidth to use if \code{optimalbw = FALSE}.
+#' @param optimalbw boolean indicating if the bandwith should be choosen by optimisation (between \code{optimal.minBandwidth} and
+#' \code{optimal.minBandwidth} using the criteria \code{asymmetricCriterion}).
+#' If \code{optimalbw = FALSE} then the bandwith specified in \code{bandwidth} will be  used.
+#' @param optimal.minBandwidth,optimal.maxBandwidth the range used for the optimal bandwith selection.
+#' @param bandwidth the bandwidth to use if \code{optimalbw = FALSE}.
 #' @references Dagum, Estela Bee and Silvia Bianconcini (2008). “The Henderson Smoother in Reproducing Kernel Hilbert Space”. In: Journal of Business & Economic Statistics 26, pp. 536–545. URL: \url{https://ideas.repec.org/a/bes/jnlbes/v26y2008p536-545.html}.
 #' @examples
 #' rkhs <- rkhs_filter(horizon = 6, asymmetricCriterion = "Timeliness")
@@ -19,124 +21,64 @@
 #' }
 #' @export
 rkhs_filter <- function(horizon = 6, degree = 2,
-                        kernel = c("BiWeight", "Henderson", "Epanechnikov", "Triangular", "Uniform", "TriWeight", "TriCube"),
+                        kernel = c("Biweight", "Henderson", "Epanechnikov", "Triangular", "Uniform", "Triweight"),
                         asymmetricCriterion = c("Timeliness", "FrequencyResponse", "Accuracy", "Smoothness", "Undefined"),
                         density = c("uniform", "rw"),
                         passband = 2*pi/12,
                         optimalbw = TRUE,
-                        bw = horizon + 1){
-  if(optimalbw){
-    jprops <- rkhs_filter_optimalbw(horizon = horizon,
-                                    degree = degree,
-                                    kernel = kernel,
-                                    asymmetricCriterion = asymmetricCriterion,
-                                    density = density,
-                                    passband = passband)
-  }else{
-    jprops <- rkhs_filter_bw(horizon = horizon,
-                             degree = degree,
-                             kernel = kernel,
-                             bandWidth = bw)
-  }
-
-  return(structure(FiniteFilters2R(jprops, horizon),
-                   class="rkhs_filter"))
-}
-
-rkhs_filter_bw <- function(horizon = 6,
-                           degree = 2,
-                           kernel = c("BiWeight", "Henderson", "Epanechnikov", "Triangular", "Uniform", "TriWeight", "TriCube"),
-                           bandWidth = horizon + 1){
-  kernel = match.arg(kernel)
-  jkernel = kernelToDoubleUnaryOperator(kernel, degree, horizon)
-  afilter <- lapply(0:(horizon-1),function(i){
-    .jcall("jdplus/rkhs/CutAndNormalizeFilters",
-           "Ljdplus/math/linearfilters/FiniteFilter;",
-           "of",
-           jkernel,
-           bandWidth, as.integer(horizon),
-           as.integer(i))
-  })
-  afilter <- .jarray(afilter,
-                     "jdplus/math/linearfilters/FiniteFilter")
-  sfilter <- .jcall("jdplus/rkhs/KernelsUtility",
-                    "Ljdplus/math/linearfilters/SymmetricFilter;",
-                    "symmetricFilter",
-                    jkernel,
-                    horizon + 1,
-                    as.integer(horizon))
-  builder <- .jcall("demetra/saexperimental/r/FiltersToolkit$FiniteFilters",
-                    "Ldemetra/saexperimental/r/FiltersToolkit$FiniteFilters$FiniteFiltersBuilder;",
-                    "builder")
-  builder$filter(sfilter)
-  builder$afilters(afilter)
-  jprops <- builder$build()
-  jprops
-}
-
-rkhs_filter_optimalbw <- function(horizon = 6, degree = 2,
-                                  kernel = c("BiWeight", "Henderson", "Epanechnikov", "Triangular", "Uniform", "TriWeight", "TriCube"),
-                                  asymmetricCriterion = c("Undefined", "FrequencyResponse", "Accuracy", "Smoothness", "Timeliness"),
-                                  density = c("uniform", "rw"),
-                                  passband = 2*pi/12){
-
+                        optimal.minBandwidth = horizon,
+                        optimal.maxBandwidth = 3*horizon,
+                        bandwidth = horizon + 1){
   kernel = match.arg(kernel)
   asymmetricCriterion = match.arg(asymmetricCriterion)
-  spectral = match.arg(density)
-
-  KernelOption = J("jdplus.filters.KernelOption")
-  AsymmetricCriterion= J("jdplus.filters.AsymmetricCriterion")
-  SpectralDensity = J("jdplus/filters/SpectralDensity")
-
-  tspec = new(J("jdplus.rkhs.RKHSFilterSpec"))
-
-  tspec$setFilterLength(as.integer(horizon))
-  tspec$setPolynomialDegree(as.integer(degree))
-  tspec$setKernel(KernelOption$valueOf(kernel))
-
-  # tspec$setOptimalBandWidth(optimalbw); # Ne semble rien changer
-  tspec$setAsymmetricBandWith(AsymmetricCriterion$valueOf(asymmetricCriterion));
-  tspec$setDensity(SpectralDensity$valueOf(switch(spectral,
-                                                  rw="RandomWalk",
-                                                  "WhiteNoise")))
-  rkhs_filter <- J("jdplus.rkhs.RKHSFilterFactory")$of(tspec)
-
-  sfilter = rkhs_filter$symmetricFilter()
-  afilter = rkhs_filter$endPointsFilters()
-  # reverse the order of the asymmetric filters
-  afilter <- lapply(rev(seq_along(afilter)),
-                    function(i){
-                      afilter[[i]]
-                    }
+  density = match.arg(density)
+  rkhs_filter = J("demetra/saexperimental/r/RKHSFilters")$filterProperties(
+    as.integer(horizon), as.integer(degree), kernel,
+    optimalbw, asymmetricCriterion, density=="rw", passband,
+    bandwidth, optimal.minBandwidth, optimal.maxBandwidth
   )
-  afilter <- .jarray(afilter,
-                     "jdplus/math/linearfilters/FiniteFilter")
-  builder <- .jcall("demetra/saexperimental/r/FiltersToolkit$FiniteFilters",
-                    "Ldemetra/saexperimental/r/FiltersToolkit$FiniteFilters$FiniteFiltersBuilder;",
-                    "builder")
-  builder$filter(sfilter)
-  builder$afilters(afilter)
-  jprops <- builder$build()
-
-  return(jprops)
+  return(structure(FiniteFilters2R(rkhs_filter, horizon, TRUE),
+                   class="rkhs_filter"))
 }
+#' Optimization Function of Reproducing Kernel Hilbert Space (RKHS) filters
+#'
+#' Export function used to compute the optimal bandwidth of Reproducing Kernel Hilbert Space (RKHS) filters
+#' @inheritParams rkhs_filter
+#' @inheritParams fst_filter
+#' @examples
+#' plot(rkhs_optimization_fun(horizon = 6, leads = 0,degree = 3, asymmetricCriterion = "Timeliness"),
+#'      5.5, 6*3, ylab = "Timeliness",
+#'      main = "6X0 filter")
+#' plot(rkhs_optimization_fun(horizon = 6, leads = 1,degree = 3, asymmetricCriterion = "Timeliness"),
+#'      5.5, 6*3, ylab = "Timeliness",
+#'      main = "6X1 filter")
+#' plot(rkhs_optimization_fun(horizon = 6, leads = 2,degree = 3, asymmetricCriterion = "Timeliness"),
+#'      5.5, 6*3, ylab = "Timeliness",
+#'      main = "6X2 filter")
+#' plot(rkhs_optimization_fun(horizon = 6, leads = 3,degree = 3, asymmetricCriterion = "Timeliness"),
+#'      5.5, 6*3, ylab = "Timeliness",
+#'      main = "6X3 filter")
+#' plot(rkhs_optimization_fun(horizon = 6, leads = 4,degree = 3, asymmetricCriterion = "Timeliness"),
+#'      5.5, 6*3, ylab = "Timeliness",
+#'      main = "6X4 filter")
+#' plot(rkhs_optimization_fun(horizon = 6, leads = 5,degree = 3, asymmetricCriterion = "Timeliness"),
+#'      5.5, 6*3, ylab = "Timeliness",
+#'      main = "6X5 filter")
+#' @export
+rkhs_optimization_fun <- function(horizon = 6, leads = 0,  degree = 2,
+                        kernel = c("Biweight", "Henderson", "Epanechnikov", "Triangular", "Uniform", "Triweight"),
+                        asymmetricCriterion = c("Timeliness", "FrequencyResponse", "Accuracy", "Smoothness"),
+                        density = c("uniform", "rw"),
+                        passband = 2*pi/12){
+  kernel = match.arg(kernel)
+  asymmetricCriterion = match.arg(asymmetricCriterion)
+  density = match.arg(density)
+  optimalFunCriteria = J("demetra/saexperimental/r/RKHSFilters")$optimalCriteria(
+    as.integer(horizon), as.integer(leads), as.integer(degree), kernel,
+    asymmetricCriterion, density=="rw", passband
+  )$applyAsDouble
 
-kernelToDoubleUnaryOperator <- function(kernel, degree, horizon){
-  jkernel <- J("jdplus/stats/Kernels")
-  jHighOrderKernels <- J("jdplus/rkhs/HighOrderKernels")
-  res = switch(kernel,
-               BiWeight=jHighOrderKernels$kernel(jkernel$BIWEIGHT,
-                                                 as.integer(degree)),
-               TriWeight = jHighOrderKernels$kernel(jkernel$TRIWEIGHT,
-                                                    as.integer(degree)),
-               Uniform = jHighOrderKernels$kernel(jkernel$UNIFORM,
-                                                  as.integer(degree)),
-               Triangular = jHighOrderKernels$kernel(jkernel$TRIANGULAR,
-                                                     as.integer(degree)),
-               Epanechnikov = jHighOrderKernels$kernel(jkernel$EPANECHNIKOV,
-                                                       as.integer(degree)),
-               Henderson = jHighOrderKernels$kernel(jkernel$henderson(as.integer(horizon)),
-                                                    as.integer(degree))
-  )
-  .jcast(res,"java.util.function.DoubleUnaryOperator")
+  Vectorize(function(x){
+    optimalFunCriteria(x)
+  })
 }
