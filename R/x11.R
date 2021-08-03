@@ -204,3 +204,55 @@ x11_res <- function(y, context, mul){
   colnames(res) <- c("y", "sa", "t", "s", "i")
   res
 }
+#' @export
+x11 <- function(y, period = frequency(y),
+                trend.coefs,  mul=TRUE,
+                seas.s0=c("S3X3", "S3X1", "S3X5", "S3X9", "S3X15"),
+                seas.s1=c("S3X5", "S3X3", "S3X1", "S3X9", "S3X15"),
+                extreme.lsig=1.5, extreme.usig=2.5){
+  seas0=match.arg(seas.s0)
+  seas1=match.arg(seas.s1)
+
+  if(is.matrix(trend.coefs)){
+    trend.coefs <- lapply(1:ncol(trend.coefs),
+                          function(i) trend.coefs[,i])
+  }
+  trend.coefs <- lapply(trend.coefs, removeTrailingZeroOrNA)
+  sym_filter <- trend.coefs[[length(trend.coefs)]]
+  asy_filter <- trend.coefs[-length(trend.coefs)]
+  leftTrendFilter <- lapply(rev(asy_filter), rev)
+  if(length(sym_filter) != 2*length(leftTrendFilter)+1){
+    stop(sprintf("The symmetric filter is of length %i but only %i asymmetric filters provided",
+                 length(sym_filter),
+                 2*length(leftTrendFilter)+1))
+  }
+  mt <- J("jdplus.math.matrices.Matrix")
+  ltrendf = mt$make(as.integer(length(sym_filter)-1), # nrows
+                    as.integer(length(leftTrendFilter))#ncols
+  )
+  # for(i in seq_along(asy_filter)){
+  #   ltrendf$column(i-1L)$drop(i-1L,0L)$
+  #     copyFrom(asy_filter[[i]],0L)
+  # }
+  for(i in seq_along(leftTrendFilter)){
+    ltrendf$column(i-1L)$drop(0L, i-1L)$
+      copyFrom(leftTrendFilter[[i]],0L)
+  }
+  ctrendf = J("demetra.data.DoubleSeq")$of(sym_filter)
+  x11decomp = J("demetra/saexperimental/r/X11Decomposition")
+  jrslt = x11decomp$trendX11(as.numeric(y), period, mul,
+                             ctrendf, ltrendf,
+                             seas0, seas1, extreme.lsig, extreme.usig)
+  decomposition <- ts.union(y,
+                            cbind(proc_vector(jrslt, "d11"),
+                                  proc_vector(jrslt, "d12"),
+                                  proc_vector(jrslt, "d10"),
+                                  proc_vector(jrslt, "d13")))
+  colnames(decomposition) <- c("y", "sa", "t", "s", "i")
+  decomposition
+  return(structure(list(
+    java=jrslt,
+    decomposition=decomposition),
+    class="X11_RSLT"))
+}
+
