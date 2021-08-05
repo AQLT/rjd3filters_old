@@ -1,4 +1,3 @@
-#' @export
 x11_lp <- function(y, period = frequency(y),
                    decomposition = c("Additive", "Multiplicative", "LogAdditive", "PseudoAdditive"),
                    horizon=6, degree=2,
@@ -69,7 +68,6 @@ x11_lp <- function(y, period = frequency(y),
   mul = decomposition =="Multiplicative"
   x11_res(y, context, mul)
 }
-#' @export
 x11_fst <- function(y, period = frequency(y),
                    decomposition = c("Additive", "Multiplicative", "LogAdditive", "PseudoAdditive"),
                    horizon=6, degree=2,
@@ -121,7 +119,6 @@ x11_fst <- function(y, period = frequency(y),
   mul = decomposition =="Multiplicative"
   x11_res(y, context, mul)
 }
-#' @export
 x11_rkhs <- function(y, period = frequency(y),
                      decomposition = c("Additive", "Multiplicative", "LogAdditive", "PseudoAdditive"),
                      horizon = 6,
@@ -204,6 +201,25 @@ x11_res <- function(y, context, mul){
   colnames(res) <- c("y", "sa", "t", "s", "i")
   res
 }
+#' X-11 Decomposition With Custom Trend Filters
+#'
+#' Perform the X-11 decomposition using custom trend filter
+#' @param y input time-series.
+#' @param period period.
+#' @param trend.coefs coefficients of the filters used for the trend-cycle extraction from
+#' the real-time asymmetric filter to the symmetric filter. Can be a, object of class \code{"list"},
+#' \code{"matrix"}, \code{"lp_filter"} or \code{"rkhs_filter"}.
+#' @param mul boolean indicating if the decomposition mode is multiplicative.
+#' @param seas.s0,seas.s1 seasonal filters.
+#' @param extreme.lsig,extreme.usig boundaries used for outlier correction in irregular.
+#' @examples
+#' y <- retailsa$AllOtherGenMerchandiseStores
+#' decomposition_lp <- x11(y, trend.coefs = lp_filter())
+#' decomposition_rkhs <- x11(y, trend.coefs = rkhs_filter())
+#' plot(y)
+#' lines(decomposition_lp$decomposition[,"t"], col = "red")
+#' lines(decomposition_rkhs$decomposition[,"t"], col = "green")
+#' @importFrom stats ts.union
 #' @export
 x11 <- function(y, period = frequency(y),
                 trend.coefs,  mul=TRUE,
@@ -212,6 +228,10 @@ x11 <- function(y, period = frequency(y),
                 extreme.lsig=1.5, extreme.usig=2.5){
   seas0=match.arg(seas.s0)
   seas1=match.arg(seas.s1)
+
+  if(inherits(trend.coefs, c("lp_filter","rkhs_filter"))){
+    trend.coefs <- trend.coefs$filters.coef
+  }
 
   if(is.matrix(trend.coefs)){
     trend.coefs <- lapply(1:ncol(trend.coefs),

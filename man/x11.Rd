@@ -18,7 +18,7 @@ x11(
 \arguments{
 \item{y}{input time-series.}
 
-\item{period}{period}
+\item{period}{period.}
 
 \item{trend.coefs}{coefficients of the filters used for the trend-cycle extraction from
 the real-time asymmetric filter to the symmetric filter. Can be a, object of class \code{"list"},
