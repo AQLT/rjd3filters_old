@@ -1,4 +1,4 @@
-#' Reproducing Kernel Hilbert Space (RKHS) filters
+#' Reproducing Kernel Hilbert Space (RKHS) Filters
 #'
 #' Estimation of a filter using Reproducing Kernel Hilbert Space (RKHS)
 #' @inheritParams localpolynomials
@@ -40,7 +40,7 @@ rkhs_filter <- function(horizon = 6, degree = 2,
   return(structure(FiniteFilters2R(rkhs_filter, horizon, TRUE),
                    class="rkhs_filter"))
 }
-#' Optimization Function of Reproducing Kernel Hilbert Space (RKHS) filters
+#' Optimization Function of Reproducing Kernel Hilbert Space (RKHS) Filters
 #'
 #' Export function used to compute the optimal bandwidth of Reproducing Kernel Hilbert Space (RKHS) filters
 #' @inheritParams rkhs_filter
@@ -80,5 +80,50 @@ rkhs_optimization_fun <- function(horizon = 6, leads = 0,  degree = 2,
 
   Vectorize(function(x){
     optimalFunCriteria(x)
+  })
+}
+#' Optimal Bandwith of Reproducing Kernel Hilbert Space (RKHS) Filters
+#'
+#' Function to export the optimal bandwidths used in Reproducing Kernel Hilbert Space (RKHS) filters
+#' @inheritParams rkhs_filter
+#' @examples
+#' rkhs_optimal_bw(asymmetricCriterion = "Timeliness")
+#' rkhs_optimal_bw(asymmetricCriterion = "Timeliness", optimal.minBandwidth = 6.2)
+#' @export
+rkhs_optimal_bw <- function(horizon = 6,  degree = 2,
+                           kernel = c("Biweight", "Henderson", "Epanechnikov", "Triangular", "Uniform", "Triweight"),
+                           asymmetricCriterion = c("Timeliness", "FrequencyResponse", "Accuracy", "Smoothness"),
+                           density = c("uniform", "rw"),
+                           passband = 2*pi/12,
+                           optimal.minBandwidth = horizon,
+                           optimal.maxBandwidth = 3*horizon){
+  kernel = match.arg(kernel)
+  asymmetricCriterion = match.arg(asymmetricCriterion)
+  density = match.arg(density)
+  optimalBw= J("demetra/saexperimental/r/RKHSFilters")$optimalBandwidth(
+    as.integer(horizon), as.integer(degree), kernel,
+    asymmetricCriterion, density=="rw", passband, optimal.minBandwidth, optimal.maxBandwidth
+  )
+  names(optimalBw) <- sprintf("q=%i", 0:(horizon-1))
+  optimalBw
+}
+#' @export
+rkhs_kernel <- function(kernel = c("Biweight", "Henderson", "Epanechnikov", "Triangular", "Uniform", "Triweight"),
+                        degree = 2, horizon = 6){
+  kernel = match.arg(kernel)
+  kernel =  switch(tolower(kernel),
+    "biweight" = "BiWeight",
+    "triweight" ="TriWeight",
+    "uniform" = "Uniform",
+    "triangular" = "Triangular",
+    "epanechnikov" = "Epanechnikov",
+    "henderson" = "Henderson"
+  )
+  kernel_fun = J("demetra/saexperimental/r/RKHSFilters")$kernel(
+    kernel, as.integer(degree), as.integer(horizon)
+  )$applyAsDouble
+
+  Vectorize(function(x){
+    kernel_fun(x)
   })
 }

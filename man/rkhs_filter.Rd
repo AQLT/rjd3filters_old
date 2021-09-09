@@ -2,7 +2,7 @@
 % Please edit documentation in R/RKHS.R
 \name{rkhs_filter}
 \alias{rkhs_filter}
-\title{Reproducing Kernel Hilbert Space (RKHS) filters}
+\title{Reproducing Kernel Hilbert Space (RKHS) Filters}
 \usage{
 rkhs_filter(
   horizon = 6,

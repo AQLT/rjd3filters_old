@@ -2,7 +2,7 @@
 % Please edit documentation in R/RKHS.R
 \name{rkhs_optimization_fun}
 \alias{rkhs_optimization_fun}
-\title{Optimization Function of Reproducing Kernel Hilbert Space (RKHS) filters}
+\title{Optimization Function of Reproducing Kernel Hilbert Space (RKHS) Filters}
 \usage{
 rkhs_optimization_fun(
   horizon = 6,
