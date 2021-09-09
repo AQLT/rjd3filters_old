@@ -13,3 +13,8 @@ print.rkhs_filter <- function(x, ...){
   cat("$filters.coef\n")
   print(x$filters.coef, ...)
 }
+#' @export
+print.dfa_filter <- function(x, ...){
+  cat("$filters.coef\n")
+  print(x$filters.coef, ...)
+}

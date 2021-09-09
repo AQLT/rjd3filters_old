@@ -9,10 +9,12 @@
 \alias{plot_gain}
 \alias{plot_gain.lp_filter}
 \alias{plot_gain.rkhs_filter}
+\alias{plot_gain.dfa_filter}
 \alias{plot_gain.fst_filter}
 \alias{plot_phase}
 \alias{plot_phase.lp_filter}
 \alias{plot_phase.rkhs_filter}
+\alias{plot_phase.dfa_filter}
 \alias{plot_phase.fst_filter}
 \title{Plots filters properties}
 \usage{
@@ -66,6 +68,17 @@ plot_gain(x, nxlab = 7, add = FALSE, xlim = c(0, pi), ...)
   ...
 )
 
+\method{plot_gain}{dfa_filter}(
+  x,
+  nxlab = 7,
+  add = FALSE,
+  xlim = c(0, pi),
+  q = 0,
+  legend = FALSE,
+  legend.pos = "topright",
+  ...
+)
+
 \method{plot_gain}{fst_filter}(x, nxlab = 7, add = FALSE, xlim = c(0, pi), ...)
 
 plot_phase(x, nxlab = 7, add = FALSE, xlim = c(0, pi), normalized = FALSE, ...)
@@ -83,6 +96,18 @@ plot_phase(x, nxlab = 7, add = FALSE, xlim = c(0, pi), normalized = FALSE, ...)
 )
 
 \method{plot_phase}{rkhs_filter}(
+  x,
+  nxlab = 7,
+  add = FALSE,
+  xlim = c(0, pi),
+  normalized = FALSE,
+  q = 0,
+  legend = FALSE,
+  legend.pos = "topright",
+  ...
+)
+
+\method{plot_phase}{dfa_filter}(
   x,
   nxlab = 7,
   add = FALSE,
