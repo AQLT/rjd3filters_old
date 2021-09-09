@@ -153,6 +153,17 @@ plot_gain.rkhs_filter <- function(x, nxlab = 7, add = FALSE,
 #' @name plot_filters
 #' @rdname plot_filters
 #' @export
+plot_gain.dfa_filter <- function(x, nxlab = 7, add = FALSE,
+                                  xlim = c(0, pi), q = 0, legend = FALSE,
+                                  legend.pos = "topright", ...){
+  plot_gain_default(x = x,
+                    nxlab = nxlab, add = add,
+                    xlim = xlim, q = q, legend = legend,
+                    legend.pos = legend.pos, ...)
+}
+#' @name plot_filters
+#' @rdname plot_filters
+#' @export
 plot_gain.fst_filter<- function(x, nxlab = 7, add = FALSE,
                                 xlim = c(0, pi), ...){
   x = x$filters.gain
@@ -222,6 +233,19 @@ plot_phase.lp_filter <- function(x, nxlab = 7, add = FALSE,
 #' @rdname plot_filters
 #' @export
 plot_phase.rkhs_filter <- function(x, nxlab = 7, add = FALSE,
+                                 xlim = c(0, pi), normalized = FALSE,
+                                 q = 0, legend = FALSE, legend.pos = "topright", ...){
+  plot_phase_default(x = x,
+                     nxlab = nxlab, add = add,
+                     xlim = xlim, normalized = normalized,
+                     q = q, legend = legend,
+                     legend.pos = legend.pos, ...)
+
+}
+#' @name plot_filters
+#' @rdname plot_filters
+#' @export
+plot_phase.dfa_filter <- function(x, nxlab = 7, add = FALSE,
                                  xlim = c(0, pi), normalized = FALSE,
                                  q = 0, legend = FALSE, legend.pos = "topright", ...){
   plot_phase_default(x = x,
