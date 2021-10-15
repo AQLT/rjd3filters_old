@@ -9,7 +9,8 @@ jasym_filter(y, coefs, lags)
 \arguments{
 \item{y}{a univariate or multivariate time series.}
 
-\item{coefs}{the coefficients of the asymmetric moving average.}
+\item{coefs}{an object of class \code{"moving_average"} or the coefficients
+of a moving average. In that case the argument \code{lags} must be provided.}
 
 \item{lags}{Lags of the filter (should be positive).}
 }
