@@ -150,10 +150,10 @@ par(def.par)
 ```{r, diagnostic-plots, eval = TRUE, echo=FALSE}
 ```
 
-### Manipulate moving average
+### Manipulate moving averages
 
-You can also create and manipulate moving average with the class `moving_average`.
-In the next example we show how to create the M2X12 moving average, the first moving average used to extract the trend-cycle in X-11, and the M3X3 moving average, applied on each months to extract seasonal component
+You can also create and manipulate moving averages with the class `moving_average`.
+In the next examples we show how to create the M2X12 moving average, the first moving average used to extract the trend-cycle in X-11, and the M3X3 moving average, applied to each months to extract seasonal component.
 
 
 ```{r, mm-plots, eval = TRUE}
@@ -170,8 +170,8 @@ M3X3_seasonal <- to_seasonal(M3X3, 12)
 # M3X3_seasonal moving average applied to the global series
 M3X3_seasonal
 layout(matrix(c(1,2), nrow = 1))
-plot_gain(M3X3)
-plot_gain(M3X3_seasonal)
+plot_gain(M3X3, main = "M3X3 applied to each month")
+plot_gain(M3X3_seasonal, main = "M3X3 applied to the global series")
 
 # To apply the moving average
 t <- jasym_filter(y, M2X12)
