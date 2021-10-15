@@ -29,7 +29,15 @@ Imports:
    stats
 License: EUPL
 LazyData: TRUE
-Collate:
+URL: https://github.com/palatej/rjdfilters
+Suggests:
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+RoxygenNote: 7.1.2
+Roxygen: list(markdown = TRUE)
+Encoding: UTF-8
+Collate: 
     'RKHS.R'
     'dfa.R'
     'ts.R'
@@ -42,15 +50,8 @@ Collate:
     'implicit_forecast.R'
     'jasym_filter.R'
     'kernels.R'
+    'moving_average.R'
     'plots.R'
     'print.R'
     'x11.R'
     'zzz.R'
-URL: https://github.com/palatej/rjdfilters
-Suggests:
-    knitr,
-    rmarkdown
-VignetteBuilder: knitr
-RoxygenNote: 7.1.1
-Roxygen: list(markdown = TRUE)
-Encoding: UTF-8

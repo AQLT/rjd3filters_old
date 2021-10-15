@@ -173,6 +173,50 @@ par(def.par)
 
 <img src="man/figures/README-diagnostic-plots-1.png" style="display: block; margin: auto;" />
 
+### Manipulate moving average
+
+You can also create and manipulate moving average with the class
+`moving_average`. In the next example we show how to create the M2X12
+moving average, the first moving average used to extract the trend-cycle
+in X-11, and the M3X3 moving average, applied on each months to extract
+seasonal component
+
+``` r
+e1 <- moving_average(rep(1,12), lags = -6)
+e1 <- e1/sum(e1)
+e2 <- moving_average(rep(1/12, 12), lags = -5)
+M2X12 <- (e1 + e2)/2
+coef(M2X12)
+#>        t-6        t-5        t-4        t-3        t-2        t-1          t 
+#> 0.04166667 0.08333333 0.08333333 0.08333333 0.08333333 0.08333333 0.08333333 
+#>        t+1        t+2        t+3        t+4        t+5        t+6 
+#> 0.08333333 0.08333333 0.08333333 0.08333333 0.08333333 0.04166667
+M3 <- moving_average(rep(1/3, 3), lags = -1)
+M3X3 <- M3 * M3
+# M3X3 moving average applied to each month
+M3X3
+#> [1] "0,1111 B^2 + 0,2222 B + 0,3333 + 0,2222 F + 0,1111 F^2"
+M3X3_seasonal <- to_seasonal(M3X3, 12)
+# M3X3_seasonal moving average applied to the global series
+M3X3_seasonal
+#> [1] "0,1111 B^24 + 0,2222 B^12 + 0,3333 + 0,2222 F^12 + 0,1111 F^24"
+layout(matrix(c(1,2), nrow = 1))
+plot_gain(M3X3)
+plot_gain(M3X3_seasonal)
+```
+
+<img src="man/figures/README-mm-plots-1.png" style="display: block; margin: auto;" />
+
+``` r
+# To apply the moving average
+t <- jasym_filter(y, M2X12)
+si <- y - t
+s <- jasym_filter(si, M3X3_seasonal)
+# or equivalently :
+s_mm <- M3X3_seasonal * (1 - M2X12)
+s <- jasym_filter(y, s_mm)
+```
+
 ## Bibliography
 
 Dagum, Estela Bee and Silvia Bianconcini (2008). “The Henderson Smoother
