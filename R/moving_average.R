@@ -1,9 +1,17 @@
 # library(rJava)
 # library(rjdfilters)
-#' @export
 setClass("moving_average",
          representation = representation(internal = "jobjRef" )
 )
+#' Manipulation of moving averages
+#'
+#' @param x vector of coefficients
+#' @param lags n
+#' @param s e
+#' @param object e
+#' @param ... e
+#' @param na.rm e
+#' @param e1,e2 e
 #' @export
 moving_average <- function(x, lags){
   finiteFilter <- J("jdplus.math.linearfilters.FiniteFilter")
@@ -14,6 +22,7 @@ moving_average <- function(x, lags){
   jobj <- finiteFilter$of(x, as.integer(lags))
   new(Class = "moving_average", internal = jobj)
 }
+#' @rdname moving_average
 #' @export
 is.moving_average <- function(x){
   inherits(x, "moving_average")
@@ -26,26 +35,32 @@ coef.moving_average <- function(object, ...){
                                   get_upper_bound(object))
   coefs
 }
+#' @rdname moving_average
 #' @export
 is_symmetric <- function(x){
   x@internal$isSymmetric()
 }
+#' @rdname moving_average
 #' @export
 get_upper_bound <- function(x){
   x@internal$getUpperBound()
 }
+#' @rdname moving_average
 #' @export
 get_lower_bound <- function(x){
   x@internal$getLowerBound()
 }
+#' @rdname moving_average
 #' @export
 mirror <- function(x){
   x@internal$mirror()
 }
+#' @rdname moving_average
 #' @export
 length.moving_average <- function(x){
   x@internal$length()
 }
+#' @rdname moving_average
 #' @export
 to_seasonal <- function(x, s){
   lb <- get_lower_bound(x)
@@ -58,6 +73,7 @@ to_seasonal <- function(x, s){
            coefs[length(x)])
   moving_average(new_coefs, lb * s)
 }
+#' @rdname moving_average
 #' @export
 setMethod(f = "show",
           signature = "moving_average",
@@ -65,15 +81,17 @@ setMethod(f = "show",
             print(object@internal$toString())
             invisible(object)
           })
+#' @rdname moving_average
 #' @export
 sum.moving_average <- function(..., na.rm = FALSE){
   sum(
     unlist(lapply(list(...),
-                  function(x) sum(coef(x))
+                  function(x) sum(coef(x),na.rm = na.rm)
     )
     )
   )
 }
+#' @rdname moving_average
 #' @export
 setMethod("+",
           signature(e1 = "moving_average",
@@ -83,6 +101,7 @@ setMethod("+",
             jobj <- finiteFilter$add(e1@internal, e2@internal)
             new(Class = "moving_average", internal = jobj)
           })
+#' @rdname moving_average
 #' @export
 setMethod("+",
           signature(e1 = "moving_average",
@@ -90,6 +109,7 @@ setMethod("+",
           function(e1, e2) {
             e1 + moving_average(e2,0)
           })
+#' @rdname moving_average
 #' @export
 setMethod("+",
           signature(e1 = "numeric",
@@ -97,14 +117,20 @@ setMethod("+",
           function(e1, e2) {
             moving_average(e1,0) + e2
           })
+#' @rdname moving_average
+#' @export
+setMethod("+", signature(e1 = "moving_average", e2 = "missing"), function(e1,e2) e1)
+#' @rdname moving_average
 #' @export
 setMethod("-",
-          signature(e1 = "moving_average"),
-          function(e1) {
+          signature(e1 = "moving_average",
+                    e2 = "missing"),
+          function(e1, e2) {
             finiteFilter <- J("jdplus.math.linearfilters.FiniteFilter")
             jobj <- finiteFilter$negate(e1@internal)
             new(Class = "moving_average", internal = jobj)
           })
+#' @rdname moving_average
 #' @export
 setMethod("-",
           signature(e1 = "moving_average",
@@ -114,6 +140,7 @@ setMethod("-",
             jobj <- finiteFilter$subtract(e1@internal, e2@internal)
             new(Class = "moving_average", internal = jobj)
           })
+#' @rdname moving_average
 #' @export
 setMethod("-",
           signature(e1 = "moving_average",
@@ -121,6 +148,7 @@ setMethod("-",
           function(e1, e2) {
             e1 - moving_average(e2,0)
           })
+#' @rdname moving_average
 #' @export
 setMethod("-",
           signature(e1 = "numeric",
@@ -128,6 +156,7 @@ setMethod("-",
           function(e1, e2) {
             moving_average(e1,0) - e2
           })
+#' @rdname moving_average
 #' @export
 setMethod("*",
           signature(e1 = "moving_average",
@@ -137,6 +166,7 @@ setMethod("*",
             jobj <- finiteFilter$multiply(e1@internal, e2@internal)
             new(Class = "moving_average", internal = jobj)
           })
+#' @rdname moving_average
 #' @export
 setMethod("*",
           signature(e1 = "moving_average",
@@ -144,6 +174,7 @@ setMethod("*",
           function(e1, e2) {
             e1 * moving_average(e2,0)
           })
+#' @rdname moving_average
 #' @export
 setMethod("*",
           signature(e1 = "numeric",
@@ -151,6 +182,7 @@ setMethod("*",
           function(e1, e2) {
             moving_average(e1,0) * e2
           })
+#' @rdname moving_average
 #' @export
 setMethod("/",
           signature(e1 = "moving_average",
@@ -158,6 +190,7 @@ setMethod("/",
           function(e1, e2) {
             e1 * moving_average(1/e2,0)
           })
+#' @rdname plot_filters
 #' @export
 plot_coef.moving_average <- function(x, nxlab = 7, add = FALSE,
                                  zeroAsNa = FALSE, ...){
@@ -174,6 +207,7 @@ plot_coef.moving_average <- function(x, nxlab = 7, add = FALSE,
   if(!add)
     axis(1, at=seq(-n, n, by = 1), labels = names(x_plot))
 }
+#' @rdname plot_filters
 #' @export
 plot_gain.moving_average<- function(x, nxlab = 7, add = FALSE,
                                 xlim = c(0, pi), ...){
@@ -186,6 +220,7 @@ plot_gain.moving_average<- function(x, nxlab = 7, add = FALSE,
     axis(1, at = x_lab_at * pi, labels = xlabel(x_lab_at))
   }
 }
+#' @rdname plot_filters
 #' @export
 plot_phase.moving_average<- function(x, nxlab = 7, add = FALSE,
                                  xlim = c(0, pi), normalized = FALSE, ...){

@@ -28,6 +28,7 @@ or later version is required.
 ``` r
 # Install development version from GitHub
 # install.packages("devtools")
+devtools::install_github("palatej/rjd3toolkit")
 devtools::install_github("palatej/rjdfilters")
 ```
 
@@ -67,7 +68,7 @@ legend("topleft", legend = c("y","Musgrave", "FST", "RKHS"),
 
 The last estimates can also be analysed with the `implicit_forecast`
 function that retreive the implicit forecasts corresponding to the
-asymmetric filters (i.e. : the forecasts needed to have the same
+asymmetric filters (i.e., the forecasts needed to have the same
 end-points estimates but using the symmetric filter).
 
 ``` r
@@ -200,6 +201,9 @@ M3X3_seasonal <- to_seasonal(M3X3, 12)
 # M3X3_seasonal moving average applied to the global series
 M3X3_seasonal
 #> [1] "0,1111 B^24 + 0,2222 B^12 + 0,3333 + 0,2222 F^12 + 0,1111 F^24"
+
+def.par <- par(no.readonly = TRUE)
+par(mai = c(0.5, 0.8, 0.3, 0))
 layout(matrix(c(1,2), nrow = 1))
 plot_gain(M3X3, main = "M3X3 applied to each month")
 plot_gain(M3X3_seasonal, main = "M3X3 applied to the global series")
@@ -208,11 +212,13 @@ plot_gain(M3X3_seasonal, main = "M3X3 applied to the global series")
 <img src="man/figures/README-mm-plots-1.png" style="display: block; margin: auto;" />
 
 ``` r
+par(def.par)
+
 # To apply the moving average
 t <- jasym_filter(y, M2X12)
 si <- y - t
 s <- jasym_filter(si, M3X3_seasonal)
-# or equivalently :
+# or equivalently:
 s_mm <- M3X3_seasonal * (1 - M2X12)
 s <- jasym_filter(y, s_mm)
 ```
