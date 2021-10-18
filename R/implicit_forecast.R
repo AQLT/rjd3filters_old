@@ -60,7 +60,7 @@ implicit_forecast.default <- function(y, coefs){
                    "jdplus/math/linearfilters/IFiniteFilter")
   jy <- .jcall("demetra/data/DoubleSeq",
                "Ldemetra/data/DoubleSeq;", "of",as.numeric(tail(y,lags+1)))
-  prev <- .jcall("jdplus/math/linearfilters/AsymmetricFilters",
+  prev <- .jcall("jdplus/math/linearfilters/AsymmetricFiltersFactory",
          "[D","implicitForecasts",
          jsymf, jasym, jy)
   ts(prev,
