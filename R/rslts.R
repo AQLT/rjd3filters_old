@@ -1,4 +1,4 @@
-#' @import rJava
+#' @import rJava rjd3toolkit
 #' @include ts.R
 NULL
 
