@@ -108,7 +108,7 @@ lp_filter <- function(horizon = 6, degree = 3,
                  tweight, passband)
 
   return(structure(FiniteFilters2R(jprops, horizon),
-  class="lp_filter"))
+  class=c("lp_filter", "FiniteFilters")))
 }
 coefficients_names <- function(lb, ub){
   x <- sprintf("t%+i", seq(lb,ub))

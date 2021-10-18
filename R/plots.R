@@ -53,10 +53,10 @@ plot_coef_default <- function(x, nxlab = 7, add = FALSE,
   if(!add)
     axis(1, at=seq(-horizon, horizon, by = 1), labels = rownames(x))
 }
-#' @name plot_filters
+
 #' @rdname plot_filters
 #' @export
-plot_coef.lp_filter <- function(x, nxlab = 7, add = FALSE,
+plot_coef.FiniteFilters <- function(x, nxlab = 7, add = FALSE,
                                 zeroAsNa = FALSE, q = 0, legend = FALSE,
                                 legend.pos = "topright", ...){
   plot_coef_default(x = x,
@@ -64,18 +64,7 @@ plot_coef.lp_filter <- function(x, nxlab = 7, add = FALSE,
                     zeroAsNa = zeroAsNa, q = q, legend = legend,
                     legend.pos = legend.pos, ...)
 }
-#' @name plot_filters
-#' @rdname plot_filters
-#' @export
-plot_coef.rkhs_filter <- function(x, nxlab = 7, add = FALSE,
-                                zeroAsNa = FALSE, q = 0, legend = FALSE,
-                                legend.pos = "topright", ...){
-  plot_coef_default(x = x,
-                    nxlab = nxlab, add = add,
-                    zeroAsNa = zeroAsNa, q = q, legend = legend,
-                    legend.pos = legend.pos, ...)
-}
-#' @name plot_filters
+
 #' @rdname plot_filters
 #' @export
 plot_coef.fst_filter <- function(x, nxlab = 7, add = FALSE,
@@ -92,7 +81,7 @@ plot_coef.fst_filter <- function(x, nxlab = 7, add = FALSE,
   if(!add)
     axis(1, at=seq(-n, n, by = 1), labels = names(x_plot))
 }
-#' @name plot_filters
+
 #' @rdname plot_filters
 #' @export
 plot_gain <- function(x, nxlab = 7, add = FALSE,
@@ -128,10 +117,10 @@ plot_gain_default <- function(x, nxlab = 7, add = FALSE,
     axis(1, at = x_lab_at * pi, labels = xlabel(x_lab_at))
   }
 }
-#' @name plot_filters
+
 #' @rdname plot_filters
 #' @export
-plot_gain.lp_filter <- function(x, nxlab = 7, add = FALSE,
+plot_gain.FiniteFilters <- function(x, nxlab = 7, add = FALSE,
                                 xlim = c(0, pi), q = 0, legend = FALSE,
                                 legend.pos = "topright", ...){
   plot_gain_default(x = x,
@@ -139,29 +128,7 @@ plot_gain.lp_filter <- function(x, nxlab = 7, add = FALSE,
                     xlim = xlim, q = q, legend = legend,
                     legend.pos = legend.pos, ...)
 }
-#' @name plot_filters
-#' @rdname plot_filters
-#' @export
-plot_gain.rkhs_filter <- function(x, nxlab = 7, add = FALSE,
-                                  xlim = c(0, pi), q = 0, legend = FALSE,
-                                  legend.pos = "topright", ...){
-  plot_gain_default(x = x,
-                    nxlab = nxlab, add = add,
-                    xlim = xlim, q = q, legend = legend,
-                    legend.pos = legend.pos, ...)
-}
-#' @name plot_filters
-#' @rdname plot_filters
-#' @export
-plot_gain.dfa_filter <- function(x, nxlab = 7, add = FALSE,
-                                  xlim = c(0, pi), q = 0, legend = FALSE,
-                                  legend.pos = "topright", ...){
-  plot_gain_default(x = x,
-                    nxlab = nxlab, add = add,
-                    xlim = xlim, q = q, legend = legend,
-                    legend.pos = legend.pos, ...)
-}
-#' @name plot_filters
+
 #' @rdname plot_filters
 #' @export
 plot_gain.fst_filter<- function(x, nxlab = 7, add = FALSE,
@@ -177,7 +144,7 @@ plot_gain.fst_filter<- function(x, nxlab = 7, add = FALSE,
     axis(1, at = x_lab_at * pi, labels = xlabel(x_lab_at))
   }
 }
-#' @name plot_filters
+
 #' @rdname plot_filters
 #' @export
 plot_phase <- function(x, nxlab = 7, add = FALSE,
@@ -216,10 +183,10 @@ plot_phase_default <- function(x, nxlab = 7, add = FALSE,
   }
 
 }
-#' @name plot_filters
+
 #' @rdname plot_filters
 #' @export
-plot_phase.lp_filter <- function(x, nxlab = 7, add = FALSE,
+plot_phase.FiniteFilters <- function(x, nxlab = 7, add = FALSE,
                                  xlim = c(0, pi), normalized = FALSE,
                                  q = 0, legend = FALSE, legend.pos = "topright", ...){
   plot_phase_default(x = x,
@@ -229,33 +196,7 @@ plot_phase.lp_filter <- function(x, nxlab = 7, add = FALSE,
                      legend.pos = legend.pos, ...)
 
 }
-#' @name plot_filters
-#' @rdname plot_filters
-#' @export
-plot_phase.rkhs_filter <- function(x, nxlab = 7, add = FALSE,
-                                 xlim = c(0, pi), normalized = FALSE,
-                                 q = 0, legend = FALSE, legend.pos = "topright", ...){
-  plot_phase_default(x = x,
-                     nxlab = nxlab, add = add,
-                     xlim = xlim, normalized = normalized,
-                     q = q, legend = legend,
-                     legend.pos = legend.pos, ...)
 
-}
-#' @name plot_filters
-#' @rdname plot_filters
-#' @export
-plot_phase.dfa_filter <- function(x, nxlab = 7, add = FALSE,
-                                 xlim = c(0, pi), normalized = FALSE,
-                                 q = 0, legend = FALSE, legend.pos = "topright", ...){
-  plot_phase_default(x = x,
-                     nxlab = nxlab, add = add,
-                     xlim = xlim, normalized = normalized,
-                     q = q, legend = legend,
-                     legend.pos = legend.pos, ...)
-
-}
-#' @name plot_filters
 #' @rdname plot_filters
 #' @export
 plot_phase.fst_filter<- function(x, nxlab = 7, add = FALSE,

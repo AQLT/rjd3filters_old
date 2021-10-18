@@ -20,51 +20,13 @@ get_properties_function <- function(x,
   UseMethod("get_properties_function", x)
 }
 #' @export
-get_properties_function.lp_filter <- function(x,
+get_properties_function.FiniteFilters <- function(x,
                                                component = c("Symmetric Gain",
                                                              "Symmetric Phase",
                                                              "Symmetric transfer",
                                                              "Asymmetric Gain",
                                                              "Asymmetric Phase",
                                                              "Asymmetric transfer"), ...){
-  component = match.arg(component)
-  switch(component,
-         "Symmetric Gain" = {
-           get_gain_function(x$internal$getFilter())
-         },
-         "Asymmetric Gain" = {
-           afunction = .jevalArray(x$internal$getAfilters())
-           afunction = sapply(afunction, get_gain_function)
-           names(afunction) <- sprintf("q=%s", seq(0, length(afunction)-1))
-           afunction
-         },
-         "Symmetric Phase" = {
-           get_phase_function(x$internal$getFilter())
-         },
-         "Asymmetric Phase" = {
-           afunction = .jevalArray(x$internal$getAfilters())
-           afunction = sapply(afunction, get_phase_function)
-           names(afunction) <- sprintf("q=%s", seq(0, length(afunction)-1))
-           afunction
-         },
-         "Symmetric transfer" = {
-           get_frequencyResponse_function(x$internal$getFilter())
-         },
-         "Asymmetric transfer" = {
-           afunction = .jevalArray(x$internal$getAfilters())
-           afunction = sapply(afunction, get_frequencyResponse_function)
-           names(afunction) <- sprintf("q=%s", seq(0, length(afunction)-1))
-           afunction
-         })
-}
-#' @export
-get_properties_function.rkhs_filter <- function(x,
-                                              component = c("Symmetric Gain",
-                                                            "Symmetric Phase",
-                                                            "Symmetric transfer",
-                                                            "Asymmetric Gain",
-                                                            "Asymmetric Phase",
-                                                            "Asymmetric transfer"), ...){
   component = match.arg(component)
   switch(component,
          "Symmetric Gain" = {
