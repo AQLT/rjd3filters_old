@@ -38,7 +38,7 @@ rkhs_filter <- function(horizon = 6, degree = 2,
     bandwidth, optimal.minBandwidth, optimal.maxBandwidth
   )
   return(structure(FiniteFilters2R(rkhs_filter, horizon, TRUE),
-                   class="rkhs_filter"))
+                   class=c("rkhs_filter", "FiniteFilters")))
 }
 #' Optimization Function of Reproducing Kernel Hilbert Space (RKHS) Filters
 #'
@@ -107,6 +107,8 @@ rkhs_optimal_bw <- function(horizon = 6,  degree = 2,
   names(optimalBw) <- sprintf("q=%i", 0:(horizon-1))
   optimalBw
 }
+#' Get RKHS kernel function
+#' @inheritParams rkhs_filter
 #' @export
 rkhs_kernel <- function(kernel = c("Biweight", "Henderson", "Epanechnikov", "Triangular", "Uniform", "Triweight"),
                         degree = 2, horizon = 6){
