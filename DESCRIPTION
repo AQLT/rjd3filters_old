@@ -23,6 +23,7 @@ Depends:
     R (>= 3.1.1)
 Imports:
     rJava (>= 0.9-8),
+    rjd3toolkit (>= 0.1.1),
    methods,
    MASS,
    graphics,
