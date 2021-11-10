@@ -70,9 +70,9 @@ to_seasonal(x, s)
 \S4method{/}{moving_average,numeric}(e1, e2)
 }
 \arguments{
-\item{x}{e}
+\item{x}{vector of coefficients}
 
-\item{lags}{e}
+\item{lags}{n}
 
 \item{s}{e}
 
