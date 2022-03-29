@@ -62,13 +62,12 @@ x11 <- function(y, period = frequency(y),
   jrslt = x11decomp$trendX11(as.numeric(y), period, mul,
                              ctrendf, ltrendf,
                              seas0, seas1, extreme.lsig, extreme.usig)
-  decomposition <- ts.union(y,
-                            cbind(proc_vector(jrslt, "d11"),
-                                  proc_vector(jrslt, "d12"),
-                                  proc_vector(jrslt, "d10"),
-                                  proc_vector(jrslt, "d13")))
+  decomposition <- cbind(y,
+                         proc_vector(jrslt, "d11"),
+                         proc_vector(jrslt, "d12"),
+                         proc_vector(jrslt, "d10"),
+                         proc_vector(jrslt, "d13"))
   colnames(decomposition) <- c("y", "sa", "t", "s", "i")
-  decomposition
   return(structure(list(
     java=jrslt,
     decomposition=decomposition),
