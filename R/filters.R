@@ -1,4 +1,4 @@
-#' @include ts.R procresults.R
+#' @include procresults.R
 #' @import rJava
 NULL
 

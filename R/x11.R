@@ -34,7 +34,7 @@ x11 <- function(y, period = frequency(y),
     trend.coefs <- lapply(1:ncol(trend.coefs),
                           function(i) trend.coefs[,i])
   }
-  trend.coefs <- lapply(trend.coefs, rjdfilters:::removeTrailingZeroOrNA)
+  trend.coefs <- lapply(trend.coefs, removeTrailingZeroOrNA)
   sym_filter <- trend.coefs[[length(trend.coefs)]]
   asy_filter <- trend.coefs[-length(trend.coefs)]
   leftTrendFilter <- lapply(rev(asy_filter), rev)

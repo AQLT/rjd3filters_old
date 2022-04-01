@@ -1,4 +1,3 @@
-#' @include rslts.R
 #' @import rJava
 NULL
 

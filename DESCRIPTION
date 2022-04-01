@@ -1,7 +1,7 @@
 Package: rjdfilters
 Type: Package
 Title: Trend-Cycle Extraction with Linear Filters
-Version: 0.0.2
+Version: 0.0.3
 Authors@R: c(
   person("Jean", "Palate", role = c("aut", "cre"),
                 email = "jean.palate@nbb.be"),
@@ -23,7 +23,7 @@ Depends:
     R (>= 3.1.1)
 Imports:
     rJava (>= 0.9-8),
-    rjd3toolkit (>= 0.1.1),
+    rjd3toolkit (>= 0.2.0),
    methods,
    MASS,
    graphics,
@@ -41,8 +41,6 @@ Encoding: UTF-8
 Collate: 
     'RKHS.R'
     'dfa.R'
-    'ts.R'
-    'rslts.R'
     'procresults.R'
     'filters.R'
     'finiteFilters2R.R'
