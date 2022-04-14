@@ -143,22 +143,19 @@ jfilter.default <- function(y, coefs){
   lags <- length(coefs)-1
   scoef <- coefs[[lags+1]]
 
-  jsymf <- .jcall("jdplus/math/linearfilters/SymmetricFilter",
-                  "Ljdplus/math/linearfilters/SymmetricFilter;",
-                  "of", .jcall("demetra/data/DoubleSeq",
-                               "Ldemetra/data/DoubleSeq;", "of",as.numeric(scoef)))
+  jsymf <- .jcast(moving_average(scoef, -lags)@internal, "jdplus/math/linearfilters/IFiniteFilter")
 
 
-  jasym <- lapply(lags:1,
-                  function(i){
-                    .jcall("jdplus/math/linearfilters/FiniteFilter",
-                           "Ljdplus/math/linearfilters/FiniteFilter;",
-                           "of", removeTrailingZeroOrNA(coefs[[i]]),
-                           as.integer(-lags))
-                  }
+  jrasym <- lapply(lags:1,
+                   function(i){
+                     moving_average(rjdfilters:::removeTrailingZeroOrNA(coefs[[i]]), -lags)@internal
+                   }
   )
-  jasym <- .jarray(jasym,
-                   "jdplus/math/linearfilters/IFiniteFilter")
+  jrasym <- .jarray(jrasym,
+                    "jdplus/math/linearfilters/IFiniteFilter")
+  # TODO take into account jlasym
+  jlasym <-  .jnull("[Ljdplus.math.linearfilters.IFiniteFilter;")
+
 
   jy <- .jcall("demetra/data/DoubleSeq",
                "Ldemetra/data/DoubleSeq;", "of",as.numeric(y))
@@ -167,10 +164,10 @@ jfilter.default <- function(y, coefs){
                    "Ldemetra/data/DoubleSeq;", "filter",
                    jy,
                    jsymf,
-                   jasym
+                   jlasym,
+                   jrasym
   )
   result <- result$toArray()
-
   if(is.ts(y))
     result <- ts(result,start = start(y), frequency = frequency(y))
   result

@@ -14,12 +14,14 @@ setClass("moving_average",
 #' @param e1,e2 e
 #' @export
 moving_average <- function(x, lags){
-  finiteFilter <- J("jdplus.math.linearfilters.FiniteFilter")
-  x <- as.numeric(x)
+  x <- removeTrailingZeroOrNA(as.numeric(x))
   if (length(x) == 1){
     x <- .jarray(x)
   }
-  jobj <- finiteFilter$of(x, as.integer(lags))
+  jobj <-  .jcall("jdplus/math/linearfilters/FiniteFilter",
+                  "Ljdplus/math/linearfilters/FiniteFilter;",
+                  "of", x,
+                  as.integer(lags))
   new(Class = "moving_average", internal = jobj)
 }
 #' @rdname moving_average
