@@ -148,13 +148,20 @@ jfilter.default <- function(y, coefs){
 
   jrasym <- lapply(lags:1,
                    function(i){
-                     moving_average(rjdfilters:::removeTrailingZeroOrNA(coefs[[i]]), -lags)@internal
+                     moving_average(removeTrailingZeroOrNA(coefs[[i]]), -lags)@internal
                    }
   )
   jrasym <- .jarray(jrasym,
                     "jdplus/math/linearfilters/IFiniteFilter")
-  # TODO take into account jlasym
-  jlasym <-  .jnull("[Ljdplus.math.linearfilters.IFiniteFilter;")
+  jlasym <- lapply(lags:1,
+                   function(i){
+                     x = removeTrailingZeroOrNA(coefs[[i]])
+                     p = get_upper_bound(moving_average(x, -lags))
+                     moving_average(rev(x), -p)@internal
+                   }
+  )
+  jlasym <- .jarray(jlasym,
+                    "jdplus/math/linearfilters/IFiniteFilter")
 
 
   jy <- .jcall("demetra/data/DoubleSeq",
