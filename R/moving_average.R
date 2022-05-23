@@ -6,12 +6,10 @@ setClass("moving_average",
 #' Manipulation of moving averages
 #'
 #' @param x vector of coefficients
-#' @param lags n
-#' @param s e
-#' @param object e
-#' @param ... e
-#' @param na.rm e
-#' @param e1,e2 e
+#' @param lags integer indicating the number of lags of the moving average
+#' @param s seasonal period for the \code{to_seasonal()} function.
+#' @param ...,na.rm see \link[base]{mean}
+#' @param object,e1,e2 moving averages
 #' @export
 moving_average <- function(x, lags){
   x <- removeTrailingZeroOrNA(as.numeric(x))

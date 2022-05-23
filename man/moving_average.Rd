@@ -72,17 +72,13 @@ to_seasonal(x, s)
 \arguments{
 \item{x}{vector of coefficients}
 
-\item{lags}{n}
+\item{lags}{integer indicating the number of lags of the moving average}
 
-\item{s}{e}
+\item{s}{seasonal period for the \code{to_seasonal()} function.}
 
-\item{object}{e}
+\item{object, e1, e2}{moving averages}
 
-\item{...}{e}
-
-\item{na.rm}{e}
-
-\item{e1, e2}{e}
+\item{..., na.rm}{see \link[base]{mean}}
 }
 \description{
 Manipulation of moving averages
