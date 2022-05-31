@@ -35,7 +35,7 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8
 Collate: 

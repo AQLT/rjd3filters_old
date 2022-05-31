@@ -27,7 +27,7 @@
 \alias{/,moving_average,numeric-method}
 \title{Manipulation of moving averages}
 \usage{
-moving_average(x, lags)
+moving_average(x, lags = -length(x))
 
 is.moving_average(x)
 
@@ -78,7 +78,7 @@ to_seasonal(x, s)
 \arguments{
 \item{x}{vector of coefficients}
 
-\item{lags}{integer indicating the number of lags of the moving average}
+\item{lags}{integer indicating the number of lags of the moving average.}
 
 \item{s}{seasonal period for the \code{to_seasonal()} function.}
 
@@ -88,4 +88,37 @@ to_seasonal(x, s)
 }
 \description{
 Manipulation of moving averages
+}
+\examples{
+y <- retailsa$AllOtherGenMerchandiseStores
+e1 <- moving_average(rep(1,12), lags = -6)
+e1 <- e1/sum(e1)
+e2 <- moving_average(rep(1/12, 12), lags = -5)
+M2X12 <- (e1 + e2)/2
+coef(M2X12)
+M3 <- moving_average(rep(1/3, 3), lags = -1)
+M3X3 <- M3 * M3
+# M3X3 moving average applied to each month
+M3X3
+M3X3_seasonal <- to_seasonal(M3X3, 12)
+# M3X3_seasonal moving average applied to the global series
+M3X3_seasonal
+
+def.par <- par(no.readonly = TRUE)
+par(mai = c(0.5, 0.8, 0.3, 0))
+layout(matrix(c(1,2), nrow = 1))
+plot_gain(M3X3, main = "M3X3 applied to each month")
+plot_gain(M3X3_seasonal, main = "M3X3 applied to the global series")
+par(def.par)
+
+# To apply the moving average
+t <- y * M2X12
+# Or use the jasym_filter() function:
+t <- jasym_filter(y, M2X12)
+si <- y - t
+s <- si * M3X3_seasonal
+# or equivalently:
+s_mm <- M3X3_seasonal * (1 - M2X12)
+s <- y * s_mm
+plot(s)
 }

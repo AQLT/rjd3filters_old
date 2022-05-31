@@ -215,12 +215,12 @@ plot_gain(M3X3_seasonal, main = "M3X3 applied to the global series")
 par(def.par)
 
 # To apply the moving average
-t <- jasym_filter(y, M2X12)
+t <- y * M2X12
 si <- y - t
-s <- jasym_filter(si, M3X3_seasonal)
+s <- si * M3X3_seasonal
 # or equivalently:
 s_mm <- M3X3_seasonal * (1 - M2X12)
-s <- jasym_filter(y, s_mm)
+s <- y * s_mm
 ```
 
 ## Bibliography
