@@ -29,9 +29,7 @@ rkhs_optimal_bw(
 
 \item{passband}{passband threshold.}
 
-\item{optimal.minBandwidth}{the range used for the optimal bandwith selection.}
-
-\item{optimal.maxBandwidth}{the range used for the optimal bandwith selection.}
+\item{optimal.minBandwidth, optimal.maxBandwidth}{the range used for the optimal bandwith selection.}
 }
 \description{
 Function to export the optimal bandwidths used in Reproducing Kernel Hilbert Space (RKHS) filters
