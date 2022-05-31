@@ -177,6 +177,20 @@ setMethod("*",
 #' @rdname moving_average
 #' @export
 setMethod("*",
+          signature(e2 = "moving_average"),
+          function(e1, e2) {
+            jasym_filter(e1,e2)
+          })
+#' @rdname moving_average
+#' @export
+setMethod("*",
+          signature(e1 = "moving_average"),
+          function(e1, e2) {
+            jasym_filter(e1,e2)
+          })
+#' @rdname moving_average
+#' @export
+setMethod("*",
           signature(e1 = "numeric",
                     e2 = "moving_average"),
           function(e1, e2) {
