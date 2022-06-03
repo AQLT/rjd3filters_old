@@ -270,7 +270,7 @@ plot_coef.moving_average <- function(x, nxlab = 7, add = FALSE,
     x_plot <- trailingZeroAsNa(x_plot)
   matplot(seq(-n, n, by = 1), x_plot,
           xaxt = "n", xlab = "", type = "o", pch = 20,
-          ylab = "coefficient", add = add)
+          ylab = "coefficient", add = add, ...)
   if(!add)
     axis(1, at=seq(-n, n, by = 1), labels = names(x_plot))
 }
