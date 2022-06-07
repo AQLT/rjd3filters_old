@@ -50,6 +50,7 @@ Collate:
     'implicit_forecast.R'
     'jasym_filter.R'
     'kernels.R'
+    'macurves.R'
     'moving_average.R'
     'plots.R'
     'print.R'
