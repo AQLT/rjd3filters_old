@@ -39,14 +39,16 @@ x11 <- function(y, period = frequency(y),
   asy_filter <- trend.coefs[-length(trend.coefs)]
   leftTrendFilter <- lapply(rev(asy_filter), rev)
   leftTrendFilter <- do.call(cbind, lapply(leftTrendFilter, function(x){
-    c(x, rep(0, length(sym_filter) - 1 - length(x)))
+    c(x, rep(0, 2*length(leftTrendFilter)- length(x)))
   }))
+  sym_filter <- c(sym_filter, rep(0, 2*ncol(leftTrendFilter) + 1- length(sym_filter)))
 
   if(length(sym_filter) != 2*ncol(leftTrendFilter)+1){
     stop(sprintf("The symmetric filter is of length %i but only %i asymmetric filters provided",
                  length(sym_filter),
                  2*ncol(leftTrendFilter)+1))
   }
+
   # mt <- J("jdplus.math.matrices.FastMatrix")
   # ltrendf = mt$make(as.integer(length(sym_filter)-1), # nrows
   #                   as.integer(length(leftTrendFilter))#ncols
@@ -55,7 +57,7 @@ x11 <- function(y, period = frequency(y),
   #   ltrendf$column(i-1L)$drop(0L, i-1L)$
   #     copyFrom(leftTrendFilter[[i]],0L)
   # }
-  ltrendf = matrix_r2jd(leftTrendFilter)
+  ltrendf = rjd3toolkit::matrix_r2jd(leftTrendFilter)
 
   ctrendf = J("demetra.data.DoubleSeq")$of(sym_filter)
   x11decomp = J("demetra/saexperimental/r/X11Decomposition")
