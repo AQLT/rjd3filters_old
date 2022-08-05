@@ -2,7 +2,7 @@
 #'
 #' @param x input time series.
 #' @param sc trend-cycle component.
-#' @param boolean indication if the decomposition is multiplicative or additive.
+#' @param mul boolean indication if the decomposition is multiplicative or additive.
 #'
 #' @examples
 #' x = retailsa$AllOtherGenMerchandiseStores

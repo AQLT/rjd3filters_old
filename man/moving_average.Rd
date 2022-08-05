@@ -11,6 +11,9 @@
 \alias{to_seasonal}
 \alias{show,moving_average-method}
 \alias{sum.moving_average}
+\alias{[,moving_average,numeric-method}
+\alias{[<-,moving_average,ANY,missing,numeric-method}
+\alias{cbind.moving_average}
 \alias{+,moving_average,moving_average-method}
 \alias{+,moving_average,numeric-method}
 \alias{+,numeric,moving_average-method}
@@ -46,6 +49,12 @@ to_seasonal(x, s)
 \S4method{show}{moving_average}(object)
 
 \method{sum}{moving_average}(..., na.rm = FALSE)
+
+\S4method{[}{moving_average,numeric}(x, i)
+
+\S4method{[}{moving_average,ANY,missing,numeric}(x, i) <- value
+
+\method{cbind}{moving_average}(...)
 
 \S4method{+}{moving_average,moving_average}(e1, e2)
 
@@ -85,6 +94,8 @@ to_seasonal(x, s)
 \item{object, e1, e2}{moving averages}
 
 \item{..., na.rm}{see \link[base]{mean}}
+
+\item{i, value}{indices specifying elements to extract or replace and the new value}
 }
 \description{
 Manipulation of moving averages
