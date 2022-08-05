@@ -42,8 +42,8 @@ jasym_filter.default <- function(y, coefs, lags){
   DataBlock = J("jdplus.data.DataBlock")
   jy = DataBlock$of(as.numeric(y))
   out = DataBlock$of(as.numeric(rep(NA, jy$length() - length(coefs)+1)))
-  coefs@internal$apply(jy,
-                       out)
+  ma2jd(coefs)$apply(jy,
+                     out)
   result = out$toArray()
   result <- c(rep(NA, abs(min(lb, 0))),
               result,
@@ -143,12 +143,12 @@ jfilter.default <- function(y, coefs){
   lags <- length(coefs)-1
   scoef <- coefs[[lags+1]]
 
-  jsymf <- .jcast(moving_average(scoef, -lags)@internal, "jdplus/math/linearfilters/IFiniteFilter")
+  jsymf <- .jcast(ma2jd(moving_average(scoef, -lags)), "jdplus/math/linearfilters/IFiniteFilter")
 
 
   jrasym <- lapply(lags:1,
                    function(i){
-                     moving_average(removeTrailingZeroOrNA(coefs[[i]]), -lags)@internal
+                     ma2jd(moving_average(removeTrailingZeroOrNA(coefs[[i]]), -lags))
                    }
   )
   jrasym <- .jarray(jrasym,
@@ -157,7 +157,7 @@ jfilter.default <- function(y, coefs){
                    function(i){
                      x = removeTrailingZeroOrNA(coefs[[i]])
                      p = get_upper_bound(moving_average(x, -lags))
-                     moving_average(rev(x), -p)@internal
+                     ma2jd(moving_average(rev(x), -p))
                    }
   )
   jlasym <- .jarray(jlasym,
