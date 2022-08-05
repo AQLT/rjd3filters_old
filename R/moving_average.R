@@ -80,7 +80,10 @@ is.moving_average <- function(x){
 #' @importFrom stats coef
 #' @export
 coef.moving_average <- function(object, ...){
-  return(object@coefficients)
+  coefs = object@coefficients
+  names(coefs) <- coefficients_names(get_lower_bound(object),
+                                     get_upper_bound(object))
+  return(coefs)
 }
 #' @rdname moving_average
 #' @export
