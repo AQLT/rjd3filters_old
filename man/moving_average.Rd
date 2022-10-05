@@ -7,6 +7,7 @@
 \alias{get_upper_bound}
 \alias{get_lower_bound}
 \alias{mirror}
+\alias{rev.moving_average}
 \alias{length.moving_average}
 \alias{to_seasonal}
 \alias{show,moving_average-method}
@@ -41,6 +42,8 @@ get_upper_bound(x)
 get_lower_bound(x)
 
 mirror(x)
+
+rev.moving_average(x)
 
 \method{length}{moving_average}(x)
 

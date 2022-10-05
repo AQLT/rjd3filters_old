@@ -51,6 +51,9 @@ moving_average <- function(x, lags = -length(x)){
   upper_bound = lags + length(x)
   # remove 1 if it is >= 0 (central term)
   upper_bound = upper_bound - (upper_bound >= 0)
+
+  names(x) <- coefficients_names(lags,
+                                 upper_bound)
   res <- new("moving_average",
              coefficients = x, lower_bound = lags,
              upper_bound = upper_bound)
@@ -81,8 +84,6 @@ is.moving_average <- function(x){
 #' @export
 coef.moving_average <- function(object, ...){
   coefs = object@coefficients
-  names(coefs) <- coefficients_names(get_lower_bound(object),
-                                     get_upper_bound(object))
   return(coefs)
 }
 #' @rdname moving_average
@@ -103,7 +104,12 @@ get_lower_bound <- function(x){
 #' @rdname moving_average
 #' @export
 mirror <- function(x){
-  .jcall(ma2jd(x), "Ljdplus/math/linearfilters/FiniteFilter;", "mirror")
+  jd2ma(.jcall(ma2jd(x), "Ljdplus/math/linearfilters/FiniteFilter;", "mirror"))
+}
+#' @rdname moving_average
+#' @export
+rev.moving_average <- function(x){
+  mirror(x)
 }
 #' @rdname moving_average
 #' @export
@@ -152,14 +158,14 @@ setMethod("[",
 #' @rdname moving_average
 #' @export
 setReplaceMethod("[",
-          signature(x = "moving_average",
-                    i = "ANY",
-                    j = "missing",
-                    value = "numeric"),
-          function(x, i, value) {
-            x@coefficients[i] <- value
-            x
-          })
+                 signature(x = "moving_average",
+                           i = "ANY",
+                           j = "missing",
+                           value = "numeric"),
+                 function(x, i, value) {
+                   x@coefficients[i] <- value
+                   x
+                 })
 #' @rdname moving_average
 #' @export
 cbind.moving_average <- function(...){
@@ -361,34 +367,34 @@ plot_phase.moving_average<- function(x, nxlab = 7, add = FALSE,
 }
 #' @export
 get_properties_function.moving_average <- function(x,
-           component = c("Symmetric Gain",
-                         "Symmetric Phase",
-                         "Symmetric transfer",
-                         "Asymmetric Gain",
-                         "Asymmetric Phase",
-                         "Asymmetric transfer"), ...){
-    x = ma2jd(x)
-    component = match.arg(component)
-    switch(component,
-           "Symmetric Gain" = {
-             get_gain_function(x)
-           },
-           "Asymmetric Gain" = {
-             get_gain_function(x)
-           },
-           "Symmetric Phase" = {
-             get_phase_function(x)
-           },
-           "Asymmetric Phase" = {
-             get_phase_function(x)
-           },
-           "Symmetric transfer" = {
-             get_frequencyResponse_function(x)
-           },
-           "Asymmetric transfer" = {
-             get_frequencyResponse_function(x)
-           })
-  }
+                                                   component = c("Symmetric Gain",
+                                                                 "Symmetric Phase",
+                                                                 "Symmetric transfer",
+                                                                 "Asymmetric Gain",
+                                                                 "Asymmetric Phase",
+                                                                 "Asymmetric transfer"), ...){
+  x = ma2jd(x)
+  component = match.arg(component)
+  switch(component,
+         "Symmetric Gain" = {
+           get_gain_function(x)
+         },
+         "Asymmetric Gain" = {
+           get_gain_function(x)
+         },
+         "Symmetric Phase" = {
+           get_phase_function(x)
+         },
+         "Asymmetric Phase" = {
+           get_phase_function(x)
+         },
+         "Symmetric transfer" = {
+           get_frequencyResponse_function(x)
+         },
+         "Asymmetric transfer" = {
+           get_frequencyResponse_function(x)
+         })
+}
 
 # sum(e1)
 # sum(e2)
