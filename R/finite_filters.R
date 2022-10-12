@@ -1,15 +1,28 @@
-library(rjdfilters)
 setClass("finite_filters",
          slots = c(sfilter = "moving_average",
                    lfilters = "list",
                    rfilters = "list")
 )
+#' Manipulating Finite Filters
+#'
+#' @param sfilter the symmetric filter
+#' @param rfilters the right filters (used on the last points).
+#' @param lfilters the left filters (used on the first points).
+#' @param first_to_last boolean
+#' @export
 finite_filters <- function(sfilter,
                            rfilters = NULL,
-                           lfilters = NULL){
+                           lfilters = NULL,
+                           first_to_last = FALSE){
   if (is.null(lfilters) & !is.null(rfilters)) {
+    if (first_to_last) {
+      rfilters = rev(rfilters)
+    }
     lfilters = rev(lapply(rfilters, rev.moving_average))
   } else if (!is.null(lfilters) & is.null(rfilters)) {
+    if (!first_to_last) {
+      lfilters = rev(lfilters)
+    }
     rfilters = rev(lapply(lfilters, rev.moving_average))
   } else if (is.null(lfilters) & is.null(rfilters)) {
     return(sfilter)
@@ -19,6 +32,8 @@ finite_filters <- function(sfilter,
              rfilters = rfilters)
   res
 }
+#' @rdname finite_filters
+#' @export
 setMethod(f = "show",
           signature = "finite_filters",
           definition = function(object){
@@ -57,7 +72,7 @@ setMethod("*",
                     e2 = "finite_filters"),
           function(e1, e2) {
             jfilter(e1,
-                    c(object@rfilters, list(object@sfilter)))
+                    c(rev(object@rfilters), list(object@sfilter)))
           })
 
 #' @rdname finite_filters
@@ -204,40 +219,38 @@ setMethod("*",
               moving_average(rfilters[i,],
                              lags = lags - i +1)
             })
-            # rfilters = rev(rfilters)
 
             lfilters = new_mat[(1:((nrow(new_mat)-1)/2)),]
             lfilters = lapply(1:nrow(lfilters),function(i){
               moving_average(lfilters[i,],
                              lags = lags + i -1)
             })
-            # lfilters = rev(lfilters)
             finite_filters(sfilter = sym, rfilters = rfilters, lfilters = lfilters)
           })
-all_mm <- apply(lp_filter()$filters.coef,2,
-                moving_average, lags = -6)
-
-ff = finite_filters(all_mm[["q=6"]], rfilters = rev(all_mm[-7]))
-
-
-ff*2/10
-all_mm <- apply(lp_filter(horizon = 2)$filters.coef,2,
-                moving_average, lags = -2)
-
-# ff = finite_filters(all_mm[["q=2"]], rfilters = all_mm[-3])
-ff2 = finite_filters(all_mm[["q=2"]], rfilters = all_mm[-3])
-ff = finite_filters(moving_average(c(1/3,1/3,1/3), -1),
-                    rfilters = list(moving_average(c(1/2,1/2), -1)))
-
-e1 = finite_filters(all_mm[["q=2"]], rfilters = rev(all_mm[-3]))
-e2 = finite_filters(moving_average(c(1/3,1/3,1/3), -1),
-                    rfilters = list(moving_average(c(1/2,1/2), -1)))
-ff2 * ff
-class(ff2)
-class(ff)
-tmp = print(ff)
-t(tmp)
-object = ff
-e1 = ff2
-e2 = ff
-rev()
+# all_mm <- apply(lp_filter()$filters.coef,2,
+#                 moving_average, lags = -6)
+#
+# ff = finite_filters(all_mm[["q=6"]], rfilters = rev(all_mm[-7]))
+#
+#
+# ff*2/10
+# all_mm <- apply(lp_filter(horizon = 2)$filters.coef,2,
+#                 moving_average, lags = -2)
+#
+# # ff = finite_filters(all_mm[["q=2"]], rfilters = all_mm[-3])
+# ff2 = finite_filters(all_mm[["q=2"]], rfilters = all_mm[-3])
+# ff = finite_filters(moving_average(c(1/3,1/3,1/3), -1),
+#                     rfilters = list(moving_average(c(1/2,1/2), -1)))
+#
+# e1 = finite_filters(all_mm[["q=2"]], rfilters = rev(all_mm[-3]))
+# e2 = finite_filters(moving_average(c(1/3,1/3,1/3), -1),
+#                     rfilters = list(moving_average(c(1/2,1/2), -1)))
+# ff2 * ff
+# class(ff2)
+# class(ff)
+# tmp = print(ff)
+# t(tmp)
+# object = ff
+# e1 = ff2
+# e2 = ff
+# rev()
