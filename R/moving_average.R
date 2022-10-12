@@ -48,9 +48,9 @@ setClass("moving_average",
 #' @export
 moving_average <- function(x, lags = -length(x)){
   x <- removeTrailingZeroOrNA(as.numeric(x))
-  upper_bound = lags + length(x)
+  upper_bound = lags + length(x) -1
   # remove 1 if it is >= 0 (central term)
-  upper_bound = upper_bound - (upper_bound >= 0)
+  # upper_bound = upper_bound - (upper_bound >= 0)
 
   names(x) <- coefficients_names(lags,
                                  upper_bound)
