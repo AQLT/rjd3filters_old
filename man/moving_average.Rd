@@ -43,7 +43,7 @@ get_lower_bound(x)
 
 mirror(x)
 
-rev.moving_average(x)
+\method{rev}{moving_average}(x)
 
 \method{length}{moving_average}(x)
 
