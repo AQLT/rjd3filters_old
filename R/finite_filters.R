@@ -22,7 +22,13 @@ finite_filters <- function(sfilter,
 setMethod(f = "show",
           signature = "finite_filters",
           definition = function(object){
-            print(do.call(cbind, c(object@rfilters, list(object@sfilter))))
+            x = do.call(cbind, c(list(object@sfilter), object@rfilters))
+            # if (isTRUE(all.equal(object@rfilters, object@lfilters))) {
+            #   x = do.call(cbind, c(list(object@sfilter), object@rfilters))
+            # } else {
+            #   x = do.call(cbind, c(object@lfilters, list(object@sfilter), object@rfilters))
+            # }
+            print(x)
           })
 
 #' @rdname finite_filters
@@ -156,12 +162,39 @@ setMethod("*",
             nb_ma_e1 <- length(e1@lfilters)
             nb_ma_e2 <- length(e2@lfilters)
             nb_ma <- max(nb_ma_e1, nb_ma_e2)
-            matrix_e1 <- t(do.call(cbind, c(rev(e1@lfilters),
-                                            rep(list(e1@sfilter), 2 * (nb_ma - nb_ma_e1) + 1),
-                                            rev(e1@rfilters))))
-            matrix_e2 <- t(do.call(cbind, c(rev(e2@lfilters),
-                                            rep(list(e2@sfilter), 2 * (nb_ma - nb_ma_e2)+ 1),
-                                            rev(e2@rfilters))))
+
+            new_e1 <- c(e1@lfilters,
+                       rep(list(e1@sfilter), 2 * (nb_ma - nb_ma_e1) + 1),
+                       e1@rfilters)
+            new_e2 <- c(e2@lfilters,
+                        rep(list(e2@sfilter), 2 * (nb_ma - nb_ma_e2)+ 1),
+                        e2@rfilters)
+
+            if (nb_ma_e1 < nb_ma_e2) {
+              matrix_e2 <- t(do.call(cbind, lapply(1:length(new_e2), function(i){
+                new_e2[[i]] * moving_average(1, lags = -nb_ma+(i-1))
+              })))
+
+              matrix_e1 <- t(do.call(cbind, lapply(1:length(new_e1), function(i){
+                new_e1[[i]] * moving_average(1, lags = -abs(nb_ma_e1 - nb_ma_e2)*2 +i)
+              })))
+            } else if (nb_ma_e1 > nb_ma_e2) {
+              matrix_e1 <- t(do.call(cbind, lapply(1:length(new_e1), function(i){
+                new_e1[[i]] * moving_average(1, lags = -nb_ma+(i-1))
+              })))
+
+              matrix_e2 <- t(do.call(cbind, lapply(1:length(new_e2), function(i){
+                new_e2[[i]] * moving_average(1, lags = -abs(nb_ma_e1 - nb_ma_e2)*2 +i-1)
+              })))
+            } else {
+              matrix_e1 <- t(do.call(cbind, lapply(1:length(new_e1), function(i){
+                new_e1[[i]] * moving_average(1, lags = -nb_ma+(i-1))
+              })))
+              matrix_e2 <- t(do.call(cbind, lapply(1:length(new_e2), function(i){
+                new_e2[[i]] * moving_average(1, lags = -nb_ma+(i-1))
+              })))
+            }
+
             new_mat <- matrix_e1 %*% matrix_e2
             lags = -(ncol(new_mat)-1)/2
             sym = moving_average(new_mat[(nrow(new_mat)+1)/2,],
@@ -171,20 +204,21 @@ setMethod("*",
               moving_average(rfilters[i,],
                              lags = lags - i +1)
             })
-            rfilters = rev(rfilters)
+            # rfilters = rev(rfilters)
 
             lfilters = new_mat[(1:((nrow(new_mat)-1)/2)),]
             lfilters = lapply(1:nrow(lfilters),function(i){
               moving_average(lfilters[i,],
                              lags = lags + i -1)
             })
-            lfilters = rev(lfilters)
+            # lfilters = rev(lfilters)
             finite_filters(sfilter = sym, rfilters = rfilters, lfilters = lfilters)
           })
 all_mm <- apply(lp_filter()$filters.coef,2,
                 moving_average, lags = -6)
 
-ff = finite_filters(all_mm[["q=6"]], rfilters = all_mm[-7])
+ff = finite_filters(all_mm[["q=6"]], rfilters = rev(all_mm[-7]))
+
 
 ff*2/10
 all_mm <- apply(lp_filter(horizon = 2)$filters.coef,2,
@@ -195,7 +229,7 @@ ff2 = finite_filters(all_mm[["q=2"]], rfilters = all_mm[-3])
 ff = finite_filters(moving_average(c(1/3,1/3,1/3), -1),
                     rfilters = list(moving_average(c(1/2,1/2), -1)))
 
-e1 = finite_filters(all_mm[["q=2"]], rfilters = all_mm[-3])
+e1 = finite_filters(all_mm[["q=2"]], rfilters = rev(all_mm[-3]))
 e2 = finite_filters(moving_average(c(1/3,1/3,1/3), -1),
                     rfilters = list(moving_average(c(1/2,1/2), -1)))
 ff2 * ff
