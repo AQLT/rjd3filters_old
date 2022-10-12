@@ -106,6 +106,7 @@ get_lower_bound <- function(x){
 mirror <- function(x){
   jd2ma(.jcall(ma2jd(x), "Ljdplus/math/linearfilters/FiniteFilter;", "mirror"))
 }
+#' @method rev moving_average
 #' @rdname moving_average
 #' @export
 rev.moving_average <- function(x){
