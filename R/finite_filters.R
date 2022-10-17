@@ -14,6 +14,12 @@ finite_filters <- function(sfilter,
                            rfilters = NULL,
                            lfilters = NULL,
                            first_to_last = FALSE){
+  # if (is.matrix(rfilters)){
+  #   rfilters <- lapply(1:ncol(rfilters), function(i) rfilters[,i])
+  # }
+  # if (is.matrix(lfilters)){
+  #   lfilters <- lapply(1:ncol(lfilters), function(i) lfilters[,i])
+  # }
   if (is.null(lfilters) & !is.null(rfilters)) {
     if (first_to_last) {
       rfilters = rev(rfilters)
@@ -37,7 +43,8 @@ finite_filters <- function(sfilter,
 setMethod(f = "show",
           signature = "finite_filters",
           definition = function(object){
-            x = do.call(cbind, c(list(object@sfilter), object@rfilters))
+            x = as.matrix(object)
+            # colnames(x) <- coefficients_names(, 0)
             # if (isTRUE(all.equal(object@rfilters, object@lfilters))) {
             #   x = do.call(cbind, c(list(object@sfilter), object@rfilters))
             # } else {
@@ -60,6 +67,17 @@ setMethod("*",
 #' @rdname finite_filters
 #' @export
 setMethod("*",
+          signature(e1 = "moving_average",
+                    e2 = "finite_filters"),
+          function(e1, e2) {
+            e2@sfilter = e2@sfilter * e1
+            e2@lfilters = lapply(e2@lfilters, `*`, e1)
+            e2@rfilters = lapply(e2@rfilters, `*`, e1)
+            e2
+          })
+#' @rdname finite_filters
+#' @export
+setMethod("*",
           signature(e1 = "finite_filters",
                     e2 = "numeric"),
           function(e1, e2) {
@@ -78,21 +96,6 @@ setMethod("*",
 #' @rdname finite_filters
 #' @export
 setMethod("+",
-          signature(e1 = "moving_average",
-                    e2 = "moving_average"),
-          function(e1, e2) {
-            finiteFilter <- J("jdplus.math.linearfilters.FiniteFilter")
-            jobj <- .jcall(finiteFilter,
-                           "Ljdplus/math/linearfilters/FiniteFilter;",
-                           "add",
-                           .jcast(ma2jd(e1), "jdplus/math/linearfilters/IFiniteFilter"),
-                           .jcast(ma2jd(e2), "jdplus/math/linearfilters/IFiniteFilter"))
-
-            jd2ma(jobj)
-          })
-#' @rdname finite_filters
-#' @export
-setMethod("+",
           signature(e1 = "finite_filters",
                     e2 = "numeric"),
           function(e1, e2) {
@@ -102,6 +105,25 @@ setMethod("+",
 #' @export
 setMethod("+",
           signature(e1 = "numeric",
+                    e2 = "finite_filters"),
+          function(e1, e2) {
+            e2 + e1
+          })
+#' @rdname finite_filters
+#' @export
+setMethod("+",
+          signature(e1 = "finite_filters",
+                    e2 = "moving_average"),
+          function(e1, e2) {
+            e1@sfilter = e1@sfilter + e2
+            e1@lfilters = lapply(e1@lfilters, `+`, e2)
+            e1@rfilters = lapply(e1@rfilters, `+`, e2)
+            e1
+          })
+#' @rdname finite_filters
+#' @export
+setMethod("+",
+          signature(e1 = "moving_average",
                     e2 = "finite_filters"),
           function(e1, e2) {
             e2 + e1
@@ -167,7 +189,13 @@ setMethod("/",
             e1@rfilters = lapply(e1@rfilters, `/`, e2)
             e1
           })
-
+#' @method as.matrix finite_filters
+#' @export
+as.matrix.finite_filters <- function(x, ...) {
+  x = do.call(cbind, c(list(x@sfilter), x@rfilters))
+  colnames(x) <- sprintf("q=%i",seq(ncol(x) -1, 0))
+  x
+}
 #' @rdname finite_filters
 #' @export
 setMethod("*",
@@ -227,6 +255,23 @@ setMethod("*",
             })
             finite_filters(sfilter = sym, rfilters = rfilters, lfilters = lfilters)
           })
+#' @export
+to_seasonal.finite_filters <- function(x, s){
+  x@sfilter = to_seasonal(x@sfilter, s)
+  x@rfilters = unlist(lapply(x@rfilters, function(x){
+    new_mm = to_seasonal(x, s)
+    lapply(s:1, function(i){
+      new_mm * moving_average(1, lags = (i-1))
+    })
+  }))
+  x@lfilters = unlist(lapply(x@lfilters, function(x){
+    new_mm = to_seasonal(x, s)
+    lapply(1:s, function(i){
+      new_mm * moving_average(1, lags = -(i-1))
+    })
+  }))
+  x
+}
 # all_mm <- apply(lp_filter()$filters.coef,2,
 #                 moving_average, lags = -6)
 #
