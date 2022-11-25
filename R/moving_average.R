@@ -47,6 +47,8 @@ setClass("moving_average",
 #' plot(s)
 #' @export
 moving_average <- function(x, lags = -length(x)){
+  if (inherits(x, "moving_average"))
+    return (x)
   x <- removeTrailingZeroOrNA(as.numeric(x))
   upper_bound = lags + length(x) -1
   # remove 1 if it is >= 0 (central term)
@@ -120,6 +122,10 @@ length.moving_average <- function(x){
 #' @rdname moving_average
 #' @export
 to_seasonal <- function(x, s){
+  UseMethod("to_seasonal", x)
+}
+#' @export
+to_seasonal.default <- function(x, s){
   lb <- get_lower_bound(x)
   up <- get_upper_bound(x)
   coefs <- coef(x)
@@ -312,6 +318,14 @@ setMethod("/",
                     e2 = "numeric"),
           function(e1, e2) {
             e1 * moving_average(1/e2,0)
+          })
+#' @rdname moving_average
+#' @export
+setMethod("^",
+          signature(e1 = "moving_average",
+                    e2 = "numeric"),
+          function(e1, e2) {
+            Reduce(`*`, rep(list(e1), e2))
           })
 #' @rdname plot_filters
 #' @export
