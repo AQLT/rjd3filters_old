@@ -1,4 +1,4 @@
-Package: rjdfilters
+Package: rjd3filters
 Type: Package
 Title: Trend-Cycle Extraction with Linear Filters
 Version: 0.0.3
