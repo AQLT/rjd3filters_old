@@ -301,7 +301,7 @@ setMethod("*",
 setMethod("*",
           signature(e1 = "moving_average"),
           function(e1, e2) {
-            jasym_filter(e1,e2)
+            jasym_filter(e2, e1)
           })
 #' @rdname moving_average
 #' @export
