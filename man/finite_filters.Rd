@@ -4,11 +4,14 @@
 \alias{finite_filters}
 \alias{show,finite_filters-method}
 \alias{*,finite_filters,moving_average-method}
+\alias{*,moving_average,finite_filters-method}
 \alias{*,finite_filters,numeric-method}
 \alias{*,ANY,finite_filters-method}
-\alias{+,moving_average,moving_average-method}
+\alias{*,finite_filters,ANY-method}
 \alias{+,finite_filters,numeric-method}
 \alias{+,numeric,finite_filters-method}
+\alias{+,finite_filters,moving_average-method}
+\alias{+,moving_average,finite_filters-method}
 \alias{+,finite_filters,missing-method}
 \alias{-,finite_filters,missing-method}
 \alias{-,finite_filters,moving_average-method}
@@ -30,15 +33,21 @@ finite_filters(
 
 \S4method{*}{finite_filters,moving_average}(e1, e2)
 
+\S4method{*}{moving_average,finite_filters}(e1, e2)
+
 \S4method{*}{finite_filters,numeric}(e1, e2)
 
 \S4method{*}{ANY,finite_filters}(e1, e2)
 
-\S4method{+}{moving_average,moving_average}(e1, e2)
+\S4method{*}{finite_filters,ANY}(e1, e2)
 
 \S4method{+}{finite_filters,numeric}(e1, e2)
 
 \S4method{+}{numeric,finite_filters}(e1, e2)
+
+\S4method{+}{finite_filters,moving_average}(e1, e2)
+
+\S4method{+}{moving_average,finite_filters}(e1, e2)
 
 \S4method{+}{finite_filters,missing}(e1, e2)
 
@@ -59,7 +68,7 @@ finite_filters(
 \arguments{
 \item{sfilter}{the symmetric filter}
 
-\item{rfilters}{the right filters (used on the last points).}
+\item{rfilters}{the right filters (used on the last points), from the first filter to the last (real-time)}
 
 \item{lfilters}{the left filters (used on the first points).}
 

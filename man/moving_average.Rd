@@ -29,6 +29,7 @@
 \alias{*,moving_average,ANY-method}
 \alias{*,numeric,moving_average-method}
 \alias{/,moving_average,numeric-method}
+\alias{^,moving_average,numeric-method}
 \title{Manipulation of moving averages}
 \usage{
 moving_average(x, lags = -length(x))
@@ -86,6 +87,8 @@ to_seasonal(x, s)
 \S4method{*}{numeric,moving_average}(e1, e2)
 
 \S4method{/}{moving_average,numeric}(e1, e2)
+
+\S4method{^}{moving_average,numeric}(e1, e2)
 }
 \arguments{
 \item{x}{vector of coefficients}
