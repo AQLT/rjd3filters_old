@@ -136,14 +136,7 @@ to_seasonal.default <- function(x, s){
                  coefs[length(x)])
   moving_average(new_coefs, lb * s)
 }
-#' @rdname moving_average
-#' @export
-setMethod(f = "show",
-          signature = "moving_average",
-          definition = function(object){
-            print(.jcall(ma2jd(object), "S", "toString"))
-            invisible(object)
-          })
+
 #' @rdname moving_average
 #' @export
 sum.moving_average <- function(..., na.rm = FALSE){
@@ -325,7 +318,11 @@ setMethod("^",
           signature(e1 = "moving_average",
                     e2 = "numeric"),
           function(e1, e2) {
-            Reduce(`*`, rep(list(e1), e2))
+            if (e2 == 0) {
+              moving_average(1, 0)
+            } else {
+              Reduce(`*`, rep(list(e1), e2))
+            }
           })
 #' @rdname plot_filters
 #' @export
@@ -410,49 +407,3 @@ get_properties_function.moving_average <- function(x,
            get_frequencyResponse_function(x)
          })
 }
-
-# sum(e1)
-# sum(e2)
-#
-# y <- retailsa$DrinkingPlaces
-# library(rJava)
-# e1 <- moving_average(rep(1,12), lags =-5)
-# e1 <- e1/sum(e1)
-# length(e1)
-# e1
-# e2 <- moving_average(rep(1,12), lags =-6)/12
-# x <- (e1+e2)/12
-# x
-# e1 <- moving_average(1:5, lags =-3)
-# x = e1
-#
-# jy <- J("demetra/data/DoubleSeq")$of(as.numeric(y))
-# jres <- J("demetra/data/DoubleSeq$Mutable")$of(as.numeric(y))
-# tmp$of
-# tmp$of()
-# x@internal$apply(jy,jres)
-#
-#
-# lb = get_lower_bound(x)
-# ub = get_upper_bound(x)
-# DataBlock = J("jdplus.data.DataBlock")
-# out = DataBlock$of(as.numeric(rep(NA, jy$length() - length(x)+1)))
-# out$length()
-# x@internal$apply(DataBlock$of(as.numeric(y)),
-#                  out)
-# out$length()
-# result = out$toArray()
-# result <- c(rep(NA, abs(min(lb, 0))),
-#             result,
-#          rep(NA, abs(max(ub, 0))))
-# if(is.ts(y))
-#   result <- ts(result,start = start(y), frequency = frequency(y))
-#
-# ts.union(jasym_filter(y, coef(x), abs(get_lower_bound(x))),
-#          result)
-# all.equal(result, jasym_filter(y, coef(x), abs(get_lower_bound(x))))
-
-# e1+e2
-# e1-e2
-# e1*e2
-# e2/2
