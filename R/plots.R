@@ -238,6 +238,8 @@ trailingZeroAsNa <- function(x){
   # x
 }
 removeTrailingZeroOrNA <- function(x){
+  if (identical(x, 0))
+    return(x)
   i <- length(x)
   remove_i <- NULL
   while ((is.na(x[i]) || (x[i] == 0)) && i > 0) {
