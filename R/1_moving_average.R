@@ -280,7 +280,24 @@ setMethod("*",
           signature(e1 = "moving_average",
                     e2 = "numeric"),
           function(e1, e2) {
-            e1 * moving_average(e2,0)
+            if (length(e2) == 1) {
+              e1 * moving_average(e2,0)
+            } else {
+              jasym_filter(e2, e1)
+            }
+          })
+
+#' @rdname moving_average
+#' @export
+setMethod("*",
+          signature(e1 = "numeric",
+                    e2 = "moving_average"),
+          function(e1, e2) {
+            if (length(e1) == 1) {
+              moving_average(e1,0) * e2
+            } else {
+              jasym_filter(e1, e2)
+            }
           })
 #' @rdname moving_average
 #' @export
@@ -295,14 +312,6 @@ setMethod("*",
           signature(e1 = "moving_average"),
           function(e1, e2) {
             jasym_filter(e2, e1)
-          })
-#' @rdname moving_average
-#' @export
-setMethod("*",
-          signature(e1 = "numeric",
-                    e2 = "moving_average"),
-          function(e1, e2) {
-            moving_average(e1,0) * e2
           })
 #' @rdname moving_average
 #' @export

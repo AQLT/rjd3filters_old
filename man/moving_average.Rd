@@ -24,9 +24,9 @@
 \alias{-,numeric,moving_average-method}
 \alias{*,moving_average,moving_average-method}
 \alias{*,moving_average,numeric-method}
+\alias{*,numeric,moving_average-method}
 \alias{*,ANY,moving_average-method}
 \alias{*,moving_average,ANY-method}
-\alias{*,numeric,moving_average-method}
 \alias{/,moving_average,numeric-method}
 \alias{^,moving_average,numeric-method}
 \alias{show,moving_average-method}
@@ -78,11 +78,11 @@ to_seasonal(x, s)
 
 \S4method{*}{moving_average,numeric}(e1, e2)
 
+\S4method{*}{numeric,moving_average}(e1, e2)
+
 \S4method{*}{ANY,moving_average}(e1, e2)
 
 \S4method{*}{moving_average,ANY}(e1, e2)
-
-\S4method{*}{numeric,moving_average}(e1, e2)
 
 \S4method{/}{moving_average,numeric}(e1, e2)
 
