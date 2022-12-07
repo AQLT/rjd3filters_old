@@ -223,9 +223,9 @@ as.matrix.finite_filters <- function(x, rfilters = TRUE, lfilters = FALSE, ...) 
   index_r = seq(length(x@rfilters) - 1, 0)
   index_l = seq(0, -(length(x@lfilters) - 1))
   index_sym = length(x@rfilters)
-  colnames(mat) <- sprintf("q=%i",c(index_l, index_sym, index_l))
+  colnames(mat) <- sprintf("q=%i",c(index_l, index_sym, index_r))
   if (!rfilters) {
-    mat = mat[, -seq(nrow(mat), by = -1, length.out = length(x@rfilters))]
+    mat = mat[, -seq(ncol(mat), by = -1, length.out = length(x@rfilters))]
   }
   if (!lfilters) {
     mat = mat[, -seq(1, by = 1, length.out = length(x@lfilters))]
