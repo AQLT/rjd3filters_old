@@ -1,9 +1,14 @@
+#' Get Moving Averages from ARIMA model
+#'
+#' @param x the object.
+#' @param ... unused parameters
+#'
 #' @export
-get_moving_average <- function(x, period, ...) {
+get_moving_average <- function(x, ...) {
   UseMethod("get_moving_average", x)
 }
 #' @export
-get_moving_average.Arima <- function(x){
+get_moving_average.Arima <- function(x, ...){
   arima_mod <- x$arma
   ar <- arima_mod[1]
   ma <- arima_mod[2]
@@ -49,68 +54,12 @@ get_moving_average.Arima <- function(x){
   diff_mm <- (1 - moving_average(1, lags = -1)) ^ diff
   sdiff_mm <- (1 - moving_average(1, lags = -period)) ^ sdiff
 
-  list(#mean = mean_mm,
-       order = list(ar = ar_mm,
-                    diff = diff_mm,
-                    ma = ma_mm),
-       seasonal = list(ar = sar_mm,
-                       diff = sdiff_mm,
-                       ma = sma_mm))
-}
-#' @export
-get_moving_average.regarima <- function(x, period = 12, ...){
-  specif = x$specification$arima$specification
-  ar <- specif$arima.p
-  ma <- specif$arima.q
-  sar <- specif$arima.bp
-  sma <- specif$arima.bq
-  diff <- specif$arima.d
-  sdiff <- specif$arima.bd
-  mean <- x$model$spec_rslt$Mean
-
-  ar_mm <- ma_mm <- sar_mm <-
-    sma_mm <- moving_average(1, lags = 0)
-  coef <- x$arima.coefficients[,1]
-
-  if (ar > 0) {
-    ar_mm <- moving_average(coef[sprintf("Phi(%i)", seq(ar, 1))],
-                            lags = - ar)
-    ar_mm <- 1 - ar_mm
-  }
-  if (sar > 0) {
-    sar_mm <- moving_average(coef[sprintf("BPhi(%i)", seq(sar, 1))],
-                             lags = - sar)
-    sar_mm <- to_seasonal(sar_mm, period)
-    sar_mm <- 1 - sar_mm
-  }
-  if (ma > 0) {
-    ma_mm <- moving_average(coef[sprintf("Theta(%i)", seq(ma, 1))],
-                            lags = - ma)
-    ma_mm <- 1 + ma_mm
-  }
-  if (sma > 0) {
-    sma_mm <- moving_average(coef[sprintf("BTheta(%i)", seq(sma, 1))],
-                             lags = - sma)
-    sma_mm <- to_seasonal(sma_mm, period)
-    sma_mm <- 1 + sma_mm
-  }
-  if (mean) {
-    mean_mm <- x$regression.coefficients["Mean",1]
-  } else {
-    mean_mm <- 0
-  }
-  mean_mm <- moving_average(mean_mm, 0)
-
-  diff_mm <- (1 - moving_average(1, lags = -1)) ^ diff
-  sdiff_mm <- (1 - moving_average(1, lags = -period)) ^ sdiff
-
-  list(#mean = mean_mm,
-       order = list(ar = ar_mm,
-                    diff = diff_mm,
-                    ma = ma_mm),
-       seasonal = list(ar = sar_mm,
-                       diff = sdiff_mm,
-                       ma = sma_mm))
+  list(left = list(ar = ar_mm,
+                 sar = sar_mm,
+                 diff = diff_mm,
+                 sdiff = sdiff_mm),
+       right = list(ma = ma_mm,
+                    sma = sma_mm))
 }
 #' @export
 get_moving_average.regarima <- function(x, period = 12, ...){
@@ -159,13 +108,12 @@ get_moving_average.regarima <- function(x, period = 12, ...){
   diff_mm <- (1 - moving_average(1, lags = -1)) ^ diff
   sdiff_mm <- (1 - moving_average(1, lags = -period)) ^ sdiff
 
-  list(#mean = mean_mm,
-    order = list(ar = ar_mm,
-                 diff = diff_mm,
-                 ma = ma_mm),
-    seasonal = list(ar = sar_mm,
-                    diff = sdiff_mm,
-                    ma = sma_mm))
+  list(left = list(ar = ar_mm,
+                   sar = sar_mm,
+                   diff = diff_mm,
+                   sdiff = sdiff_mm),
+       right = list(ma = ma_mm,
+                    sma = sma_mm))
 }
 #' @export
 get_moving_average.SA <- function(x, period = 12, ...){
@@ -210,13 +158,12 @@ get_moving_average.JD3_SARIMA_ESTIMATION <- function(x, period = 12, ...){
   diff_mm <- (1 - moving_average(1, lags = -1)) ^ diff
   sdiff_mm <- (1 - moving_average(1, lags = -period)) ^ sdiff
 
-  list(#mean = mean_mm,
-    order = list(ar = ar_mm,
-                 diff = diff_mm,
-                 ma = ma_mm),
-    seasonal = list(ar = sar_mm,
-                    diff = sdiff_mm,
-                    ma = sma_mm))
+  list(left = list(ar = ar_mm,
+                   sar = sar_mm,
+                   diff = diff_mm,
+                   sdiff = sdiff_mm),
+       right = list(ma = ma_mm,
+                    sma = sma_mm))
 }
 #' @export
 get_moving_average.JD3_REGARIMA_OUTPUT <- function(x, ...){
