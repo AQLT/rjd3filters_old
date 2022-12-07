@@ -6,6 +6,11 @@
 \usage{
 get_moving_average(x, ...)
 }
+\arguments{
+\item{x}{the object.}
+
+\item{...}{unused parameters}
+}
 \description{
 Get Moving Averages from ARIMA model
 }
