@@ -46,10 +46,11 @@ finite_filters.moving_average <- function(sfilter,
     rfilters = lapply(seq_along(rfilters), function(i) {
       rfilters[[i]] * moving_average(1, lags = -i)
     })
-    lfilters = rep(list(sfilter), abs(get_lower_bound(sfilter)))
-    lfilters = lapply(seq_along(lfilters), function(i) {
-      lfilters[[i]] * moving_average(1, lags = i)
-    })
+    lfilters = rev(lapply(rfilters, rev.moving_average))
+    # lfilters = rep(list(sfilter), abs(get_lower_bound(sfilter)))
+    # lfilters = lapply(seq_along(lfilters), function(i) {
+    #   lfilters[[i]] * moving_average(1, lags = i)
+    # })
   }
   res <- new("finite_filters",
              sfilter = sfilter, lfilters = lfilters,
@@ -93,7 +94,7 @@ setMethod("*",
           signature(e1 = "moving_average",
                     e2 = "finite_filters"),
           function(e1, e2) {
-            e2 * e1
+            finite_filters(e1) * e2
           })
 #' @rdname finite_filters
 #' @export
@@ -219,19 +220,22 @@ setMethod("/",
 #' @method as.matrix finite_filters
 #' @export
 as.matrix.finite_filters <- function(x, rfilters = TRUE, lfilters = FALSE, ...) {
-  mat = do.call(cbind, c(x@lfilters, list(x@sfilter), x@rfilters))
+  mat = c(x@lfilters, list(x@sfilter), x@rfilters)
   index_r = seq(length(x@rfilters) - 1, 0)
   index_l = seq(0, -(length(x@lfilters) - 1))
   index_sym = length(x@rfilters)
-  colnames(mat) <- sprintf("q=%i",c(index_l, index_sym, index_r))
+  names(mat) <- sprintf("q=%i",c(index_l, index_sym, index_r))
   if (!rfilters) {
-    mat = mat[, -seq(ncol(mat), by = -1, length.out = length(x@rfilters))]
+    mat = mat[-seq(length(mat), by = -1, length.out = length(x@rfilters))]
   }
   if (!lfilters) {
-    mat = mat[, -seq(1, by = 1, length.out = length(x@lfilters))]
+    mat = mat[-seq(1, by = 1, length.out = length(x@lfilters))]
   }
+
+  mat = do.call(cbind, mat)
   mat
 }
+
 #' @export
 setMethod("^",
           signature(e1 = "finite_filters",
