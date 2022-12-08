@@ -21,6 +21,7 @@ e2 = finite_filters(si_1)
 mm_s_norm = finite_filters((1 - M2X12), rfilters = lapply(1:6, function(i) (1 - M2X12)*moving_average(1, lags = -i)))
 e1 = mm_s_norm
 e2 = s_1
+
 s_1_norm = mm_s_norm * s_2
 sa_1 <- 1 - s_1_norm
 sa_1*y
