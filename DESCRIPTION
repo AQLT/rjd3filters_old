@@ -56,5 +56,6 @@ Collate:
     'macurves.R'
     'plots.R'
     'print.R'
+    'test_X11.R'
     'x11.R'
     'zzz.R'
