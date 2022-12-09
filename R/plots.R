@@ -252,3 +252,28 @@ removeTrailingZeroOrNA <- function(x){
     x[-remove_i]
   }
 }
+remove_bound_NA <- function(x) {
+  if (all(is.na(x)))
+    x
+  i <- length(x)
+  j <- 1
+  remove_i_last <- remove_i_first <- NULL
+  while (is.na(x[i]) && i > 0) {
+    remove_i_last <- c(i, remove_i_last)
+    i <- i - 1
+  }
+  while (is.na(x[j]) && i < length(x)) {
+    remove_i_first <- c(j, remove_i_first)
+    j <- j + 1
+  }
+
+  if(is.null(remove_i_first) & is.null(remove_i_last)){
+    # list(data = x, leading = 0,
+    #      trailing = 0)
+  } else{
+    x = x[- c(remove_i_first, remove_i_last)]
+  }
+
+  list(data = x, leading = length(remove_i_first),
+       trailing = length(remove_i_last))
+}
