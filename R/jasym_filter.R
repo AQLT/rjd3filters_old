@@ -113,6 +113,8 @@ jasym_filter.matrix <- function(y, coefs, lags){
 #' @param coefs a \code{matrix} or a \code{list} that contains all the coefficients of the asymmetric and symmetric filters.
 #'  (from the shortest to the symmetric filter). See details.
 #'
+#' @param remove_missing if `TRUE` (default) leading and trailing NA are removed before filtering.
+#'
 #' @details
 #' The functions \code{jfilter} extends \code{\link[stats]{filter}} allowing to set multiple moving averages
 #' to deal with the boundaries.
@@ -132,11 +134,11 @@ jasym_filter.matrix <- function(y, coefs, lags){
 #' @inheritParams jasym_filter
 #' @seealso \code{\link{jasym_filter}}
 #' @export
-jfilter <- function(y, coefs){
+jfilter <- function(y, coefs, remove_missing = TRUE){
   UseMethod("jfilter", y)
 }
 #' @export
-jfilter.default <- function(y, coefs){
+jfilter.default <- function(y, coefs, remove_missing = TRUE){
   if(is.matrix(coefs)){
     coefs <- lapply(1:ncol(coefs), function(i) coefs[,i])
   }
@@ -162,10 +164,16 @@ jfilter.default <- function(y, coefs){
   )
   jlasym <- .jarray(jlasym,
                     "jdplus/math/linearfilters/IFiniteFilter")
+  if (remove_missing){
+    data_clean = remove_bound_NA(y)
+    y2 = data_clean$data
+  } else {
+    y2 = y
+  }
 
 
   jy <- .jcall("demetra/data/DoubleSeq",
-               "Ldemetra/data/DoubleSeq;", "of",as.numeric(y))
+               "Ldemetra/data/DoubleSeq;", "of",as.numeric(y2))
 
   result <- .jcall("jdplus/math/linearfilters/FilterUtility",
                    "Ldemetra/data/DoubleSeq;", "filter",
@@ -175,6 +183,11 @@ jfilter.default <- function(y, coefs){
                    jrasym
   )
   result <- result$toArray()
+
+  if (remove_missing){
+    result = c(rep(NA, data_clean$leading), result,
+               rep(NA, data_clean$trailing))
+  }
   if(is.ts(y))
     result <- ts(result,start = start(y), frequency = frequency(y))
   result
