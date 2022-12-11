@@ -252,6 +252,21 @@ removeTrailingZeroOrNA <- function(x){
     x[-remove_i]
   }
 }
+removeTrailingZero <- function(x){
+  if (identical(x, 0))
+    return(x)
+  i <- length(x)
+  remove_i <- NULL
+  while (isTRUE(all.equal(x[i], 0)) && i > 0) {
+    remove_i <- c(i, remove_i)
+    i <- i - 1
+  }
+  if(is.null(remove_i)){
+    x
+  } else{
+    x[-remove_i]
+  }
+}
 remove_bound_NA <- function(x) {
   if (all(is.na(x)))
     x

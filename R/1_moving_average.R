@@ -49,7 +49,7 @@ setClass("moving_average",
 moving_average <- function(x, lags = -length(x)){
   if (inherits(x, "moving_average"))
     return (x)
-  x <- removeTrailingZeroOrNA(as.numeric(x))
+  x <- removeTrailingZero(as.numeric(x))
   upper_bound = lags + length(x) -1
   # remove 1 if it is >= 0 (central term)
   # upper_bound = upper_bound - (upper_bound >= 0)
