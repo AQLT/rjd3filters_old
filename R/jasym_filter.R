@@ -36,20 +36,20 @@ jasym_filter.default <- function(y, coefs, lags){
   if (!is.moving_average(coefs)) {
     coefs <- moving_average(coefs, -abs(lags))
   }
+  lb = get_lower_bound(coefs)
+  ub = get_upper_bound(coefs)
 
-  jy <- .jcall("demetra/data/DoubleSeq",
-               "Ldemetra/data/DoubleSeq;", "of", as.numeric(y))
+  DataBlock = J("jdplus.data.DataBlock")
+  jy = DataBlock$of(as.numeric(y))
+  out = DataBlock$of(as.numeric(rep(NA, jy$length())))
+  ma2jd(coefs)$apply(jy,
+                     out)
+  result = out$toArray()
+  result <- c(rep(NA, abs(min(lb, 0))),
+              result,
+              rep(NA, abs(max(ub, 0))))
+  result
 
-  jsymf <- .jcast(ma2jd(coefs),
-                  "jdplus/math/linearfilters/IFiniteFilter")
-  result <- .jcall("jdplus/math/linearfilters/FilterUtility",
-                   "Ldemetra/data/DoubleSeq;", "filter",
-                   jy,
-                   jsymf,
-                   .jnull("[Ljdplus/math/linearfilters/IFiniteFilter;"),
-                   .jnull("[Ljdplus/math/linearfilters/IFiniteFilter;")
-                   )
-  result <- .jcall(result, "[D", "toArray")
   if (is.ts(y))
     result <- ts(result,start = start(y), frequency = frequency(y))
   result
