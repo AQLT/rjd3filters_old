@@ -41,7 +41,7 @@ jasym_filter.default <- function(y, coefs, lags){
 
   DataBlock = J("jdplus.data.DataBlock")
   jy = DataBlock$of(as.numeric(y))
-  out = DataBlock$of(as.numeric(rep(NA, jy$length())))
+  out = DataBlock$of(as.numeric(rep(NA, jy$length() - length(coefs)+1)))
   ma2jd(coefs)$apply(jy,
                      out)
   result = out$toArray()
