@@ -8,6 +8,7 @@ setClass("moving_average",
 #'
 #' @param x vector of coefficients
 #' @param lags integer indicating the number of lags of the moving average.
+#' @param trailing_zero,leading_zero boolean indicating wheter to remove leading/trailing zero and NA.
 #' @param s seasonal period for the \code{to_seasonal()} function.
 #' @param ...,na.rm see \link[base]{mean}
 #' @param i,value indices specifying elements to extract or replace and the new value
@@ -46,12 +47,17 @@ setClass("moving_average",
 #' s <- y * s_mm
 #' plot(s)
 #' @export
-moving_average <- function(x, lags = -length(x), trailing_zero = FALSE){
+moving_average <- function(x, lags = -length(x), trailing_zero = FALSE, leading_zero = FALSE){
   if (inherits(x, "moving_average"))
     return (x)
   x <- as.numeric(x)
   if (trailing_zero)
-    x <- removeTrailingZeroOrNA(x)
+    x <- rm_trailing_zero_or_na(x)
+  if (leading_zero){
+    new_x <- rm_leading_zero_or_na(x)
+    lags <- lags - (length(new_x) - length(x))
+    x <- new_x
+  }
   upper_bound = lags + length(x) -1
   # remove 1 if it is >= 0 (central term)
   # upper_bound = upper_bound - (upper_bound >= 0)
@@ -69,7 +75,7 @@ jd2ma <- function(jobj, trailing_zero = FALSE){
   moving_average(x, lags, trailing_zero = trailing_zero)
 }
 ma2jd <- function(x){
-  lags <- get_lower_bound(x)
+  lags <- lower_bound(x)
   coefs = as.numeric(coef(x))
   if (length(x) == 1){
     coefs <- .jarray(coefs)
@@ -94,17 +100,17 @@ coef.moving_average <- function(object, ...){
 #' @export
 is_symmetric <- function(x){
   # .jcall(ma2jd(x), "Z", "isSymmetric")
-  (get_upper_bound(x) == (-get_lower_bound(x))) &&
+  (upper_bound(x) == (-lower_bound(x))) &&
     isTRUE(all.equal(coef(x), rev(coef(x)), check.attributes = FALSE))
 }
 #' @rdname moving_average
 #' @export
-get_upper_bound <- function(x){
+upper_bound <- function(x){
   x@upper_bound
 }
 #' @rdname moving_average
 #' @export
-get_lower_bound <- function(x){
+lower_bound <- function(x){
   x@lower_bound
 }
 #' @rdname moving_average
@@ -130,8 +136,8 @@ to_seasonal <- function(x, s){
 }
 #' @export
 to_seasonal.default <- function(x, s){
-  lb <- get_lower_bound(x)
-  up <- get_upper_bound(x)
+  lb <- lower_bound(x)
+  up <- upper_bound(x)
   coefs <- coef(x)
   new_coefs <- c(unlist(lapply(coefs[-length(x)],
                                function(x){
@@ -157,7 +163,26 @@ setMethod("[",
           signature(x = "moving_average",
                     i = "numeric"),
           function(x, i) {
-            coef(x)[i]
+            coefs <- coef(x)
+            indices <- seq_along(coefs)[i]
+            coefs[-indices] <- 0
+            if (all(coefs == 0))
+              return(moving_average(0, lags = 0))
+
+            moving_average(coefs, lags = lower_bound(x),
+                           leading_zero = TRUE, trailing_zero = TRUE)
+          })
+#' @rdname moving_average
+#' @export
+setMethod("[",
+          signature(x = "moving_average",
+                    i = "logical"),
+          function(x, i) {
+            coefs <- coef(x)
+            indices <- seq_along(coefs)[i]
+            coefs[!indices] <- 0
+            moving_average(coefs, lags = lower_bound(x),
+                           leading_zero = TRUE, trailing_zero = TRUE)
           })
 #' @rdname moving_average
 #' @export
@@ -174,13 +199,13 @@ setReplaceMethod("[",
 #' @export
 cbind.moving_average <- function(...){
   all_mm <- list(...)
-  new_lb = min(sapply(all_mm, get_lower_bound))
-  new_ub = max(sapply(all_mm, get_upper_bound))
-  nb_uterms = max(sapply(all_mm, function(x) get_lower_bound(x) + length(x)))
+  new_lb = min(sapply(all_mm, lower_bound))
+  new_ub = max(sapply(all_mm, upper_bound))
+  nb_uterms = max(sapply(all_mm, function(x) lower_bound(x) + length(x)))
   new_mm <- lapply(all_mm, function(x){
-    c(rep(0, abs(new_lb - get_lower_bound(x))),
+    c(rep(0, abs(new_lb - lower_bound(x))),
       coef(x),
-      rep(0, abs(nb_uterms - (get_lower_bound(x) + length(x))))
+      rep(0, abs(nb_uterms - (lower_bound(x) + length(x))))
     )
   })
   new_mm <- do.call(cbind, new_mm)
@@ -341,7 +366,7 @@ setMethod("^",
 #' @export
 plot_coef.moving_average <- function(x, nxlab = 7, add = FALSE,
                                      zeroAsNa = FALSE, ...){
-  n <- max(abs(c(get_upper_bound(x), get_lower_bound(x))))
+  n <- max(abs(c(upper_bound(x), lower_bound(x))))
   x_plot <- vector(mode = "double", length = 2*n+1)
   names(x_plot) <- coefficients_names(-n, n)
   coefs <- coef(x)
@@ -421,6 +446,10 @@ get_properties_function.moving_average <- function(x,
          })
 }
 #'@export
-simple_ma <- function(order, lags = -order) {
-  moving_average(rep(1, order*2+1), lags = -lags)/(order*2+1)
+simple_ma <- function(order, lags = - trunc((order-1)/2)) {
+  moving_average(rep(1, order), lags = lags) / order
+}
+#'@export
+as.list.moving_average <- function(x, ...) {
+  lapply(seq_along(x), function(i) x[i])
 }
