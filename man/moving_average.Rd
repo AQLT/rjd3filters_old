@@ -4,14 +4,15 @@
 \alias{moving_average}
 \alias{is.moving_average}
 \alias{is_symmetric}
-\alias{get_upper_bound}
-\alias{get_lower_bound}
+\alias{upper_bound}
+\alias{lower_bound}
 \alias{mirror}
 \alias{rev.moving_average}
 \alias{length.moving_average}
 \alias{to_seasonal}
 \alias{sum.moving_average}
 \alias{[,moving_average,numeric-method}
+\alias{[,moving_average,logical-method}
 \alias{[<-,moving_average,ANY,missing,numeric-method}
 \alias{cbind.moving_average}
 \alias{+,moving_average,moving_average-method}
@@ -32,15 +33,20 @@
 \alias{show,moving_average-method}
 \title{Manipulation of moving averages}
 \usage{
-moving_average(x, lags = -length(x))
+moving_average(
+  x,
+  lags = -length(x),
+  trailing_zero = FALSE,
+  leading_zero = FALSE
+)
 
 is.moving_average(x)
 
 is_symmetric(x)
 
-get_upper_bound(x)
+upper_bound(x)
 
-get_lower_bound(x)
+lower_bound(x)
 
 mirror(x)
 
@@ -53,6 +59,8 @@ to_seasonal(x, s)
 \method{sum}{moving_average}(..., na.rm = FALSE)
 
 \S4method{[}{moving_average,numeric}(x, i)
+
+\S4method{[}{moving_average,logical}(x, i)
 
 \S4method{[}{moving_average,ANY,missing,numeric}(x, i) <- value
 
@@ -94,6 +102,8 @@ to_seasonal(x, s)
 \item{x}{vector of coefficients}
 
 \item{lags}{integer indicating the number of lags of the moving average.}
+
+\item{trailing_zero, leading_zero}{boolean indicating wheter to remove leading/trailing zero and NA.}
 
 \item{s}{seasonal period for the \code{to_seasonal()} function.}
 

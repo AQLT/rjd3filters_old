@@ -7,7 +7,6 @@
 \alias{*,finite_filters,numeric-method}
 \alias{*,ANY,finite_filters-method}
 \alias{*,finite_filters,ANY-method}
-\alias{+,finite_filters,numeric-method}
 \alias{+,numeric,finite_filters-method}
 \alias{+,finite_filters,moving_average-method}
 \alias{+,moving_average,finite_filters-method}
@@ -38,8 +37,6 @@ finite_filters(
 \S4method{*}{ANY,finite_filters}(e1, e2)
 
 \S4method{*}{finite_filters,ANY}(e1, e2)
-
-\S4method{+}{finite_filters,numeric}(e1, e2)
 
 \S4method{+}{numeric,finite_filters}(e1, e2)
 
