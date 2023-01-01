@@ -167,7 +167,7 @@ setMethod("[",
             indices <- seq_along(coefs)[i]
             coefs[-indices] <- 0
             if (all(coefs == 0))
-              return(moving_average(0, lags = 0))
+              return (moving_average(0, lags = lower_bound(x) + indices - 1))
 
             moving_average(coefs, lags = lower_bound(x),
                            leading_zero = TRUE, trailing_zero = TRUE)
