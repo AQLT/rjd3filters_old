@@ -46,10 +46,12 @@ setClass("moving_average",
 #' s <- y * s_mm
 #' plot(s)
 #' @export
-moving_average <- function(x, lags = -length(x)){
+moving_average <- function(x, lags = -length(x), trailing_zero = FALSE){
   if (inherits(x, "moving_average"))
     return (x)
-  x <- removeTrailingZero(as.numeric(x))
+  x <- as.numeric(x)
+  if (trailing_zero)
+    x <- removeTrailingZeroOrNA(x)
   upper_bound = lags + length(x) -1
   # remove 1 if it is >= 0 (central term)
   # upper_bound = upper_bound - (upper_bound >= 0)
@@ -61,10 +63,10 @@ moving_average <- function(x, lags = -length(x)){
              upper_bound = upper_bound)
   res
 }
-jd2ma <- function(jobj){
+jd2ma <- function(jobj, trailing_zero = FALSE){
   x <- .jcall(jobj, "[D", "weightsToArray")
   lags <- .jcall(jobj, "I", "getLowerBound")
-  moving_average(x, lags)
+  moving_average(x, lags, trailing_zero = trailing_zero)
 }
 ma2jd <- function(x){
   lags <- get_lower_bound(x)
@@ -91,7 +93,9 @@ coef.moving_average <- function(object, ...){
 #' @rdname moving_average
 #' @export
 is_symmetric <- function(x){
-  .jcall(ma2jd(x), "Z", "isSymmetric")
+  # .jcall(ma2jd(x), "Z", "isSymmetric")
+  (get_upper_bound(x) == (-get_lower_bound(x))) &&
+    isTRUE(all.equal(coef(x), rev(coef(x)), check.attributes = FALSE))
 }
 #' @rdname moving_average
 #' @export
@@ -212,7 +216,7 @@ setMethod("+",
           signature(e1 = "numeric",
                     e2 = "moving_average"),
           function(e1, e2) {
-            moving_average(e1,0) + e2
+            e2 + e1
           })
 #' @rdname moving_average
 #' @export
@@ -250,7 +254,7 @@ setMethod("-",
           signature(e1 = "moving_average",
                     e2 = "numeric"),
           function(e1, e2) {
-            e1 - moving_average(e2,0)
+            e1 + (- e2)
           })
 #' @rdname moving_average
 #' @export
@@ -258,7 +262,7 @@ setMethod("-",
           signature(e1 = "numeric",
                     e2 = "moving_average"),
           function(e1, e2) {
-            moving_average(e1,0) - e2
+            e1 + (- e2)
           })
 #' @rdname moving_average
 #' @export
@@ -415,4 +419,8 @@ get_properties_function.moving_average <- function(x,
          "Asymmetric transfer" = {
            get_frequencyResponse_function(x)
          })
+}
+#'@export
+simple_ma <- function(order) {
+  moving_average(rep(1, order*2+1), lags = -order)/(order*2+1)
 }
