@@ -36,8 +36,8 @@ jasym_filter.default <- function(y, coefs, lags){
   if (!is.moving_average(coefs)) {
     coefs <- moving_average(coefs, -abs(lags))
   }
-  lb = get_lower_bound(coefs)
-  ub = get_upper_bound(coefs)
+  lb = lower_bound(coefs)
+  ub = upper_bound(coefs)
 
   DataBlock = J("jdplus.data.DataBlock")
   jy = DataBlock$of(as.numeric(y))
@@ -55,7 +55,7 @@ jasym_filter.default <- function(y, coefs, lags){
   result
 }
 # jasym_filter.default <- function(y, coefs, lags){
-#   coefs <- removeTrailingZeroOrNA(coefs)
+#   coefs <- rm_trailing_zero_or_na(coefs)
 #   leads <- length(coefs)-(lags+1)
 #   jsymf <- .jcall("jdplus/math/linearfilters/FiniteFilter",
 #                   "Ljdplus/math/linearfilters/FiniteFilter;",
@@ -143,8 +143,20 @@ jfilter <- function(y, coefs, remove_missing = TRUE){
 jfilter.default <- function(y, coefs, remove_missing = TRUE){
   if (inherits(coefs, "finite_filters")) {
     jsymf <- ma2jd(coefs@sfilter)
-    jrasym <- lapply(coefs@rfilters, ma2jd)
-    jlasym <- rev(lapply(coefs@lfilters, ma2jd))
+    rfilters <- coefs@rfilters
+    lfilters <- coefs@lfilters
+    if (length(rfilters) < upper_bound(coefs@sfilter)) {
+     # last points as NA
+      rfilters <- c(rfilters,
+                    rep(list(moving_average(NA, lags = 0)), upper_bound(coefs@sfilter) - length(rfilters)))
+    }
+    if (length(lfilters) < -lower_bound(coefs@sfilter)) {
+      # first points as NA
+      lfilters <- c(rep(list(moving_average(NA, lags = 0)), -lower_bound(coefs@sfilter) - length(lfilters)),
+                    lfilters)
+    }
+    jrasym <- lapply(rfilters, ma2jd)
+    jlasym <- rev(lapply(lfilters, ma2jd))
 
     jsymf <- .jcast(jsymf,
                     "jdplus/math/linearfilters/IFiniteFilter")
@@ -169,15 +181,15 @@ jfilter.default <- function(y, coefs, remove_missing = TRUE){
     jsymf <- .jcast(ma2jd(moving_average(scoef, -lags)), "jdplus/math/linearfilters/IFiniteFilter")
     jrasym <- lapply(lags:1,
                      function(i){
-                       ma2jd(moving_average(removeTrailingZeroOrNA(coefs[[i]]), -lags))
+                       ma2jd(moving_average(rm_trailing_zero_or_na(coefs[[i]]), -lags))
                      }
     )
     jrasym <- .jarray(jrasym,
                       "jdplus/math/linearfilters/IFiniteFilter")
     jlasym <- lapply(lags:1,
                      function(i){
-                       x = removeTrailingZeroOrNA(coefs[[i]])
-                       p = get_upper_bound(moving_average(x, -lags))
+                       x = rm_trailing_zero_or_na(coefs[[i]])
+                       p = upper_bound(moving_average(x, -lags))
                        ma2jd(moving_average(rev(x), -p))
                      }
     )
