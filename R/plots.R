@@ -237,7 +237,22 @@ trailingZeroAsNa <- function(x){
   #          by = 1)] <- NA
   # x
 }
-removeTrailingZeroOrNA <- function(x){
+rm_leading_zero_or_na <- function(x){
+  if (identical(x, 0))
+    return(x)
+  i <- 1
+  remove_i <- NULL
+  while ((is.na(x[i]) || (x[i] == 0)) && i <= length(x)) {
+    remove_i <- c(i, remove_i)
+    i <- i + 1
+  }
+  if(is.null(remove_i)){
+    x
+  } else{
+    x[-remove_i]
+  }
+}
+rm_trailing_zero_or_na <- function(x){
   if (identical(x, 0))
     return(x)
   i <- length(x)
@@ -252,7 +267,7 @@ removeTrailingZeroOrNA <- function(x){
     x[-remove_i]
   }
 }
-removeTrailingZero <- function(x){
+rm_trailing_zero <- function(x){
   if (identical(x, 0))
     return(x)
   i <- length(x)
