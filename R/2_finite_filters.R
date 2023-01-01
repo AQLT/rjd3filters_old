@@ -282,52 +282,55 @@ setMethod("*",
           signature(e1 = "finite_filters",
                     e2 = "finite_filters"),
           function(e1, e2) {
-            # all_f_1 <- c(e1@lfilters,
-            #              rep(list(e1@sfilter), length(sfilter) - length(e1@sfilter)),
-            #              e1@rfilters)
-            # all_f_2 <- c(e2@lfilters,
-            #              rep(list(e2@sfilter),  length(sfilter) - length(e2@sfilter)),
-            #              e2@rfilters)
-            #
-            # multiply_list <- function(e1, e2)
-            #   e1_l <- as.list(e1)
-            # new_f <-
-            #   lapply(seq_along(all_f_1),
-            #          function(i) {
-            #            x = all_f_1[[i]]
-            #            as.list(x)
-            #            multiplied_l <- mapply(`*`, all_f[seq(i + lower_bound(e1),
-            #                                                  i + upper_bound(e1))], e1_l)
-            #            Reduce(`+`, multiplied_l)
-            #          })
+
             sfilter <- e1@sfilter * e2@sfilter
-
-            n_rfilter <- upper_bound(e1@sfilter) + upper_bound(e2@sfilter)
-            n_lfilter <- lower_bound(e1@sfilter) + lower_bound(e2@sfilter)
-            n_rfilter <- max(n_rfilter, 0)
-            n_lfilter <- abs(min(n_lfilter, 0))
-
-            e1_lfilters <- c(e1@lfilters,
-                             rep(list(e1@sfilter),
-                                 max(n_lfilter + lower_bound(e1@sfilter), 0))
-            )
-            e2_lfilters <- c(e2@lfilters,
-                             rep(list(e2@sfilter),
-                                 max(n_lfilter + lower_bound(e2@sfilter), 0))
-            )
-
-            e1_rfilters <- c(rep(list(e1@sfilter),
-                                 max(n_rfilter - upper_bound(e1@sfilter), 0)),
-                             e1@rfilters
-            )
-            e2_rfilters <- c(rep(list(e2@sfilter),
-                                 max(n_rfilter - upper_bound(e2@sfilter), 0)),
-                             e2@rfilters
-            )
-
-            lfilters <- mapply(`*`, e1_lfilters, e2_lfilters)
-            rfilters <- mapply(`*`, e1_rfilters, e2_rfilters)
+            all_f_1 <- c(e1@lfilters,
+                         rep(list(e1@sfilter), length(sfilter) - length(e1@sfilter) + 1),
+                         e1@rfilters)
+            all_f_2 <- c(e2@lfilters,
+                         rep(list(e2@sfilter),  length(sfilter) - length(e2@sfilter) + 1),
+                         e2@rfilters)
+            new_f <-
+              lapply(seq_along(all_f_1),
+                     function(i) {
+                       x = all_f_1[[i]]
+                       multiplied_l <- mapply(`*`,
+                                              all_f_2[seq(lower_bound(x), upper_bound(x)) + i],
+                                              as.list(x))
+                       Reduce(`+`, multiplied_l)
+                     })
+            sym_i <- (length(new_f) - 1)/2 + 1
+            lfilters <- new_f[seq(1, sym_i - 1)]
+            sfilter <- new_f[[sym_i]]
+            rfilters <- new_f[seq(sym_i + 1, length(new_f))]
             finite_filters(sfilter = sfilter, rfilters = rfilters, lfilters = lfilters)
+
+            # n_rfilter <- upper_bound(e1@sfilter) + upper_bound(e2@sfilter)
+            # n_lfilter <- lower_bound(e1@sfilter) + lower_bound(e2@sfilter)
+            # n_rfilter <- max(n_rfilter, 0)
+            # n_lfilter <- abs(min(n_lfilter, 0))
+            #
+            # e1_lfilters <- c(e1@lfilters,
+            #                  rep(list(e1@sfilter),
+            #                      max(n_lfilter + lower_bound(e1@sfilter), 0))
+            # )
+            # e2_lfilters <- c(e2@lfilters,
+            #                  rep(list(e2@sfilter),
+            #                      max(n_lfilter + lower_bound(e2@sfilter), 0))
+            # )
+            #
+            # e1_rfilters <- c(rep(list(e1@sfilter),
+            #                      max(n_rfilter - upper_bound(e1@sfilter), 0)),
+            #                  e1@rfilters
+            # )
+            # e2_rfilters <- c(rep(list(e2@sfilter),
+            #                      max(n_rfilter - upper_bound(e2@sfilter), 0)),
+            #                  e2@rfilters
+            # )
+            #
+            # lfilters <- mapply(`*`, e1_lfilters, e2_lfilters)
+            # rfilters <- mapply(`*`, e1_rfilters, e2_rfilters)
+            # finite_filters(sfilter = sfilter, rfilters = rfilters, lfilters = lfilters)
           })
 #' @export
 setMethod("+",
