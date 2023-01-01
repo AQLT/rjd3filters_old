@@ -421,6 +421,6 @@ get_properties_function.moving_average <- function(x,
          })
 }
 #'@export
-simple_ma <- function(order) {
-  moving_average(rep(1, order*2+1), lags = -order)/(order*2+1)
+simple_ma <- function(order, lags = -order) {
+  moving_average(rep(1, order*2+1), lags = -lags)/(order*2+1)
 }
