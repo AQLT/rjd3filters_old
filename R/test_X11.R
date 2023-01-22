@@ -13,27 +13,19 @@ y2 = ts(c(115.7, 109.8, 100.6, 106.6, 98.7, 103.9, 109.5, 97.7,
           108.1, 79.7, 114.8, 121, 121.7, 114.8, 116.3, 111.5, 124, 115.4,
           114, 121, 109.5, 85.4, 120.6, 126.4, 127.7, 120, 124.1, 116.3,
           130.2), start = c(1985, 10), frequency = 12)
-# wk <- RJDemetra::new_workspace()
-# RJDemetra::new_multiprocessing(wk, "sa1")
-# RJDemetra::add_sa_item(wk, "sa1", RJDemetra::x13(y, spec = "X11"), "X13")
-# RJDemetra::save_workspace(wk, "workspace.xml")
-wk <- RJDemetra::load_workspace("workspace.xml")
-RJDemetra::compute(wk)
-mod <- RJDemetra::get_jmodel(wk,progress_bar = FALSE)[[1]][[1]]
-extract <- function(id) {
-  RJDemetra::get_indicators(mod, sprintf("decomposition.%s", id))[[1]]
-}
+
 compare <- function(x, id){
-  res = ts.intersect(x, extract(id))
+  res = cbind(na.omit(x), extract(id))
   all.equal(res[,1], res[,2])
 }
-# extract <- function(x, id){
-#   ts(rjd3toolkit:::proc_vector(x$java, id),
-#      end = end(y), frequency = frequency(y))
-# }
-# x11_step = x11(y = y, trend.coefs = lp_filter(horizon = 6,ic = 3.5)$filters.coef,extreme.lsig = 300, extreme.usig = 400, mul = FALSE)
-waldo::compare(y, extract("b1"))
-
+extract <- function(id, x = x11_step){
+  rjd3toolkit:::proc_vector(x$java, id)
+}
+x11_step = rjd3filters::x11(y = y, trend.coefs = lp_filter(horizon = 6,ic = 3.5)$filters.coef,
+               extreme.lsig = 300, extreme.usig = 400, mul = FALSE,
+               seas.s0 = "S3X3",
+               seas.s1 = "S3X5")
+compare(y, "b1")
 e1 <- simple_ma(12, - 6)
 e2 <- simple_ma(12, - 5)
 # used to have the 1rst estimate of the trend
@@ -71,3 +63,5 @@ s_2_f = imput_last_obs(s_2_demean, n = 6, nperiod = 12)
 compare(s_2_f * y, "b10") # not OK
 sa_2 = 1- s_2_f
 compare(sa_2 * y, "b11") # not OK
+# AQLTools::hc_stocks(ts.union(sa_2 * y, ts(extract("b11"),
+#                                           end = c(2017, 8), frequency = 12)))
