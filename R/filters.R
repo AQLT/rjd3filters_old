@@ -1,4 +1,4 @@
-#' @include ts.R procresults.R
+#' @include procresults.R
 #' @import rJava
 NULL
 
@@ -29,7 +29,7 @@ henderson<-function(y, length, musgrave=TRUE, ic=4.5){
 #' Apply local polynomials filters
 #'
 #' @inheritParams henderson
-#' @param horizon horizon (bandwidth) of the symmetric filter .
+#' @param horizon horizon (bandwidth) of the symmetric filter.
 #' @param degree degree of polynomial.
 #' @param kernel kernel uses.
 #' @param endpoints methode for endpoints.
@@ -108,7 +108,7 @@ lp_filter <- function(horizon = 6, degree = 3,
                  tweight, passband)
 
   return(structure(FiniteFilters2R(jprops, horizon),
-  class="lp_filter"))
+  class=c("lp_filter", "FiniteFilters")))
 }
 coefficients_names <- function(lb, ub){
   x <- sprintf("t%+i", seq(lb,ub))

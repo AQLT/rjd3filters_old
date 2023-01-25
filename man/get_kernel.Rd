@@ -14,7 +14,7 @@ get_kernel(
 \arguments{
 \item{kernel}{kernel uses.}
 
-\item{horizon}{horizon (bandwidth) of the symmetric filter .}
+\item{horizon}{horizon (bandwidth) of the symmetric filter.}
 
 \item{sd_gauss}{standard deviation for gaussian kernel. By default 0.25.}
 }

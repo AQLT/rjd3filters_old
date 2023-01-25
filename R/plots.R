@@ -2,10 +2,10 @@
 #'
 #' Functions to plot the coefficients, the gain and the phase functions.
 #'
-#' @param x coefficients, gain or phase
-#' @param q q
-#' @param nxlab number of xlab
-#' @param ... other arguments to \code{matplot}
+#' @param x coefficients, gain or phase.
+#' @param q q.
+#' @param nxlab number of xlab.
+#' @param ... other arguments to \code{matplot}.
 #' @param add boolean indicating if the new plot is added to the previous one.
 #' @param xlim vector containing x limits.
 #' @param legend boolean indicating if the legend is printed.
@@ -53,10 +53,10 @@ plot_coef_default <- function(x, nxlab = 7, add = FALSE,
   if(!add)
     axis(1, at=seq(-horizon, horizon, by = 1), labels = rownames(x))
 }
-#' @name plot_filters
+
 #' @rdname plot_filters
 #' @export
-plot_coef.lp_filter <- function(x, nxlab = 7, add = FALSE,
+plot_coef.FiniteFilters <- function(x, nxlab = 7, add = FALSE,
                                 zeroAsNa = FALSE, q = 0, legend = FALSE,
                                 legend.pos = "topright", ...){
   plot_coef_default(x = x,
@@ -64,18 +64,7 @@ plot_coef.lp_filter <- function(x, nxlab = 7, add = FALSE,
                     zeroAsNa = zeroAsNa, q = q, legend = legend,
                     legend.pos = legend.pos, ...)
 }
-#' @name plot_filters
-#' @rdname plot_filters
-#' @export
-plot_coef.rkhs_filter <- function(x, nxlab = 7, add = FALSE,
-                                zeroAsNa = FALSE, q = 0, legend = FALSE,
-                                legend.pos = "topright", ...){
-  plot_coef_default(x = x,
-                    nxlab = nxlab, add = add,
-                    zeroAsNa = zeroAsNa, q = q, legend = legend,
-                    legend.pos = legend.pos, ...)
-}
-#' @name plot_filters
+
 #' @rdname plot_filters
 #' @export
 plot_coef.fst_filter <- function(x, nxlab = 7, add = FALSE,
@@ -92,7 +81,7 @@ plot_coef.fst_filter <- function(x, nxlab = 7, add = FALSE,
   if(!add)
     axis(1, at=seq(-n, n, by = 1), labels = names(x_plot))
 }
-#' @name plot_filters
+
 #' @rdname plot_filters
 #' @export
 plot_gain <- function(x, nxlab = 7, add = FALSE,
@@ -128,10 +117,10 @@ plot_gain_default <- function(x, nxlab = 7, add = FALSE,
     axis(1, at = x_lab_at * pi, labels = xlabel(x_lab_at))
   }
 }
-#' @name plot_filters
+
 #' @rdname plot_filters
 #' @export
-plot_gain.lp_filter <- function(x, nxlab = 7, add = FALSE,
+plot_gain.FiniteFilters <- function(x, nxlab = 7, add = FALSE,
                                 xlim = c(0, pi), q = 0, legend = FALSE,
                                 legend.pos = "topright", ...){
   plot_gain_default(x = x,
@@ -139,18 +128,7 @@ plot_gain.lp_filter <- function(x, nxlab = 7, add = FALSE,
                     xlim = xlim, q = q, legend = legend,
                     legend.pos = legend.pos, ...)
 }
-#' @name plot_filters
-#' @rdname plot_filters
-#' @export
-plot_gain.rkhs_filter <- function(x, nxlab = 7, add = FALSE,
-                                  xlim = c(0, pi), q = 0, legend = FALSE,
-                                  legend.pos = "topright", ...){
-  plot_gain_default(x = x,
-                    nxlab = nxlab, add = add,
-                    xlim = xlim, q = q, legend = legend,
-                    legend.pos = legend.pos, ...)
-}
-#' @name plot_filters
+
 #' @rdname plot_filters
 #' @export
 plot_gain.fst_filter<- function(x, nxlab = 7, add = FALSE,
@@ -166,7 +144,7 @@ plot_gain.fst_filter<- function(x, nxlab = 7, add = FALSE,
     axis(1, at = x_lab_at * pi, labels = xlabel(x_lab_at))
   }
 }
-#' @name plot_filters
+
 #' @rdname plot_filters
 #' @export
 plot_phase <- function(x, nxlab = 7, add = FALSE,
@@ -205,10 +183,10 @@ plot_phase_default <- function(x, nxlab = 7, add = FALSE,
   }
 
 }
-#' @name plot_filters
+
 #' @rdname plot_filters
 #' @export
-plot_phase.lp_filter <- function(x, nxlab = 7, add = FALSE,
+plot_phase.FiniteFilters <- function(x, nxlab = 7, add = FALSE,
                                  xlim = c(0, pi), normalized = FALSE,
                                  q = 0, legend = FALSE, legend.pos = "topright", ...){
   plot_phase_default(x = x,
@@ -218,20 +196,7 @@ plot_phase.lp_filter <- function(x, nxlab = 7, add = FALSE,
                      legend.pos = legend.pos, ...)
 
 }
-#' @name plot_filters
-#' @rdname plot_filters
-#' @export
-plot_phase.rkhs_filter <- function(x, nxlab = 7, add = FALSE,
-                                 xlim = c(0, pi), normalized = FALSE,
-                                 q = 0, legend = FALSE, legend.pos = "topright", ...){
-  plot_phase_default(x = x,
-                     nxlab = nxlab, add = add,
-                     xlim = xlim, normalized = normalized,
-                     q = q, legend = legend,
-                     legend.pos = legend.pos, ...)
 
-}
-#' @name plot_filters
 #' @rdname plot_filters
 #' @export
 plot_phase.fst_filter<- function(x, nxlab = 7, add = FALSE,
@@ -272,7 +237,24 @@ trailingZeroAsNa <- function(x){
   #          by = 1)] <- NA
   # x
 }
-removeTrailingZeroOrNA <- function(x){
+rm_leading_zero_or_na <- function(x){
+  if (identical(x, 0))
+    return(x)
+  i <- 1
+  remove_i <- NULL
+  while ((is.na(x[i]) || (x[i] == 0)) && i <= length(x)) {
+    remove_i <- c(i, remove_i)
+    i <- i + 1
+  }
+  if(is.null(remove_i)){
+    x
+  } else{
+    x[-remove_i]
+  }
+}
+rm_trailing_zero_or_na <- function(x){
+  if (identical(x, 0))
+    return(x)
   i <- length(x)
   remove_i <- NULL
   while ((is.na(x[i]) || (x[i] == 0)) && i > 0) {
@@ -284,4 +266,44 @@ removeTrailingZeroOrNA <- function(x){
   } else{
     x[-remove_i]
   }
+}
+rm_trailing_zero <- function(x){
+  if (identical(x, 0))
+    return(x)
+  i <- length(x)
+  remove_i <- NULL
+  while (isTRUE(all.equal(x[i], 0)) && i > 0) {
+    remove_i <- c(i, remove_i)
+    i <- i - 1
+  }
+  if(is.null(remove_i)){
+    x
+  } else{
+    x[-remove_i]
+  }
+}
+remove_bound_NA <- function(x) {
+  if (all(is.na(x)))
+    x
+  i <- length(x)
+  j <- 1
+  remove_i_last <- remove_i_first <- NULL
+  while (is.na(x[i]) && i > 0) {
+    remove_i_last <- c(i, remove_i_last)
+    i <- i - 1
+  }
+  while (is.na(x[j]) && i < length(x)) {
+    remove_i_first <- c(j, remove_i_first)
+    j <- j + 1
+  }
+
+  if(is.null(remove_i_first) & is.null(remove_i_last)){
+    # list(data = x, leading = 0,
+    #      trailing = 0)
+  } else{
+    x = x[- c(remove_i_first, remove_i_last)]
+  }
+
+  list(data = x, leading = length(remove_i_first),
+       trailing = length(remove_i_last))
 }

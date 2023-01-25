@@ -1,7 +1,7 @@
-Package: rjdfilters
+Package: rjd3filters
 Type: Package
 Title: Trend-Cycle Extraction with Linear Filters
-Version: 0.0.2
+Version: 0.0.3
 Authors@R: c(
   person("Jean", "Palate", role = c("aut", "cre"),
                 email = "jean.palate@nbb.be"),
@@ -23,33 +23,39 @@ Depends:
     R (>= 3.1.1)
 Imports:
     rJava (>= 0.9-8),
+    rjd3toolkit (>= 0.2.0),
    methods,
    MASS,
    graphics,
    stats
 License: EUPL
 LazyData: TRUE
-Collate:
-    'RKHS.R'
-    'ts.R'
-    'rslts.R'
-    'procresults.R'
-    'filters.R'
-    'finiteFilters2R.R'
-    'fst_filters.R'
-    'get_properties_function.R'
-    'implicit_forecast.R'
-    'jasym_filter.R'
-    'kernels.R'
-    'plots.R'
-    'print.R'
-    'x11.R'
-    'zzz.R'
 URL: https://github.com/palatej/rjdfilters
 Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8
+Collate: 
+    '1_moving_average.R'
+    '2_finite_filters.R'
+    'RKHS.R'
+    'arima2ma.R'
+    'dfa.R'
+    'procresults.R'
+    'filters.R'
+    'finiteFilters2R.R'
+    'fst_filters.R'
+    'get_properties_function.R'
+    'ic_r.R'
+    'implicit_forecast.R'
+    'jasym_filter.R'
+    'kernels.R'
+    'macurves.R'
+    'plots.R'
+    'print.R'
+    'test_X11.R'
+    'x11.R'
+    'zzz.R'

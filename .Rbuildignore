@@ -11,3 +11,6 @@
 cran-comments.md
 TODO.R
 ^revdep$
+workspace
+workspace.xml
+R/test_X11.R

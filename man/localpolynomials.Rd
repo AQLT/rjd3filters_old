@@ -19,7 +19,7 @@ localpolynomials(
 \arguments{
 \item{y}{input time-series?}
 
-\item{horizon}{horizon (bandwidth) of the symmetric filter .}
+\item{horizon}{horizon (bandwidth) of the symmetric filter.}
 
 \item{degree}{degree of polynomial.}
 

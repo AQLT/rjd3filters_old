@@ -4,13 +4,15 @@
 \alias{jfilter}
 \title{Linear Filtering on a Time Series}
 \usage{
-jfilter(y, coefs)
+jfilter(y, coefs, remove_missing = TRUE)
 }
 \arguments{
 \item{y}{a univariate or multivariate time series.}
 
 \item{coefs}{a \code{matrix} or a \code{list} that contains all the coefficients of the asymmetric and symmetric filters.
 (from the shortest to the symmetric filter). See details.}
+
+\item{remove_missing}{if \code{TRUE} (default) leading and trailing NA are removed before filtering.}
 }
 \description{
 Applies linear filtering to a univariate time series or to each series separately of a multivariate time series using a

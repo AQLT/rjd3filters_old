@@ -16,7 +16,7 @@ lp_filter(
 )
 }
 \arguments{
-\item{horizon}{horizon (bandwidth) of the symmetric filter .}
+\item{horizon}{horizon (bandwidth) of the symmetric filter.}
 
 \item{degree}{degree of polynomial.}
 
