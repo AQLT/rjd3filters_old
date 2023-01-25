@@ -237,7 +237,24 @@ trailingZeroAsNa <- function(x){
   #          by = 1)] <- NA
   # x
 }
-removeTrailingZeroOrNA <- function(x){
+rm_leading_zero_or_na <- function(x){
+  if (identical(x, 0))
+    return(x)
+  i <- 1
+  remove_i <- NULL
+  while ((is.na(x[i]) || (x[i] == 0)) && i <= length(x)) {
+    remove_i <- c(i, remove_i)
+    i <- i + 1
+  }
+  if(is.null(remove_i)){
+    x
+  } else{
+    x[-remove_i]
+  }
+}
+rm_trailing_zero_or_na <- function(x){
+  if (identical(x, 0))
+    return(x)
   i <- length(x)
   remove_i <- NULL
   while ((is.na(x[i]) || (x[i] == 0)) && i > 0) {
@@ -249,4 +266,44 @@ removeTrailingZeroOrNA <- function(x){
   } else{
     x[-remove_i]
   }
+}
+rm_trailing_zero <- function(x){
+  if (identical(x, 0))
+    return(x)
+  i <- length(x)
+  remove_i <- NULL
+  while (isTRUE(all.equal(x[i], 0)) && i > 0) {
+    remove_i <- c(i, remove_i)
+    i <- i - 1
+  }
+  if(is.null(remove_i)){
+    x
+  } else{
+    x[-remove_i]
+  }
+}
+remove_bound_NA <- function(x) {
+  if (all(is.na(x)))
+    x
+  i <- length(x)
+  j <- 1
+  remove_i_last <- remove_i_first <- NULL
+  while (is.na(x[i]) && i > 0) {
+    remove_i_last <- c(i, remove_i_last)
+    i <- i - 1
+  }
+  while (is.na(x[j]) && i < length(x)) {
+    remove_i_first <- c(j, remove_i_first)
+    j <- j + 1
+  }
+
+  if(is.null(remove_i_first) & is.null(remove_i_last)){
+    # list(data = x, leading = 0,
+    #      trailing = 0)
+  } else{
+    x = x[- c(remove_i_first, remove_i_last)]
+  }
+
+  list(data = x, leading = length(remove_i_first),
+       trailing = length(remove_i_last))
 }

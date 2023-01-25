@@ -4,11 +4,16 @@
 \alias{macurves}
 \title{Get Macurves Filters}
 \usage{
-macurves(seas_filter = c("S3X3", "S3X1", "S3X5", "S3X9", "S3X15"))
+macurves(seas_filter = c("S3X3", "S3X1", "S3X5", "S3X9", "S3X15"), period = 12)
 }
 \arguments{
-\item{seas_filter}{the filter to extract}
+\item{seas_filter}{the filter to extract.}
+
+\item{period}{period of the filter.}
 }
 \description{
 Get Macurves Filters
+}
+\examples{
+macurves("S3X3")
 }

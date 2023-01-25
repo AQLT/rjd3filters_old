@@ -1,4 +1,4 @@
-Package: rjdfilters
+Package: rjd3filters
 Type: Package
 Title: Trend-Cycle Extraction with Linear Filters
 Version: 0.0.3
@@ -35,11 +35,14 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8
 Collate: 
+    '1_moving_average.R'
+    '2_finite_filters.R'
     'RKHS.R'
+    'arima2ma.R'
     'dfa.R'
     'procresults.R'
     'filters.R'
@@ -51,8 +54,8 @@ Collate:
     'jasym_filter.R'
     'kernels.R'
     'macurves.R'
-    'moving_average.R'
     'plots.R'
     'print.R'
+    'test_X11.R'
     'x11.R'
     'zzz.R'

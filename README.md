@@ -1,9 +1,9 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# rjdfilters
+# rjd3filters
 
-rjdfilters is R package on linear filters for real-time trend-cycle
+rjd3filters is R package on linear filters for real-time trend-cycle
 estimates. It allows to create symmetric and asymmetric moving averages
 with:
 
@@ -21,7 +21,7 @@ computed.
 
 ## Installation
 
-rjdfilters relies on the
+rjd3filters relies on the
 [rJava](https://CRAN.R-project.org/package=rJava) package and Java SE 8
 or later version is required.
 
@@ -40,7 +40,7 @@ consequence, the filtered time series is the same, except at the
 boundaries.
 
 ``` r
-library(rjdfilters)
+library(rjd3filters)
 y <- window(retailsa$AllOtherGenMerchandiseStores,start = 2000)
 musgrave_filter <- lp_filter(horizon = 6, kernel = "Henderson",endpoints = "LC")
 musgrave <- musgrave_filter$filters.coef

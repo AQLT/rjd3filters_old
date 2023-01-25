@@ -8,6 +8,7 @@ setClass("moving_average",
 #'
 #' @param x vector of coefficients
 #' @param lags integer indicating the number of lags of the moving average.
+#' @param trailing_zero,leading_zero boolean indicating wheter to remove leading/trailing zero and NA.
 #' @param s seasonal period for the \code{to_seasonal()} function.
 #' @param ...,na.rm see \link[base]{mean}
 #' @param i,value indices specifying elements to extract or replace and the new value
@@ -46,23 +47,35 @@ setClass("moving_average",
 #' s <- y * s_mm
 #' plot(s)
 #' @export
-moving_average <- function(x, lags = -length(x)){
-  x <- removeTrailingZeroOrNA(as.numeric(x))
-  upper_bound = lags + length(x)
+moving_average <- function(x, lags = -length(x), trailing_zero = FALSE, leading_zero = FALSE){
+  if (inherits(x, "moving_average"))
+    return (x)
+  x <- as.numeric(x)
+  if (trailing_zero)
+    x <- rm_trailing_zero_or_na(x)
+  if (leading_zero){
+    new_x <- rm_leading_zero_or_na(x)
+    lags <- lags - (length(new_x) - length(x))
+    x <- new_x
+  }
+  upper_bound = lags + length(x) -1
   # remove 1 if it is >= 0 (central term)
-  upper_bound = upper_bound - (upper_bound >= 0)
+  # upper_bound = upper_bound - (upper_bound >= 0)
+
+  names(x) <- coefficients_names(lags,
+                                 upper_bound)
   res <- new("moving_average",
              coefficients = x, lower_bound = lags,
              upper_bound = upper_bound)
   res
 }
-jd2ma <- function(jobj){
+jd2ma <- function(jobj, trailing_zero = FALSE){
   x <- .jcall(jobj, "[D", "weightsToArray")
   lags <- .jcall(jobj, "I", "getLowerBound")
-  moving_average(x, lags)
+  moving_average(x, lags, trailing_zero = trailing_zero)
 }
 ma2jd <- function(x){
-  lags <- get_lower_bound(x)
+  lags <- lower_bound(x)
   coefs = as.numeric(coef(x))
   if (length(x) == 1){
     coefs <- .jarray(coefs)
@@ -81,29 +94,35 @@ is.moving_average <- function(x){
 #' @export
 coef.moving_average <- function(object, ...){
   coefs = object@coefficients
-  names(coefs) <- coefficients_names(get_lower_bound(object),
-                                     get_upper_bound(object))
   return(coefs)
 }
 #' @rdname moving_average
 #' @export
 is_symmetric <- function(x){
-  .jcall(ma2jd(x), "Z", "isSymmetric")
+  # .jcall(ma2jd(x), "Z", "isSymmetric")
+  (upper_bound(x) == (-lower_bound(x))) &&
+    isTRUE(all.equal(coef(x), rev(coef(x)), check.attributes = FALSE))
 }
 #' @rdname moving_average
 #' @export
-get_upper_bound <- function(x){
+upper_bound <- function(x){
   x@upper_bound
 }
 #' @rdname moving_average
 #' @export
-get_lower_bound <- function(x){
+lower_bound <- function(x){
   x@lower_bound
 }
 #' @rdname moving_average
 #' @export
 mirror <- function(x){
-  .jcall(ma2jd(x), "Ljdplus/math/linearfilters/FiniteFilter;", "mirror")
+  jd2ma(.jcall(ma2jd(x), "Ljdplus/math/linearfilters/FiniteFilter;", "mirror"))
+}
+#' @method rev moving_average
+#' @rdname moving_average
+#' @export
+rev.moving_average <- function(x){
+  mirror(x)
 }
 #' @rdname moving_average
 #' @export
@@ -113,8 +132,12 @@ length.moving_average <- function(x){
 #' @rdname moving_average
 #' @export
 to_seasonal <- function(x, s){
-  lb <- get_lower_bound(x)
-  up <- get_upper_bound(x)
+  UseMethod("to_seasonal", x)
+}
+#' @export
+to_seasonal.default <- function(x, s){
+  lb <- lower_bound(x)
+  up <- upper_bound(x)
   coefs <- coef(x)
   new_coefs <- c(unlist(lapply(coefs[-length(x)],
                                function(x){
@@ -123,14 +146,7 @@ to_seasonal <- function(x, s){
                  coefs[length(x)])
   moving_average(new_coefs, lb * s)
 }
-#' @rdname moving_average
-#' @export
-setMethod(f = "show",
-          signature = "moving_average",
-          definition = function(object){
-            print(.jcall(ma2jd(object), "S", "toString"))
-            invisible(object)
-          })
+
 #' @rdname moving_average
 #' @export
 sum.moving_average <- function(..., na.rm = FALSE){
@@ -147,30 +163,49 @@ setMethod("[",
           signature(x = "moving_average",
                     i = "numeric"),
           function(x, i) {
-            coef(x)[i]
+            coefs <- coef(x)
+            indices <- seq_along(coefs)[i]
+            coefs[-indices] <- 0
+            if (all(coefs == 0))
+              return (moving_average(0, lags = lower_bound(x) + indices - 1))
+
+            moving_average(coefs, lags = lower_bound(x),
+                           leading_zero = TRUE, trailing_zero = TRUE)
+          })
+#' @rdname moving_average
+#' @export
+setMethod("[",
+          signature(x = "moving_average",
+                    i = "logical"),
+          function(x, i) {
+            coefs <- coef(x)
+            indices <- seq_along(coefs)[i]
+            coefs[!indices] <- 0
+            moving_average(coefs, lags = lower_bound(x),
+                           leading_zero = TRUE, trailing_zero = TRUE)
           })
 #' @rdname moving_average
 #' @export
 setReplaceMethod("[",
-          signature(x = "moving_average",
-                    i = "ANY",
-                    j = "missing",
-                    value = "numeric"),
-          function(x, i, value) {
-            x@coefficients[i] <- value
-            x
-          })
+                 signature(x = "moving_average",
+                           i = "ANY",
+                           j = "missing",
+                           value = "numeric"),
+                 function(x, i, value) {
+                   x@coefficients[i] <- value
+                   x
+                 })
 #' @rdname moving_average
 #' @export
 cbind.moving_average <- function(...){
   all_mm <- list(...)
-  new_lb = min(sapply(all_mm, get_lower_bound))
-  new_ub = max(sapply(all_mm, get_upper_bound))
-  nb_uterms = max(sapply(all_mm, function(x) get_lower_bound(x) + length(x)))
+  new_lb = min(sapply(all_mm, lower_bound))
+  new_ub = max(sapply(all_mm, upper_bound))
+  nb_uterms = max(sapply(all_mm, function(x) lower_bound(x) + length(x)))
   new_mm <- lapply(all_mm, function(x){
-    c(rep(0, abs(new_lb - get_lower_bound(x))),
+    c(rep(0, abs(new_lb - lower_bound(x))),
       coef(x),
-      rep(0, abs(nb_uterms - (get_lower_bound(x) + length(x))))
+      rep(0, abs(nb_uterms - (lower_bound(x) + length(x))))
     )
   })
   new_mm <- do.call(cbind, new_mm)
@@ -206,7 +241,7 @@ setMethod("+",
           signature(e1 = "numeric",
                     e2 = "moving_average"),
           function(e1, e2) {
-            moving_average(e1,0) + e2
+            e2 + e1
           })
 #' @rdname moving_average
 #' @export
@@ -244,7 +279,7 @@ setMethod("-",
           signature(e1 = "moving_average",
                     e2 = "numeric"),
           function(e1, e2) {
-            e1 - moving_average(e2,0)
+            e1 + (- e2)
           })
 #' @rdname moving_average
 #' @export
@@ -252,7 +287,7 @@ setMethod("-",
           signature(e1 = "numeric",
                     e2 = "moving_average"),
           function(e1, e2) {
-            moving_average(e1,0) - e2
+            e1 + (- e2)
           })
 #' @rdname moving_average
 #' @export
@@ -274,7 +309,24 @@ setMethod("*",
           signature(e1 = "moving_average",
                     e2 = "numeric"),
           function(e1, e2) {
-            e1 * moving_average(e2,0)
+            if (length(e2) == 1) {
+              e1 * moving_average(e2,0)
+            } else {
+              jasym_filter(e2, e1)
+            }
+          })
+
+#' @rdname moving_average
+#' @export
+setMethod("*",
+          signature(e1 = "numeric",
+                    e2 = "moving_average"),
+          function(e1, e2) {
+            if (length(e1) == 1) {
+              moving_average(e1,0) * e2
+            } else {
+              jasym_filter(e1, e2)
+            }
           })
 #' @rdname moving_average
 #' @export
@@ -288,15 +340,7 @@ setMethod("*",
 setMethod("*",
           signature(e1 = "moving_average"),
           function(e1, e2) {
-            jasym_filter(e1,e2)
-          })
-#' @rdname moving_average
-#' @export
-setMethod("*",
-          signature(e1 = "numeric",
-                    e2 = "moving_average"),
-          function(e1, e2) {
-            moving_average(e1,0) * e2
+            jasym_filter(e2, e1)
           })
 #' @rdname moving_average
 #' @export
@@ -306,11 +350,23 @@ setMethod("/",
           function(e1, e2) {
             e1 * moving_average(1/e2,0)
           })
+#' @rdname moving_average
+#' @export
+setMethod("^",
+          signature(e1 = "moving_average",
+                    e2 = "numeric"),
+          function(e1, e2) {
+            if (e2 == 0) {
+              moving_average(1, 0)
+            } else {
+              Reduce(`*`, rep(list(e1), e2))
+            }
+          })
 #' @rdname plot_filters
 #' @export
 plot_coef.moving_average <- function(x, nxlab = 7, add = FALSE,
                                      zeroAsNa = FALSE, ...){
-  n <- max(abs(c(get_upper_bound(x), get_lower_bound(x))))
+  n <- max(abs(c(upper_bound(x), lower_bound(x))))
   x_plot <- vector(mode = "double", length = 2*n+1)
   names(x_plot) <- coefficients_names(-n, n)
   coefs <- coef(x)
@@ -361,77 +417,39 @@ plot_phase.moving_average<- function(x, nxlab = 7, add = FALSE,
 }
 #' @export
 get_properties_function.moving_average <- function(x,
-           component = c("Symmetric Gain",
-                         "Symmetric Phase",
-                         "Symmetric transfer",
-                         "Asymmetric Gain",
-                         "Asymmetric Phase",
-                         "Asymmetric transfer"), ...){
-    x = ma2jd(x)
-    component = match.arg(component)
-    switch(component,
-           "Symmetric Gain" = {
-             get_gain_function(x)
-           },
-           "Asymmetric Gain" = {
-             get_gain_function(x)
-           },
-           "Symmetric Phase" = {
-             get_phase_function(x)
-           },
-           "Asymmetric Phase" = {
-             get_phase_function(x)
-           },
-           "Symmetric transfer" = {
-             get_frequencyResponse_function(x)
-           },
-           "Asymmetric transfer" = {
-             get_frequencyResponse_function(x)
-           })
-  }
-
-# sum(e1)
-# sum(e2)
-#
-# y <- retailsa$DrinkingPlaces
-# library(rJava)
-# e1 <- moving_average(rep(1,12), lags =-5)
-# e1 <- e1/sum(e1)
-# length(e1)
-# e1
-# e2 <- moving_average(rep(1,12), lags =-6)/12
-# x <- (e1+e2)/12
-# x
-# e1 <- moving_average(1:5, lags =-3)
-# x = e1
-#
-# jy <- J("demetra/data/DoubleSeq")$of(as.numeric(y))
-# jres <- J("demetra/data/DoubleSeq$Mutable")$of(as.numeric(y))
-# tmp$of
-# tmp$of()
-# x@internal$apply(jy,jres)
-#
-#
-# lb = get_lower_bound(x)
-# ub = get_upper_bound(x)
-# DataBlock = J("jdplus.data.DataBlock")
-# out = DataBlock$of(as.numeric(rep(NA, jy$length() - length(x)+1)))
-# out$length()
-# x@internal$apply(DataBlock$of(as.numeric(y)),
-#                  out)
-# out$length()
-# result = out$toArray()
-# result <- c(rep(NA, abs(min(lb, 0))),
-#             result,
-#          rep(NA, abs(max(ub, 0))))
-# if(is.ts(y))
-#   result <- ts(result,start = start(y), frequency = frequency(y))
-#
-# ts.union(jasym_filter(y, coef(x), abs(get_lower_bound(x))),
-#          result)
-# all.equal(result, jasym_filter(y, coef(x), abs(get_lower_bound(x))))
-
-# e1+e2
-# e1-e2
-# e1*e2
-# e2/2
+                                                   component = c("Symmetric Gain",
+                                                                 "Symmetric Phase",
+                                                                 "Symmetric transfer",
+                                                                 "Asymmetric Gain",
+                                                                 "Asymmetric Phase",
+                                                                 "Asymmetric transfer"), ...){
+  x = ma2jd(x)
+  component = match.arg(component)
+  switch(component,
+         "Symmetric Gain" = {
+           get_gain_function(x)
+         },
+         "Asymmetric Gain" = {
+           get_gain_function(x)
+         },
+         "Symmetric Phase" = {
+           get_phase_function(x)
+         },
+         "Asymmetric Phase" = {
+           get_phase_function(x)
+         },
+         "Symmetric transfer" = {
+           get_frequencyResponse_function(x)
+         },
+         "Asymmetric transfer" = {
+           get_frequencyResponse_function(x)
+         })
+}
+#'@export
+simple_ma <- function(order, lags = - trunc((order-1)/2)) {
+  moving_average(rep(1, order), lags = lags) / order
+}
+#'@export
+as.list.moving_average <- function(x, ...) {
+  lapply(seq_along(x), function(i) x[i])
+}
