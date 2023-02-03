@@ -69,7 +69,7 @@ moving_average <- function(x, lags = -length(x), trailing_zero = FALSE, leading_
              upper_bound = upper_bound)
   res
 }
-jd2ma <- function(jobj, trailing_zero = FALSE){
+.jd2ma <- function(jobj, trailing_zero = FALSE){
   x <- .jcall(jobj, "[D", "weightsToArray")
   lags <- .jcall(jobj, "I", "getLowerBound")
   moving_average(x, lags, trailing_zero = trailing_zero)
@@ -90,7 +90,7 @@ ma2jd <- function(x){
 is.moving_average <- function(x){
   is(x, "moving_average")
 }
-#' @importFrom stats coef
+#' @importFrom stats coef coefficients
 #' @export
 coef.moving_average <- function(object, ...){
   coefs = object@coefficients
@@ -116,7 +116,7 @@ lower_bound <- function(x){
 #' @rdname moving_average
 #' @export
 mirror <- function(x){
-  jd2ma(.jcall(ma2jd(x), "Ljdplus/math/linearfilters/FiniteFilter;", "mirror"))
+  .jd2ma(.jcall(ma2jd(x), "Ljdplus/math/linearfilters/FiniteFilter;", "mirror"))
 }
 #' @method rev moving_average
 #' @rdname moving_average
@@ -225,7 +225,7 @@ setMethod("+",
                            .jcast(ma2jd(e1), "jdplus/math/linearfilters/IFiniteFilter"),
                            .jcast(ma2jd(e2), "jdplus/math/linearfilters/IFiniteFilter"))
 
-            jd2ma(jobj)
+            .jd2ma(jobj)
           })
 #' @rdname moving_average
 #' @export
@@ -257,7 +257,7 @@ setMethod("-",
                            "Ljdplus/math/linearfilters/FiniteFilter;",
                            "negate",
                            .jcast(ma2jd(e1), "jdplus/math/linearfilters/IFiniteFilter"))
-            jd2ma(jobj)
+            .jd2ma(jobj)
           })
 #' @rdname moving_average
 #' @export
@@ -271,7 +271,7 @@ setMethod("-",
                            "subtract",
                            .jcast(ma2jd(e1), "jdplus/math/linearfilters/IFiniteFilter"),
                            .jcast(ma2jd(e2), "jdplus/math/linearfilters/IFiniteFilter"))
-            jd2ma(jobj)
+            .jd2ma(jobj)
           })
 #' @rdname moving_average
 #' @export
@@ -301,7 +301,7 @@ setMethod("*",
                            "multiply",
                            .jcast(ma2jd(e1), "jdplus/math/linearfilters/IFiniteFilter"),
                            .jcast(ma2jd(e2), "jdplus/math/linearfilters/IFiniteFilter"))
-            jd2ma(jobj)
+            .jd2ma(jobj)
           })
 #' @rdname moving_average
 #' @export

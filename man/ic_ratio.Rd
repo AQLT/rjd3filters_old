@@ -11,7 +11,7 @@ ic_ratio(x, sc, mul = FALSE)
 
 \item{sc}{trend-cycle component.}
 
-\item{mul}{boolean indication if the decomposition is multiplicative or additive.}
+\item{mul}{boolean indicating if the decomposition is multiplicative or additive.}
 }
 \description{
 Compute IC-Ratio

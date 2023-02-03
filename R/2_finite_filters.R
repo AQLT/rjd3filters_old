@@ -75,13 +75,13 @@ finite_filters.FiniteFilters <- function(sfilter,
              rfilters = rfilters)
   res
 }
-jd2finitefilters <- function(jf){
+.jd2finitefilters <- function(jf){
   jsfilter <- .jcall(jf, "Ljdplus/math/linearfilters/SymmetricFilter;", "symmetricFilter")
   jlfilter <- .jcall(jf, "[Ljdplus/math/linearfilters/IFiniteFilter;", "leftEndPointsFilters")
   jrfilter <- .jcall(jf, "[Ljdplus/math/linearfilters/IFiniteFilter;", "rightEndPointsFilters")
-  finite_filters(jd2ma(jsfilter),
-                 rfilter = lapply(jrfilter, jd2ma),
-                 lfilter = rev(lapply(jlfilter, jd2ma)))
+  finite_filters(.jd2ma(jsfilter),
+                 rfilter = lapply(jrfilter, .jd2ma),
+                 lfilter = rev(lapply(jlfilter, .jd2ma)))
 }
 #' @rdname finite_filters
 #' @export

@@ -57,7 +57,7 @@ x11 <- function(y, period = frequency(y),
   #   ltrendf$column(i-1L)$drop(0L, i-1L)$
   #     copyFrom(leftTrendFilter[[i]],0L)
   # }
-  ltrendf = rjd3toolkit::matrix_r2jd(leftTrendFilter)
+  ltrendf = rjd3toolkit::.r2jd_matrix(leftTrendFilter)
 
   ctrendf = J("demetra.data.DoubleSeq")$of(sym_filter)
   x11decomp = J("demetra/saexperimental/r/X11Decomposition")
@@ -65,10 +65,10 @@ x11 <- function(y, period = frequency(y),
                              ctrendf, ltrendf,
                              seas0, seas1, extreme.lsig, extreme.usig)
   decomposition <- cbind(y,
-                         proc_vector(jrslt, "d11"),
-                         proc_vector(jrslt, "d12"),
-                         proc_vector(jrslt, "d10"),
-                         proc_vector(jrslt, "d13"))
+                         rjd3toolkit::.proc_vector(jrslt, "d11"),
+                         rjd3toolkit::.proc_vector(jrslt, "d12"),
+                         rjd3toolkit::.proc_vector(jrslt, "d10"),
+                         rjd3toolkit::.proc_vector(jrslt, "d13"))
   colnames(decomposition) <- c("y", "sa", "t", "s", "i")
   return(structure(list(
     java=jrslt,

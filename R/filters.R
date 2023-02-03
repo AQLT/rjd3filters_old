@@ -1,4 +1,3 @@
-#' @include procresults.R
 #' @import rJava
 NULL
 

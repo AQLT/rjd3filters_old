@@ -18,5 +18,5 @@ macurves <- function(seas_filter = c("S3X3", "S3X1", "S3X5", "S3X9", "S3X15"), p
                        "Ljdplus/filters/ISymmetricFiltering;",
                        "filter",
                        P, seas_opt)
-  jd2finitefilters(seasFilter)
+  .jd2finitefilters(seasFilter)
 }

@@ -19,7 +19,7 @@
 #   all.equal(res[,1], res[,2])
 # }
 # extract <- function(id, x = x11_step){
-#   rjd3toolkit:::proc_vector(x$java, id)
+#   rjd3toolkit:::.proc_vector(x$java, id)
 # }
 # x11_step = rjd3filters::x11(y = y, trend.coefs = lp_filter(horizon = 6,ic = 3.5)$filters.coef,
 #                             extreme.lsig = 300, extreme.usig = 400, mul = FALSE,

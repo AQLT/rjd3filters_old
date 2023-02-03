@@ -51,7 +51,6 @@ jasym_filter.default <- function(y, coefs, lags){
   result <- c(rep(NA, abs(min(lb, 0))),
               result,
               rep(NA, abs(max(ub, 0))))
-  result
 
   if (is.ts(y))
     result <- ts(result,start = start(y), frequency = frequency(y))
@@ -230,7 +229,7 @@ jfilter.default <- function(y, coefs, remove_missing = TRUE){
   result
 }
 #' @export
-jfilter.matrix <- function(y, coefs){
+jfilter.matrix <- function(y, coefs, remove_missing = TRUE){
   result <- y
   for (i in seq_len(ncol(y))){
     result[, i] <- jfilter(y[,i], coefs = coefs)

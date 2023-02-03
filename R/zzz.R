@@ -1,8 +1,7 @@
 #' @import rJava
 #' @importFrom graphics axis lines plot matplot
 #' @importFrom stats frequency ts
-#' @importFrom rjd3toolkit proc_data proc_dictionary proc_vector
-#'@importFrom rjd3toolkit matrix_jd2r matrix_r2jd ts_jd2r ts_r2jd tsdomain_r2jd
+#' @importFrom rjd3toolkit .proc_data .proc_dictionary .jd2r_matrix .r2jd_matrix
 NULL
 
 .onLoad <- function(libname, pkgname) {
