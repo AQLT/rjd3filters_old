@@ -29,13 +29,13 @@ Some quality criteria defined by Wildi and McElroy (2019) can also be computed.
 
 ## Installation
 
-rjd3filters relies on the [rJava](https://CRAN.R-project.org/package=rJava) package and Java SE 8 or later version is required.
+rjd3filters relies on the [rJava](https://CRAN.R-project.org/package=rJava) package and Java SE 17 or later version is required.
 
 ```{r, eval = FALSE}
 # Install development version from GitHub
 # install.packages("devtools")
 devtools::install_github("palatej/rjd3toolkit")
-devtools::install_github("palatej/rjdfilters")
+devtools::install_github("palatej/rj3dfilters")
 ```
 
 ## Basic example
@@ -187,6 +187,17 @@ s <- si * M3X3_seasonal
 s_mm <- M3X3_seasonal * (1 - M2X12)
 s <- y * s_mm
 ```
+
+### Manipulate finite filters
+
+`finite_filters` object are a combination of a central filter (used for the final estimates) and different asymmetric filters used for intermediate estimates at the beginning/end of the series when the central filter cannot be applied.
+
+```{r}
+finite_filters(musgrave)
+M3X3 <- macurves("S3X3")
+```
+
+
 
 ## Bibliography
 
