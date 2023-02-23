@@ -64,14 +64,13 @@ finite_filters.FiniteFilters <- function(sfilter,
                                          first_to_last = FALSE){
   all_f = sfilter$filters.coef
   lags = -(nrow(all_f) - 1)/2
-  all_f = lapply(rev(seq_len(ncol(all_f))), function(i) {
+  all_f = lapply(seq_len(ncol(all_f)), function(i) {
     moving_average(all_f[,i], lags, trailing_zero = TRUE)
   })
   sfilter = all_f[[1]]
   rfilters = all_f[-1]
-  lfilters = rev(lapply(rfilters, rev.moving_average))
   res <- new("finite_filters",
-             sfilter = sfilter, lfilters = lfilters,
+             sfilter = sfilter,
              rfilters = rfilters)
   res
 }
@@ -85,29 +84,13 @@ finite_filters.FiniteFilters <- function(sfilter,
 }
 #' @rdname finite_filters
 #' @export
-# e1 = finite_filters(moving_average(c(1/3,1/3, 1/3), -1), rfilters = list(moving_average(c(1/2, 1/2), -1)))
-# e2 = moving_average(c(1/3,1/3, 1/3), -1)
-# e1 = finite_filters(moving_average(rep(1,5), -2)/5,
-#                     rfilters = list(moving_average(rep(1,4), -2)/4,
-#                                     moving_average(rep(1,3), -2)/3))
 setMethod("*",
           signature(e1 = "finite_filters",
                     e2 = "moving_average"),
           function(e1, e2) {
             sym <- e1@sfilter * e2
             rfilters <- lapply(e1@rfilters, `*`, e2)
-            # rfilters <- c(rfilters,
-            #               lapply(rev(seq_len(upper_bound(sym) - length(rfilters))), function(i){
-            #                 moving_average(NA, lags = i - 1)
-            #               })
-            # )
             lfilters <- lapply(e1@lfilters, `*`, e2)
-            # lfilters <- c(lapply(rev(seq_len(abs(length(lfilters) + lower_bound(sym)))),
-            #                      function(i){
-            #                 moving_average(NA, lags = -(i - 1))
-            #               }),
-            #               lfilters
-            #               )
 
             finite_filters(sfilter = sym, rfilters = rfilters, lfilters = lfilters)
           })
@@ -157,27 +140,6 @@ setMethod("*",
             })
             finite_filters(sfilter = sym, rfilters = rfilters, lfilters = lfilters)
 
-            # s_1_norm = imput_last_obs(res, n = 6, nperiod = 1)
-            # s_1_demean = s_1 - s_1_norm
-            # s_1_f = imput_last_obs(s_1_demean, n = 6, nperiod = 12)
-            # compare(s_1_f * y, "b5")
-            # all_f <- c(e2@lfilters,
-            #            rep(list(e2@sfilter), length(e1)),
-            #            e2@rfilters)
-            # e1_l <- as.list(e1)
-            # new_f <-
-            #   lapply(seq(1 + abs(lower_bound(e1)),
-            #              length(all_f) - upper_bound(e1)),
-            #          function(i) {
-            #            multiplied_l <- mapply(`*`, all_f[seq(i + lower_bound(e1),
-            #                                                  i + upper_bound(e1))], lapply(e1_l, function(x) x))
-            #            Reduce(`+`, multiplied_l)
-            #          })
-            # sym_i <- (length(new_f) - 1)/2 + 1
-            # lfilters <- new_f[seq(1, sym_i - 1)]
-            # sfilter <- new_f[[sym_i]]
-            # rfilters <- new_f[seq(sym_i + 1, length(new_f))]
-            # finite_filters(sfilter = sfilter, rfilters = rfilters, lfilters = lfilters)
           })
 #' @rdname finite_filters
 #' @export
@@ -422,15 +384,9 @@ to_seasonal.finite_filters <- function(x, s){
   x@rfilters = unlist(lapply(x@rfilters, function(x){
     new_mm = to_seasonal(x, s)
     rep(list(new_mm), s)
-    # lapply(s:1, function(i){
-    #   new_mm * moving_average(1, lags = (i-1))
-    # })
   }))
   x@lfilters = unlist(lapply(x@lfilters, function(x){
     new_mm = to_seasonal(x, s)
-    # lapply(1:s, function(i){
-    #   new_mm * moving_average(1, lags = -(i-1))
-    # })
     rep(list(new_mm), s)
   }))
   x
