@@ -1,7 +1,7 @@
 Package: rjd3filters
 Type: Package
 Title: Trend-Cycle Extraction with Linear Filters
-Version: 0.8.0
+Version: 0.9.0
 Authors@R: c(
   person("Jean", "Palate", role = c("aut", "cre"),
                 email = "jean.palate@nbb.be"),

@@ -10,7 +10,7 @@ jfilter(y, coefs, remove_missing = TRUE)
 \item{y}{a univariate or multivariate time series.}
 
 \item{coefs}{a \code{matrix} or a \code{list} that contains all the coefficients of the asymmetric and symmetric filters.
-(from the shortest to the symmetric filter). See details.}
+(from the symmetric filter to the shortest). See details.}
 
 \item{remove_missing}{if \code{TRUE} (default) leading and trailing NA are removed before filtering.}
 }
@@ -22,9 +22,9 @@ symmetric moving average at the center and an asymmetric moving average at the b
 The functions \code{jfilter} extends \code{\link[stats]{filter}} allowing to set multiple moving averages
 to deal with the boundaries.
 
-At the center, the symmetric moving average is used (last column/element of \code{coefs}).
-At the boundaries, the first moving average of \code{coefs} is used for computing the filtered
-time series \eqn{y[n]} (no future point known), the second for computes the filtered
+At the center, the symmetric moving average is used (first column/element of \code{coefs}).
+At the boundaries, the last moving average of \code{coefs} is used to compute the filtered
+time series \eqn{y[n]} (no future point known), the second to last to compute the filtered
 time series \eqn{y[n-1]} (one future point known)...
 }
 \examples{

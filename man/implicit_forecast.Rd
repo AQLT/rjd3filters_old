@@ -10,7 +10,7 @@ implicit_forecast(y, coefs)
 \item{y}{a univariate or multivariate time series.}
 
 \item{coefs}{a \code{matrix} or a \code{list} that contains all the coefficients of the asymmetric and symmetric filters.
-(from the shortest to the symmetric filter). See details.}
+(from the symmetric filter to the shortest). See details.}
 }
 \description{
 Function to retrieve the implicit forecasts corresponding to the asymmetric filters

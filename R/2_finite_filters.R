@@ -42,14 +42,7 @@ finite_filters.moving_average <- function(sfilter,
     }
     rfilters = rev(lapply(lfilters, rev.moving_average))
   } else if (is.null(lfilters) & is.null(rfilters)) {
-    rfilters = rep(list(sfilter), abs(upper_bound(sfilter)))
-    # rfilters = lapply(seq_along(rfilters), function(i) {
-    #   rfilters[[i]] * moving_average(1, lags = -i)
-    # })
-    lfilters = rep(list(sfilter), abs(lower_bound(sfilter)))
-    # lfilters = lapply(seq_along(lfilters), function(i) {
-    #   lfilters[[i]] * moving_average(1, lags = i)
-    # })
+    rfilters = lfilters = list()
 
   }
   res <- new("finite_filters",
@@ -73,6 +66,37 @@ finite_filters.FiniteFilters <- function(sfilter,
              sfilter = sfilter,
              rfilters = rfilters)
   res
+}
+#' @export
+finite_filters.list <- function(sfilter,
+                                rfilters = NULL,
+                                lfilters = NULL,
+                                first_to_last = FALSE){
+  lags <- length(sfilter)-1
+
+  all_f <- lapply(sfilter,
+                   function(x){
+                     moving_average(rm_trailing_zero_or_na(x), -lags)
+                   }
+  )
+  if (first_to_last)
+    all_f <- rev(all_f)
+  sfilter <- all_f[[1]]
+  rfilters <- all_f[-1]
+  finite_filters(sfilter = sfilter, rfilters = rfilters)
+}
+#' @export
+finite_filters.matrix <- function(sfilter,
+                                  rfilters = NULL,
+                                  lfilters = NULL,
+                                  first_to_last = FALSE){
+  if (first_to_last) {
+    index <- ncol(sfilter):1
+  } else {
+    index <- 1:ncol(sfilter)
+  }
+  coefs <- lapply(index, function(i) sfilter[,i])
+  finite_filters(coefs, first_to_last = first_to_last)
 }
 .jd2finitefilters <- function(jf){
   jsfilter <- .jcall(jf, "Ljdplus/math/linearfilters/SymmetricFilter;", "symmetricFilter")
