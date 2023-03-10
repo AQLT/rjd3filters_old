@@ -35,8 +35,8 @@ Note that this is solved numerically: the solution isn't exact.
 }
 \examples{
 y <- retailsa$AllOtherGenMerchandiseStores
-ql <- lp_filter(horizon = 6, kernel = "Henderson", endpoints = "QL")$filters.coef
-lc <- lp_filter(horizon = 6, kernel = "Henderson", endpoints = "LC")$filters.coef
+ql <- lp_filter(horizon = 6, kernel = "Henderson", endpoints = "QL")
+lc <- lp_filter(horizon = 6, kernel = "Henderson", endpoints = "LC")
 f_ql <- implicit_forecast(y, ql)
 f_lc <- implicit_forecast(y, lc)
 

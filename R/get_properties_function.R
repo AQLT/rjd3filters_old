@@ -19,73 +19,7 @@ get_properties_function <- function(x,
                                     ...){
   UseMethod("get_properties_function", x)
 }
-#' @export
-get_properties_function.FiniteFilters <- function(x,
-                                               component = c("Symmetric Gain",
-                                                             "Symmetric Phase",
-                                                             "Symmetric transfer",
-                                                             "Asymmetric Gain",
-                                                             "Asymmetric Phase",
-                                                             "Asymmetric transfer"), ...){
-  component = match.arg(component)
-  switch(component,
-         "Symmetric Gain" = {
-           get_gain_function(x$internal$getFilter())
-         },
-         "Asymmetric Gain" = {
-           afunction = .jevalArray(x$internal$getAfilters())
-           afunction = sapply(afunction, get_gain_function)
-           names(afunction) <- sprintf("q=%s", seq(0, length(afunction)-1))
-           afunction
-         },
-         "Symmetric Phase" = {
-           get_phase_function(x$internal$getFilter())
-         },
-         "Asymmetric Phase" = {
-           afunction = .jevalArray(x$internal$getAfilters())
-           afunction = sapply(afunction, get_phase_function)
-           names(afunction) <- sprintf("q=%s", seq(0, length(afunction)-1))
-           afunction
-         },
-         "Symmetric transfer" = {
-           get_frequencyResponse_function(x$internal$getFilter())
-         },
-         "Asymmetric transfer" = {
-           afunction = .jevalArray(x$internal$getAfilters())
-           afunction = sapply(afunction, get_frequencyResponse_function)
-           names(afunction) <- sprintf("q=%s", seq(0, length(afunction)-1))
-           afunction
-         })
-}
-#' @export
-get_properties_function.fst_filter <- function(x,
-                                              component = c("Symmetric Gain",
-                                                            "Symmetric Phase",
-                                                            "Symmetric transfer",
-                                                            "Asymmetric Gain",
-                                                            "Asymmetric Phase",
-                                                            "Asymmetric transfer"), ...){
-  component = match.arg(component)
-  switch(component,
-         "Symmetric Gain" = {
-           get_gain_function(x$internal$getFilter())
-         },
-         "Asymmetric Gain" = {
-           get_gain_function(x$internal$getFilter())
-         },
-         "Symmetric Phase" = {
-           get_phase_function(x$internal$getFilter())
-         },
-         "Asymmetric Phase" = {
-           get_phase_function(x$internal$getFilter())
-         },
-         "Symmetric transfer" = {
-           get_frequencyResponse_function(x$internal$getFilter())
-         },
-         "Asymmetric transfer" = {
-           get_frequencyResponse_function(x$internal$getFilter())
-         })
-}
+
 get_gain_function <- function(x){
   jgain <- x$gainFunction()$applyAsDouble
   Vectorize(function(x){
@@ -98,13 +32,63 @@ get_phase_function <- function(x){
     jphase(x)
   })
 }
-get_frequencyResponse_function <- function(x){
+get_frequency_response_function <- function(x){
   jfrf <- x$frequencyResponseFunction()$apply
   Vectorize(function(x){
     res <- jfrf(x)
     complex(real = res$getRe(), imaginary = res$getIm())
   })
 }
+
+
+#' @export
+get_properties_function.moving_average <- function(x,
+                                                   component = c("Symmetric Gain",
+                                                                 "Symmetric Phase",
+                                                                 "Symmetric transfer",
+                                                                 "Asymmetric Gain",
+                                                                 "Asymmetric Phase",
+                                                                 "Asymmetric transfer"), ...){
+  x = .ma2jd(x)
+  component = match.arg(component)
+  switch(component,
+         "Symmetric Gain" = {
+           get_gain_function(x)
+         },
+         "Asymmetric Gain" = {
+           get_gain_function(x)
+         },
+         "Symmetric Phase" = {
+           get_phase_function(x)
+         },
+         "Asymmetric Phase" = {
+           get_phase_function(x)
+         },
+         "Symmetric transfer" = {
+           get_frequency_response_function(x)
+         },
+         "Asymmetric transfer" = {
+           get_frequency_response_function(x)
+         })
+}
+#' @export
+get_properties_function.finite_filters <- function(x,
+                                                   component = c("Symmetric Gain",
+                                                                 "Symmetric Phase",
+                                                                 "Symmetric transfer",
+                                                                 "Asymmetric Gain",
+                                                                 "Asymmetric Phase",
+                                                                 "Asymmetric transfer"), ...){
+  component = match.arg(component)
+  if (length(grep("Symmetric", component, fixed = TRUE)) > 0) {
+    get_properties_function(x@sfilter, component = component)
+  } else {
+    a_fun <- lapply(x@rfilters, get_properties_function, component = component)
+    names(a_fun) <- sprintf("q=%i", seq(length(x@rfilters) - 1, 0))
+    a_fun
+  }
+}
+# TODO finite_filters
 
 #' Compute quality criteria for asymmetric filters
 #'
@@ -142,16 +126,16 @@ get_frequencyResponse_function <- function(x){
 #' @export
 diagnostic_matrix <- function(x, lags, passband = pi/6,
                                sweights, ...){
-  if (lags >=0)
-    lags <- -lags
+  if (!is.moving_average(x))
+    x <- moving_average(x, lags = lags)
 
-  results <- c(sum(x)-1, sum(x*seq(lags,length(x) + lags-1, by = 1)),
-               sum(x*seq(lags,length(x) + lags-1, by = 1)^2),
-               fst(x, lags, passband = passband)$criteria)
+  results <- c(sum(x)-1, sum(coef(x) * seq(lower_bound(x), upper_bound(x), by = 1)),
+               sum(coef(x) * seq(lower_bound(x), upper_bound(x), by = 1)^2),
+               fst(x, lags, passband = passband))
   if(!missing(sweights)){
     results <- c(results,
                  mse(sweights,
-                     na.omit(trailingZeroAsNa(x)),
+                     x,
                      passband = passband,
                      ...
                      )

@@ -9,8 +9,8 @@ x11(
   period = frequency(y),
   trend.coefs,
   mul = TRUE,
-  seas.s0 = c("S3X3", "S3X1", "S3X5", "S3X9", "S3X15"),
-  seas.s1 = c("S3X5", "S3X3", "S3X1", "S3X9", "S3X15"),
+  seas.s0 = c("S3X3", "S3X1", "S3X5", "S3X9", "S3X15")[1],
+  seas.s1 = c("S3X5", "S3X3", "S3X1", "S3X9", "S3X15")[1],
   extreme.lsig = 1.5,
   extreme.usig = 2.5
 )

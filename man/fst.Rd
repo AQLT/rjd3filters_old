@@ -7,11 +7,11 @@
 fst(weights, lags, passband = pi/6)
 }
 \arguments{
-\item{weights}{Weights of the filter (from lower bound to upper bound)}
+\item{weights}{either a \code{"moving_average"} or a numeric vector containing weights.}
 
-\item{lags}{Lags of the filter (should be positive)}
+\item{lags}{Lags of the moving average (when \code{weights} is not a \code{"moving_average"}).}
 
-\item{passband}{Passband threshold for timeliness criterion}
+\item{passband}{Passband threshold for timeliness criterion.}
 }
 \value{
 The values of the 3 criteria, the gain and phase of the associated filter.
@@ -21,8 +21,7 @@ Compute the Fidelity, Smoothness and Timeliness (FST) criteria
 }
 \examples{
 filter <- lp_filter(horizon = 6, kernel = "Henderson", endpoints = "LC")
-weight <- filter$filters.coef[1:7,"q=0"]
-fst(weight, lags = -6)
+fst(filter[, "q=0"])
 }
 \references{
 Grun-Rehomme, Michel, Fabien Guggemos, and Dominique Ladiray (2018). “Asymmetric Moving Averages Minimizing Phase Shift”. In: Handbook on Seasonal Adjustment.

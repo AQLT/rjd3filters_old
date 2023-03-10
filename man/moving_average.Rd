@@ -15,6 +15,7 @@
 \alias{[,moving_average,logical-method}
 \alias{[<-,moving_average,ANY,missing,numeric-method}
 \alias{cbind.moving_average}
+\alias{rbind.moving_average}
 \alias{+,moving_average,moving_average-method}
 \alias{+,moving_average,numeric-method}
 \alias{+,numeric,moving_average-method}
@@ -65,6 +66,8 @@ to_seasonal(x, s)
 \S4method{[}{moving_average,ANY,missing,numeric}(x, i) <- value
 
 \method{cbind}{moving_average}(...)
+
+\method{rbind}{moving_average}(...)
 
 \S4method{+}{moving_average,moving_average}(e1, e2)
 
@@ -140,8 +143,8 @@ par(def.par)
 
 # To apply the moving average
 t <- y * M2X12
-# Or use the jasym_filter() function:
-t <- jasym_filter(y, M2X12)
+# Or use the jfilter() function:
+t <- jfilter(y, M2X12)
 si <- y - t
 s <- si * M3X3_seasonal
 # or equivalently:

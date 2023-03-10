@@ -1,9 +1,9 @@
 #' @import rJava
 NULL
 
-#' Apply Henderson linear filter
+#' Apply Henderson Linear Filter
 #'
-#' @param y input time-series?
+#' @param y input time-series.
 #' @param length length of the Henderson filter.
 #' @param musgrave boolean indicating if musgrave asymmetric filters should be used.
 #' @param ic ic ratio.
@@ -25,7 +25,7 @@ henderson<-function(y, length, musgrave=TRUE, ic=4.5){
   result
 }
 
-#' Apply local polynomials filters
+#' Apply Local Polynomials Filters
 #'
 #' @inheritParams henderson
 #' @param horizon horizon (bandwidth) of the symmetric filter.
@@ -65,7 +65,7 @@ localpolynomials<-function(y,
   result
 }
 
-#' Get properties of local polynomials filters
+#' Local Polynomials Filters
 #'
 #' @inheritParams localpolynomials
 #' @details
@@ -106,8 +106,7 @@ lp_filter <- function(horizon = 6, degree = 3,
                  as.integer(degree), kernel, endpoints, d,
                  tweight, passband)
 
-  return(structure(FiniteFilters2R(jprops, horizon),
-  class=c("lp_filter", "FiniteFilters")))
+  return(.jd2r_finitefilters(jprops, first_to_last = FALSE))
 }
 coefficients_names <- function(lb, ub){
   x <- sprintf("t%+i", seq(lb,ub))

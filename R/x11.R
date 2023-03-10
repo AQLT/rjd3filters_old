@@ -20,50 +20,34 @@
 #' @export
 x11 <- function(y, period = frequency(y),
                 trend.coefs,  mul=TRUE,
-                seas.s0=c("S3X3", "S3X1", "S3X5", "S3X9", "S3X15"),
-                seas.s1=c("S3X5", "S3X3", "S3X1", "S3X9", "S3X15"),
+                seas.s0=c("S3X3", "S3X1", "S3X5", "S3X9", "S3X15")[1],
+                seas.s1=c("S3X5", "S3X3", "S3X1", "S3X9", "S3X15")[1],
                 extreme.lsig=1.5, extreme.usig=2.5){
-  seas0=match.arg(seas.s0)
-  seas1=match.arg(seas.s1)
+  seas.s0=match.arg(seas.s0)
+  seas.s1=match.arg(seas.s1)
 
-  if(inherits(trend.coefs, c("lp_filter","rkhs_filter"))){
-    trend.coefs <- trend.coefs$filters.coef
+  if (!inherits(trend.coefs, "finite_filters")) {
+    trend.coefs <- finite_filters(trend.coefs)
   }
 
-  if(is.matrix(trend.coefs)){
-    trend.coefs <- lapply(1:ncol(trend.coefs),
-                          function(i) trend.coefs[,i])
-  }
-  trend.coefs <- lapply(trend.coefs, rm_trailing_zero_or_na)
-  sym_filter <- trend.coefs[[length(trend.coefs)]]
-  asy_filter <- trend.coefs[-length(trend.coefs)]
-  leftTrendFilter <- lapply(rev(asy_filter), rev)
-  leftTrendFilter <- do.call(cbind, lapply(leftTrendFilter, function(x){
-    c(x, rep(0, 2*length(leftTrendFilter)- length(x)))
+  sym_filter <- trend.coefs@sfilter
+  asy_filter <- trend.coefs@lfilters
+  leftTrendFilter <- do.call(cbind, lapply(asy_filter, function(x){
+    c(coef(x), rep(0, 2*length(asy_filter)- length(x)))
   }))
-  sym_filter <- c(sym_filter, rep(0, 2*ncol(leftTrendFilter) + 1- length(sym_filter)))
 
   if(length(sym_filter) != 2*ncol(leftTrendFilter)+1){
     stop(sprintf("The symmetric filter is of length %i but only %i asymmetric filters provided",
                  length(sym_filter),
                  2*ncol(leftTrendFilter)+1))
   }
-
-  # mt <- J("jdplus.math.matrices.FastMatrix")
-  # ltrendf = mt$make(as.integer(length(sym_filter)-1), # nrows
-  #                   as.integer(length(leftTrendFilter))#ncols
-  # )
-  # for(i in seq_along(leftTrendFilter)){
-  #   ltrendf$column(i-1L)$drop(0L, i-1L)$
-  #     copyFrom(leftTrendFilter[[i]],0L)
-  # }
   ltrendf = rjd3toolkit::.r2jd_matrix(leftTrendFilter)
 
-  ctrendf = J("demetra.data.DoubleSeq")$of(sym_filter)
+  ctrendf = J("demetra.data.DoubleSeq")$of(coef(sym_filter))
   x11decomp = J("demetra/saexperimental/r/X11Decomposition")
   jrslt = x11decomp$trendX11(as.numeric(y), period, mul,
                              ctrendf, ltrendf,
-                             seas0, seas1, extreme.lsig, extreme.usig)
+                             seas.s0, seas.s1, extreme.lsig, extreme.usig)
   decomposition <- cbind(y,
                          rjd3toolkit::.proc_vector(jrslt, "d11"),
                          rjd3toolkit::.proc_vector(jrslt, "d12"),

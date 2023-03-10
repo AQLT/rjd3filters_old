@@ -11,7 +11,7 @@
 #' @param legend boolean indicating if the legend is printed.
 #' @param legend.pos position of the legend.
 #' @param normalized boolean indicatif if the phase function is normalized by the frequency.
-#' @param zeroAsNa boolean indicating if the trailing zero of the coefficients should be plotted (\code{FALSE}) or removed (\code{TRUE}).
+#' @param zero_as_na boolean indicating if the trailing zero of the coefficients should be plotted (\code{FALSE}) or removed (\code{TRUE}).
 #'
 #' @examples
 #' filter <- lp_filter(6, endpoints = "DAF", kernel = "Henderson")
@@ -22,16 +22,16 @@
 #' @rdname plot_filters
 #' @importFrom MASS fractions
 #' @export
-plot_coef <- function(x, nxlab = 7, add = FALSE,
-                      zeroAsNa = FALSE, ...){
+plot_coef <- function(x, nxlab = 7, add = FALSE, ...){
   UseMethod("plot_coef", x)
 }
-plot_coef_default <- function(x, nxlab = 7, add = FALSE,
-                              zeroAsNa = FALSE, q = 0, legend = FALSE,
+#' @rdname plot_filters
+#' @export
+plot_coef.default <- function(x, nxlab = 7, add = FALSE,
+                              zero_as_na = TRUE, q = 0, legend = FALSE,
                               legend.pos = "topright", ...){
-  x = x$filters.coef
-  if(zeroAsNa)
-    x  <- apply(x,2, trailingZeroAsNa)
+  if(zero_as_na)
+    x  <- apply(x,2, trailingzero_as_na)
   col_to_plot <- sprintf("q=%i",q)
   col_to_plot <- col_to_plot[col_to_plot %in% colnames(x)]
   horizon <- (nrow(x)-1)/2
@@ -56,30 +56,24 @@ plot_coef_default <- function(x, nxlab = 7, add = FALSE,
 
 #' @rdname plot_filters
 #' @export
-plot_coef.FiniteFilters <- function(x, nxlab = 7, add = FALSE,
-                                zeroAsNa = FALSE, q = 0, legend = FALSE,
-                                legend.pos = "topright", ...){
-  plot_coef_default(x = x,
-                    nxlab = nxlab, add = add,
-                    zeroAsNa = zeroAsNa, q = q, legend = legend,
-                    legend.pos = legend.pos, ...)
+plot_coef.moving_average <- function(x, nxlab = 7, add = FALSE, ...){
+  x_plot <- coef(x)
+  matplot(seq(lower_bound(x), upper_bound(x), by = 1), x_plot,
+          xaxt = "n", xlab = "", type = "o", pch = 20,
+          ylab = "coefficient", add = add, ...)
+  if(!add)
+    axis(1, at=seq(lower_bound(x), upper_bound(x), by = 1), labels = names(x_plot))
 }
 
 #' @rdname plot_filters
 #' @export
-plot_coef.fst_filter <- function(x, nxlab = 7, add = FALSE,
-                                 zeroAsNa = FALSE, ...){
-  n <- max(abs(c(x$internal$ub(), x$internal$lb())))
-  x_plot <- vector(mode = "double", length = 2*n+1)
-  names(x_plot) <- coefficients_names(-n, n)
-  x_plot[names(x$filters.coef)] <- x$filters.coef
-  if(zeroAsNa)
-    x_plot <- trailingZeroAsNa(x_plot)
-  matplot(seq(-n, n, by = 1), x_plot,
-          xaxt = "n", xlab = "", type = "o", pch = 20,
-          ylab = "coefficient", add = add, ...)
-  if(!add)
-    axis(1, at=seq(-n, n, by = 1), labels = names(x_plot))
+plot_coef.finite_filters <- function(x, nxlab = 7, add = FALSE,
+                                     zero_as_na = TRUE, q = 0, legend = length(q) > 1,
+                                     legend.pos = "topright", ...){
+  plot_coef(x = as.matrix(x),
+            nxlab = nxlab, add = add,
+            zero_as_na = zero_as_na, q = q, legend = legend,
+            legend.pos = legend.pos, ...)
 }
 
 #' @rdname plot_filters
@@ -88,13 +82,34 @@ plot_gain <- function(x, nxlab = 7, add = FALSE,
                       xlim = c(0, pi), ...){
   UseMethod("plot_gain", x)
 }
-plot_gain_default <- function(x, nxlab = 7, add = FALSE,
-                              xlim = c(0, pi), q = 0, legend = FALSE,
-                              legend.pos = "topright", ...){
-  x = x$filters.gain
-  x_values = seq(0, pi, length.out = nrow(x))
+#' @rdname plot_filters
+#' @export
+plot_gain.moving_average<- function(x, nxlab = 7, add = FALSE,
+                                    xlim = c(0, pi), ...){
+  g = get_properties_function(x, "Symmetric Gain")
+  plot(g, type = "l",
+       xaxt = "n", xlab = "",
+       ylab = "gain", add = add, xlim = xlim, ...)
+  if(!add){
+    x_lab_at <- seq(xlim[1]/pi, xlim[2]/pi, length.out = nxlab)
+    axis(1, at = x_lab_at * pi, labels = xlabel(x_lab_at))
+  }
+}
+#' @rdname plot_filters
+#' @export
+plot_gain.finite_filters <- function(x, nxlab = 7, add = FALSE,
+                                xlim = c(0, pi), q = 0, legend = length(q) > 1,
+                                legend.pos = "topright",
+                                n = 101, ...){
+  x_values <- seq.int(xlim[1], xlim[2], length.out = n)
+  gsym <- get_properties_function(x, "Symmetric Gain")
+  gasym <- get_properties_function(x, "Asymmetric Gain")
+  all_g_f <- c(list(gsym), gasym)
+  names(all_g_f)[1] <- sprintf("q=%i", upper_bound(x@sfilter))
   col_to_plot <- sprintf("q=%i",q)
-  col_to_plot <- col_to_plot[col_to_plot %in% colnames(x)]
+  col_to_plot <- col_to_plot[col_to_plot %in% names(all_g_f)]
+  all_g_f <- all_g_f[col_to_plot]
+  y_val <- sapply(all_g_f, function(f) f(x_values))
   if (length(col_to_plot) == 0) {
     if(!add){
       plot(1, type="n",xaxt = "n", xlab = "",
@@ -105,41 +120,14 @@ plot_gain_default <- function(x, nxlab = 7, add = FALSE,
     }
     return(invisible(0))
   }
-  matplot(x_values,x[, col_to_plot], type = "l",
+  matplot(x_values, y_val[, col_to_plot], type = "l",
           xaxt = "n", xlab = "",
           ylab = "gain", add = add, xlim = xlim, ...)
 
-  if(legend)
+  if (legend)
     legend(legend.pos,col_to_plot,
            col = seq_along(col_to_plot), lty=seq_along(col_to_plot), lwd=2)
-  if(!add){
-    x_lab_at <- seq(xlim[1]/pi, xlim[2]/pi, length.out = nxlab)
-    axis(1, at = x_lab_at * pi, labels = xlabel(x_lab_at))
-  }
-}
-
-#' @rdname plot_filters
-#' @export
-plot_gain.FiniteFilters <- function(x, nxlab = 7, add = FALSE,
-                                xlim = c(0, pi), q = 0, legend = FALSE,
-                                legend.pos = "topright", ...){
-  plot_gain_default(x = x,
-                    nxlab = nxlab, add = add,
-                    xlim = xlim, q = q, legend = legend,
-                    legend.pos = legend.pos, ...)
-}
-
-#' @rdname plot_filters
-#' @export
-plot_gain.fst_filter<- function(x, nxlab = 7, add = FALSE,
-                                xlim = c(0, pi), ...){
-  x = x$filters.gain
-  x_values = seq(0, pi, length.out = length(x))
-
-  matplot(x_values, x, type = "l",
-          xaxt = "n", xlab = "",
-          ylab = "gain", add = add, xlim = xlim, ...)
-  if(!add){
+  if (!add){
     x_lab_at <- seq(xlim[1]/pi, xlim[2]/pi, length.out = nxlab)
     axis(1, at = x_lab_at * pi, labels = xlabel(x_lab_at))
   }
@@ -151,65 +139,67 @@ plot_phase <- function(x, nxlab = 7, add = FALSE,
                        xlim = c(0, pi), normalized = FALSE, ...){
   UseMethod("plot_phase", x)
 }
-plot_phase_default <- function(x, nxlab = 7, add = FALSE,
-                               xlim = c(0, pi), normalized = FALSE,
-                               q = 0, legend = FALSE, legend.pos = "topright", ...){
-  x = x$filters.phase
-  x_values = seq(0, pi, length.out = nrow(x))
-  if(normalized){
-    x[-1,] <- x[-1,] / x_values[-1]
+#' @rdname plot_filters
+#' @export
+plot_phase.moving_average<- function(x, nxlab = 7, add = FALSE,
+                                     xlim = c(0, pi), normalized = FALSE, ...){
+  p = get_properties_function(x, "Symmetric Phase")
+
+  if (normalized) {
+    p_plot <- function(x) {
+      p(x)/x
+      }
+  } else {
+    p_plot <- p
   }
+
+  plot(p_plot, type = "l",
+       xaxt = "n", xlab = "",
+       ylab = "phase", add = add, xlim = xlim, ...)
+  if(!add){
+    x_lab_at <- seq(xlim[1]/pi, xlim[2]/pi, length.out = nxlab)
+    axis(1, at = x_lab_at * pi, labels = xlabel(x_lab_at))
+  }
+}
+
+
+#' @rdname plot_filters
+#' @export
+plot_phase.finite_filters <- function(x, nxlab = 7, add = FALSE,
+                                      xlim = c(0, pi), normalized = FALSE,
+                                      q = 0, legend = length(q) > 1, legend.pos = "topright",
+                                     n = 101, ...){
+  x_values <- seq.int(xlim[1], xlim[2], length.out = n)
+  psym <- get_properties_function(x, "Symmetric Phase")
+  pasym <- get_properties_function(x, "Asymmetric Phase")
+  all_p_f <- c(list(psym), pasym)
+  names(all_p_f)[1] <- sprintf("q=%i", upper_bound(x@sfilter))
   col_to_plot <- sprintf("q=%i",q)
-  col_to_plot <- col_to_plot[col_to_plot %in% colnames(x)]
+  col_to_plot <- col_to_plot[col_to_plot %in% names(all_p_f)]
+  all_p_f <- all_p_f[col_to_plot]
+  y_val <- sapply(all_p_f, function(f) f(x_values))
+
+  if(normalized){
+    y_val[-1,] <- y_val[-1,] / x_values[-1]
+  }
   if (length(col_to_plot) == 0) {
     if(!add){
       plot(1, type="n",xaxt = "n", xlab = "",
-           ylab = "phase", xlim = xlim, ylim=c(0, 1),
+           ylab = "phase", xlim=xlim, ylim=c(0, 1),
            ...)
       x_lab_at <- seq(xlim[1]/pi, xlim[2]/pi, length.out = nxlab)
       axis(1, at = x_lab_at * pi, labels = xlabel(x_lab_at))
     }
     return(invisible(0))
   }
-  matplot(x_values,x[, col_to_plot], type = "l",
+  matplot(x_values, y_val[, col_to_plot], type = "l",
           xaxt = "n", xlab = "",
           ylab = "phase", add = add, xlim = xlim, ...)
-  if(legend)
+
+  if (legend)
     legend(legend.pos,col_to_plot,
            col = seq_along(col_to_plot), lty=seq_along(col_to_plot), lwd=2)
-  if(!add){
-    x_lab_at <- seq(xlim[1]/pi, xlim[2]/pi, length.out = nxlab)
-    axis(1, at = x_lab_at * pi, labels = xlabel(x_lab_at))
-  }
-
-}
-
-#' @rdname plot_filters
-#' @export
-plot_phase.FiniteFilters <- function(x, nxlab = 7, add = FALSE,
-                                 xlim = c(0, pi), normalized = FALSE,
-                                 q = 0, legend = FALSE, legend.pos = "topright", ...){
-  plot_phase_default(x = x,
-                     nxlab = nxlab, add = add,
-                     xlim = xlim, normalized = normalized,
-                     q = q, legend = legend,
-                     legend.pos = legend.pos, ...)
-
-}
-
-#' @rdname plot_filters
-#' @export
-plot_phase.fst_filter<- function(x, nxlab = 7, add = FALSE,
-                                 xlim = c(0, pi), normalized = FALSE, ...){
-  x = x$filters.phase
-  x_values = seq(0, pi, length.out = length(x))
-  if(normalized){
-    x[-1] <- x[-1] / x_values[-1]
-  }
-  matplot(x_values, x, type = "l",
-          xaxt = "n", xlab = "",
-          ylab = "phase", add = add, xlim = xlim, ...)
-  if(!add){
+  if (!add){
     x_lab_at <- seq(xlim[1]/pi, xlim[2]/pi, length.out = nxlab)
     axis(1, at = x_lab_at * pi, labels = xlabel(x_lab_at))
   }
@@ -224,7 +214,7 @@ xlabel <- function(x, symbol = "pi"){
   parse(text = labels)
 }
 
-trailingZeroAsNa <- function(x){
+trailingzero_as_na <- function(x){
   i <- length(x)
   while (x[i] == 0 && i > 0) {
     x[i] <- NA

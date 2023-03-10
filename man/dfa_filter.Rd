@@ -8,7 +8,7 @@ dfa_filter(
   horizon = 6,
   degree = 0,
   density = c("uniform", "rw"),
-  targetfilter = lp_filter(horizon = horizon)$filters.coef[, horizon + 1],
+  targetfilter = lp_filter(horizon = horizon)[, 1],
   passband = 2 * pi/12,
   accuracy.weight = 1/3,
   smoothness.weight = 1/3,
@@ -22,7 +22,7 @@ dfa_filter(
 
 \item{density}{hypothesis on the spectral density: \code{"uniform"} (= white woise, the default) or  \code{"rw"} (= random walk).}
 
-\item{targetfilter}{the weights of the symmetric target filters.}
+\item{targetfilter}{the weights of the symmetric target filters (by default the Henderson filter).}
 
 \item{passband}{passband threshold.}
 

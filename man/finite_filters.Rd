@@ -76,8 +76,8 @@ first asymmetric filter (when only one observation is missing) or the last one (
 Manipulating Finite Filters
 }
 \examples{
-ff_lp = finite_filters(lp_filter())
-ff_simple_ma = finite_filters(moving_average(c(1, 1, 1), lags = -1)/3,
+ff_lp <- lp_filter()
+ff_simple_ma <- finite_filters(moving_average(c(1, 1, 1), lags = -1)/3,
                rfilters = list(moving_average(c(1, 1), lags = -1)/2))
 ff_lp
 ff_simple_ma

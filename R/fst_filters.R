@@ -19,8 +19,8 @@
 #'
 #' @examples
 #' filter <- fst_filter(lags = 6, leads = 0)
-#' filter$filters.coef
-#' filter$criteria
+#' filter
+#' fst(filter)
 #' @references Grun-Rehomme, Michel, Fabien Guggemos, and Dominique Ladiray (2018). “Asymmetric Moving Averages Minimizing Phase Shift”. In: Handbook on Seasonal Adjustment.
 #' @export
 fst_filter<-function(lags = 6, leads = 0, pdegree = 2,
@@ -29,68 +29,65 @@ fst_filter<-function(lags = 6, leads = 0, pdegree = 2,
   jobj<-.jcall("demetra/saexperimental/r/FiltersToolkit", "Ldemetra/saexperimental/r/FiltersToolkit$FSTResult;",
                "fstfilter", as.integer(lags), as.integer(leads), as.integer(pdegree), smoothness.weight, as.integer(smoothness.degree),
                timeliness.weight, timeliness.passband, as.logical(timeliness.antiphase))
-  return(fstresult(jobj))
+  jfilter <- .jcall(jobj, "Ljdplus/math/linearfilters/FiniteFilter;", "getFilter")
 
-}
-
-fstresult<-function(jobj){
-  filter<-.jcall(jobj,"[D", "weights")
-  names(filter) <- coefficients_names(jobj$lb(), jobj$ub())
-  gain<-.jcall(jobj, "[D", "getGain")
-  phase<-.jcall(jobj, "[D", "getPhase")
-  criteria<-.jcall(jobj, "[D", "getCriterions")
-  names(criteria) <- c("Fidelity", "Smoothness", "Timeliness")
-  structure(list(
-    internal = jobj,
-    filters.coef=filter,
-    filters.gain=gain,
-    filters.phase=phase,
-    criteria=criteria
-  ),
-  class="fst_filter")
+  return(.jd2ma(jfilter))
 }
 
 #' FST criteria
 #'
 #' Compute the Fidelity, Smoothness and Timeliness (FST) criteria
 #'
-#' @param weights Weights of the filter (from lower bound to upper bound)
-#' @param lags Lags of the filter (should be positive)
-#' @param passband Passband threshold for timeliness criterion
+#' @param weights either a `"moving_average"` or a numeric vector containing weights.
+#' @param lags Lags of the moving average (when `weights` is not a `"moving_average"`).
+#' @param passband Passband threshold for timeliness criterion.
 #'
 #' @return The values of the 3 criteria, the gain and phase of the associated filter.
 #' @examples
 #' filter <- lp_filter(horizon = 6, kernel = "Henderson", endpoints = "LC")
-#' weight <- filter$filters.coef[1:7,"q=0"]
-#' fst(weight, lags = -6)
+#' fst(filter[, "q=0"])
 #' @references Grun-Rehomme, Michel, Fabien Guggemos, and Dominique Ladiray (2018). “Asymmetric Moving Averages Minimizing Phase Shift”. In: Handbook on Seasonal Adjustment.
 #' @export
 fst<-function(weights, lags, passband=pi/6){
-  if (lags >=0)
-    lags <- -lags
+  if (is.moving_average(weights)) {
+    lags <- lower_bound(weights)
+    weights <- coef(weights)
+  }
   jobj<-.jcall("demetra/saexperimental/r/FiltersToolkit", "Ldemetra/saexperimental/r/FiltersToolkit$FSTResult;", "fst",
                weights, as.integer(lags), passband)
-  return(fstresult(jobj))
+  criteria<-.jcall(jobj, "[D", "getCriterions")
+  names(criteria) <- c("Fidelity", "Smoothness", "Timeliness")
+  return(criteria)
 }
 
 #' Accuracy/smoothness/timeliness criteria through spectral decomposition
 #'
 #'
-#' @param sweights Weights of the symmetric filter (from 0 to n or -n to n).
-#' @param aweights Weights of the asymmetric filter (from -n to m).
+#' @param sweights `moving_average` object or weights of the symmetric filter (from 0 to n or -n to n).
+#' @param aweights `moving_average` object or weights of the asymmetric filter (from -n to m).
 #' @param density hypothesis on the spectral density: \code{"uniform"} (= white woise, the default) or  \code{"rw"} (= random walk).
 #' @param passband passband threshold.
 #'
 #' @return The criteria
 #' @examples
-#' filter <- lp_filter(horizon = 3, kernel = "Henderson", endpoints = "LC")
-#' sweights <- filter$filters.coef[,"q=3"]
-#' aweights <- filter$filters.coef[,"q=0"]
+#' filter <- lp_filter(horizon = 6, kernel = "Henderson", endpoints = "LC")
+#' sweights <- filter[,"q=6"]
+#' aweights <- filter[,"q=0"]
 #' mse(sweights, aweights)
 #' @references Wildi, Marc and McElroy, Tucker (2019). “The trilemma between accuracy, timeliness and smoothness in real-time signal extraction”. In: International Journal of Forecasting 35.3, pp. 1072–1084.
 #' @export
 mse<-function(sweights, aweights, density=c("uniform", "rw"), passband = pi/6){
-  if(length(sweights)>length(aweights)){
+  if (is.moving_average(aweights))
+    aweights <- coef(aweights)
+
+  if (is.moving_average(sweights)) {
+    if (lower_bound(sweights) < 0) {
+      # we asume sweights were specify from [-n to n] instead of [0,n]
+      sweights <- coef(sweights)[seq(lower_bound(sweights), -1)]
+    } else {
+      sweights <- coef(sweights)
+    }
+  } else if(length(sweights)>length(aweights)){
     # we asume sweights were specify from [-n to n] instead of [0,n]
     n <- (length(sweights)-1)/2
     sweights <- sweights[-seq_len(n)]

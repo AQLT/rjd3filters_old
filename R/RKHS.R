@@ -32,13 +32,12 @@ rkhs_filter <- function(horizon = 6, degree = 2,
   kernel = match.arg(kernel)
   asymmetricCriterion = match.arg(asymmetricCriterion)
   density = match.arg(density)
-  rkhs_filter = J("demetra/saexperimental/r/RKHSFilters")$filterProperties(
+  jrkhs_filter = J("demetra/saexperimental/r/RKHSFilters")$filterProperties(
     as.integer(horizon), as.integer(degree), kernel,
     optimalbw, asymmetricCriterion, density=="rw", passband,
     bandwidth, optimal.minBandwidth, optimal.maxBandwidth
   )
-  return(structure(FiniteFilters2R(rkhs_filter, horizon, TRUE),
-                   class=c("rkhs_filter", "FiniteFilters")))
+  return(.jd2r_finitefilters(jrkhs_filter))
 }
 #' Optimization Function of Reproducing Kernel Hilbert Space (RKHS) Filters
 #'

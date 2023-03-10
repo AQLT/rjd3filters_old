@@ -46,8 +46,8 @@ Estimation of a filter using the Fidelity-Smoothness-Timeliness criteria
 }
 \examples{
 filter <- fst_filter(lags = 6, leads = 0)
-filter$filters.coef
-filter$criteria
+filter
+fst(filter)
 }
 \references{
 Grun-Rehomme, Michel, Fabien Guggemos, and Dominique Ladiray (2018). “Asymmetric Moving Averages Minimizing Phase Shift”. In: Handbook on Seasonal Adjustment.

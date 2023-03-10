@@ -12,8 +12,8 @@ setClass("finite_filters",
 #' first asymmetric filter (when only one observation is missing) or the last one (real-time estimates).
 #'
 #' @examples
-#' ff_lp = finite_filters(lp_filter())
-#' ff_simple_ma = finite_filters(moving_average(c(1, 1, 1), lags = -1)/3,
+#' ff_lp <- lp_filter()
+#' ff_simple_ma <- finite_filters(moving_average(c(1, 1, 1), lags = -1)/3,
 #'                rfilters = list(moving_average(c(1, 1), lags = -1)/2))
 #' ff_lp
 #' ff_simple_ma
@@ -50,23 +50,7 @@ finite_filters.moving_average <- function(sfilter,
              rfilters = rfilters)
   res
 }
-#' @export
-finite_filters.FiniteFilters <- function(sfilter,
-                                         rfilters = NULL,
-                                         lfilters = NULL,
-                                         first_to_last = FALSE){
-  all_f = sfilter$filters.coef
-  lags = -(nrow(all_f) - 1)/2
-  all_f = lapply(seq_len(ncol(all_f)), function(i) {
-    moving_average(all_f[,i], lags, trailing_zero = TRUE)
-  })
-  sfilter = all_f[[1]]
-  rfilters = all_f[-1]
-  res <- new("finite_filters",
-             sfilter = sfilter,
-             rfilters = rfilters)
-  res
-}
+
 #' @export
 finite_filters.list <- function(sfilter,
                                 rfilters = NULL,
@@ -98,13 +82,31 @@ finite_filters.matrix <- function(sfilter,
   coefs <- lapply(index, function(i) sfilter[,i])
   finite_filters(coefs, first_to_last = first_to_last)
 }
-.jd2finitefilters <- function(jf){
-  jsfilter <- .jcall(jf, "Ljdplus/math/linearfilters/SymmetricFilter;", "symmetricFilter")
-  jlfilter <- .jcall(jf, "[Ljdplus/math/linearfilters/IFiniteFilter;", "leftEndPointsFilters")
-  jrfilter <- .jcall(jf, "[Ljdplus/math/linearfilters/IFiniteFilter;", "rightEndPointsFilters")
-  finite_filters(.jd2ma(jsfilter),
-                 rfilter = lapply(jrfilter, .jd2ma),
-                 lfilter = rev(lapply(jlfilter, .jd2ma)))
+.jd2r_finitefilters <- function(jf, first_to_last = TRUE){
+  if (.jinstanceof(jf, "jdplus/x11plus/X11SeasonalFiltersFactory$AnyFilter")) {
+    jsfilter <- .jcall(jf, "Ljdplus/math/linearfilters/SymmetricFilter;", "symmetricFilter")
+    jlfilter <- .jcall(jf, "[Ljdplus/math/linearfilters/IFiniteFilter;", "leftEndPointsFilters")
+    jrfilter <- .jcall(jf, "[Ljdplus/math/linearfilters/IFiniteFilter;", "rightEndPointsFilters")
+
+    sfilter = .jd2ma(jsfilter)
+    rfilters = lapply(jrfilter, .jd2ma)
+    lfilters = rev(lapply(jlfilter, .jd2ma))
+  } else if (.jinstanceof(jf, "demetra/saexperimental/r/FiltersToolkit$FiniteFilters")) {
+    jsfilter <- .jcall(jf, "Ljdplus/math/linearfilters/SymmetricFilter;", "getFilter")
+    jrfilter <- .jcall(jf, "[Ljdplus/math/linearfilters/IFiniteFilter;", "getAfilters")
+    if (!first_to_last) # lp_filter
+      jrfilter <- rev(jrfilter)
+
+    while (is.jnull(jrfilter[[length(jrfilter)]])) { # DFA
+      jrfilter <- jrfilter[-length(jrfilter)]
+    }
+    sfilter <- .jd2ma(jsfilter)
+    rfilters <- lapply(jrfilter, .jd2ma)
+    lfilters <- NULL
+  }
+  finite_filters(sfilter = sfilter,
+                 rfilters = rfilters,
+                 lfilters = lfilters)
 }
 #' @rdname finite_filters
 #' @export
@@ -283,20 +285,25 @@ setMethod("/",
           })
 #' @method as.matrix finite_filters
 #' @export
-as.matrix.finite_filters <- function(x, rfilters = TRUE, lfilters = FALSE, ...) {
-  rfilters_s <- lfilters_s <-
-    index_r <- index_l <- NULL
-  index_sym = length(x@rfilters)
+as.matrix.finite_filters <- function(x, sfilter = TRUE, rfilters = TRUE, lfilters = FALSE, ...) {
+  sfilter_s <- rfilters_s <- lfilters_s <-
+    index_s <- index_r <- index_l <- NULL
+  if (!any(sfilter, rfilters, lfilters))
+    return (NULL)
+  if (sfilter) {
+    sfilter_s <- list(x@sfilter)
+    index_s <- length(x@rfilters)
+  }
   if (lfilters) {
     lfilters_s <- x@lfilters
-    index_l = seq(0, -(length(x@lfilters) - 1))
+    index_l <- seq(0, -(length(x@lfilters) - 1))
   }
   if (rfilters) {
     rfilters_s <- x@rfilters
-    index_r = seq(length(x@rfilters) - 1, 0)
+    index_r <- seq(length(x@rfilters) - 1, 0)
   }
-  mat = do.call(cbind, c(lfilters_s, list(x@sfilter), rfilters_s))
-  colnames(mat) <- sprintf("q=%i", c(index_l, index_sym, index_r))
+  mat <- do.call(cbind, c(lfilters_s, sfilter_s, rfilters_s))
+  colnames(mat) <- sprintf("q=%i", c(index_l, index_s, index_r))
   mat
 }
 #' @export
@@ -401,6 +408,28 @@ setMethod("-",
                     e2 = "finite_filters"),
           function(e1, e2) {
             e1 + (-e2)
+          })
+#' @export
+setMethod("[",
+          signature(x = "finite_filters",
+                    i = "missing",
+                    j = "ANY"),
+          function(x, i, j, ...) {
+            res <- c(list(x@sfilter), x@rfilters)
+            names(res) <- sprintf("q=%i", seq(length(res) - 1, by = -1, length.out = length(res)))
+            res <- res[j]
+            if (length(res) == 1) {
+              res <- res[[1]]
+            }
+            res
+          })
+#' @export
+setMethod("[",
+          signature(x = "finite_filters",
+                    i = "ANY",
+                    j = "ANY"),
+          function(x, i, j, ...) {
+            as.matrix(x)[i, j, ...]
           })
 #' @export
 to_seasonal.finite_filters <- function(x, s){

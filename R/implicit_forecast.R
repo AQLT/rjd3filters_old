@@ -21,8 +21,8 @@
 #' @inheritParams jfilter
 #' @examples
 #' y <- retailsa$AllOtherGenMerchandiseStores
-#' ql <- lp_filter(horizon = 6, kernel = "Henderson", endpoints = "QL")$filters.coef
-#' lc <- lp_filter(horizon = 6, kernel = "Henderson", endpoints = "LC")$filters.coef
+#' ql <- lp_filter(horizon = 6, kernel = "Henderson", endpoints = "QL")
+#' lc <- lp_filter(horizon = 6, kernel = "Henderson", endpoints = "LC")
 #' f_ql <- implicit_forecast(y, ql)
 #' f_lc <- implicit_forecast(y, lc)
 #'
@@ -37,35 +37,28 @@
 implicit_forecast <- function(y, coefs){
   UseMethod("implicit_forecast", y)
 }
+#' @importFrom stats deltat
 #' @export
 implicit_forecast.default <- function(y, coefs){
-  if(is.matrix(coefs)){
-    coefs <- lapply(1:ncol(coefs), function(i) coefs[,i])
+  if (!inherits(coefs, "finite_filters")) {
+    coefs <- finite_filters(coefs)
   }
-  lags <- length(coefs)-1
-  scoef <- coefs[[lags+1]]
+  # rjd3filters:::
+  jffilters <- .finite_filters2jd(coefs)
 
-  jsymf <- .jcall("jdplus/math/linearfilters/FiniteFilter",
-                  "Ljdplus/math/linearfilters/FiniteFilter;",
-                  "of", scoef, as.integer(-lags))
-  jsymf <- .jcast(jsymf, "jdplus/math/linearfilters/IFiniteFilter")
-  jasym <- lapply(lags:1,
-                  function(i){
-                    .jcall("jdplus/math/linearfilters/FiniteFilter",
-                           "Ljdplus/math/linearfilters/FiniteFilter;",
-                           "of", coefs[[i]],as.integer(-lags))
-                  }
-  )
-  jasym <- .jarray(jasym,
-                   "jdplus/math/linearfilters/IFiniteFilter")
   jy <- .jcall("demetra/data/DoubleSeq",
-               "Ldemetra/data/DoubleSeq;", "of",as.numeric(tail(y,lags+1)))
+               "Ldemetra/data/DoubleSeq;", "of",as.numeric(tail(y,abs(lower_bound(coefs@sfilter))+1)))
   prev <- .jcall("jdplus/math/linearfilters/AsymmetricFiltersFactory",
          "[D","implicitForecasts",
-         jsymf, jasym, jy)
-  ts(prev,
-     frequency = frequency(y),
-     start = tail(time(y),1)+1/frequency(y))
+         jffilters$jsymf,
+         jffilters$jrasym,
+         jy)
+  if (is.ts(y))
+    prev <- ts(prev,
+       frequency = frequency(y),
+       start = time(y)[length(time(y))] + deltat(y))
+
+  prev
 }
 #' @export
 implicit_forecast.matrix <- function(y, coefs){

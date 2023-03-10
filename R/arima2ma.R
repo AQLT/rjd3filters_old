@@ -7,6 +7,7 @@
 get_moving_average <- function(x, ...) {
   UseMethod("get_moving_average", x)
 }
+#' @importFrom stats coefficients
 #' @export
 get_moving_average.Arima <- function(x, ...){
   arima_mod <- x$arma

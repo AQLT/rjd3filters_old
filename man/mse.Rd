@@ -7,9 +7,9 @@
 mse(sweights, aweights, density = c("uniform", "rw"), passband = pi/6)
 }
 \arguments{
-\item{sweights}{Weights of the symmetric filter (from 0 to n or -n to n).}
+\item{sweights}{\code{moving_average} object or weights of the symmetric filter (from 0 to n or -n to n).}
 
-\item{aweights}{Weights of the asymmetric filter (from -n to m).}
+\item{aweights}{\code{moving_average} object or weights of the asymmetric filter (from -n to m).}
 
 \item{density}{hypothesis on the spectral density: \code{"uniform"} (= white woise, the default) or  \code{"rw"} (= random walk).}
 
@@ -22,9 +22,9 @@ The criteria
 Accuracy/smoothness/timeliness criteria through spectral decomposition
 }
 \examples{
-filter <- lp_filter(horizon = 3, kernel = "Henderson", endpoints = "LC")
-sweights <- filter$filters.coef[,"q=3"]
-aweights <- filter$filters.coef[,"q=0"]
+filter <- lp_filter(horizon = 6, kernel = "Henderson", endpoints = "LC")
+sweights <- filter[,"q=6"]
+aweights <- filter[,"q=0"]
 mse(sweights, aweights)
 }
 \references{
