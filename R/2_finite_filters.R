@@ -424,7 +424,7 @@ setMethod("[",
             res <- c(list(x@sfilter), x@rfilters)
             names(res) <- sprintf("q=%i", seq(length(res) - 1, by = -1, length.out = length(res)))
             res <- res[j]
-            if (length(res) == 1) {
+            if (length(res) == 1 & drop) {
               res <- res[[1]]
             }
             res
