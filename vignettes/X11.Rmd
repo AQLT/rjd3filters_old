@@ -46,9 +46,9 @@ M3X3 <- macurves("S3x3")
 M3X3_s <- to_seasonal(M3X3, 12)
 s_1 <- M3X3_s * si_1
 s_1_norm <- M2X12 * s_1
-s_1_norm <- imput_last_obs(s_1_norm, n = 6, nperiod = 1)
+s_1_norm <- impute_last_obs(s_1_norm, n = 6, nperiod = 1)
 s_1_demean <- s_1 - s_1_norm
-s_1_f <- imput_last_obs(s_1_demean, n = 6, nperiod = 12)
+s_1_f <- impute_last_obs(s_1_demean, n = 6, nperiod = 12)
 s_1_f * y # b5
 sa_1 <- 1- s_1_f
 sa_1 * y # b6
@@ -64,9 +64,9 @@ M3X5 <- macurves("S3x5")
 M3X5_s <- to_seasonal(M3X5, 12)
 s_2 <- M3X5_s * si_2
 s_2_norm <- M2X12 * s_2
-s_2_norm <- imput_last_obs(s_2_norm, n = 6, nperiod = 1)
+s_2_norm <- impute_last_obs(s_2_norm, n = 6, nperiod = 1)
 s_2_demean <- s_2 - s_2_norm
-s_2_f <- imput_last_obs(s_2_demean, n = 6, nperiod = 12)
+s_2_f <- impute_last_obs(s_2_demean, n = 6, nperiod = 12)
 s_2_f * y # b10
 sa_2 <- 1 - s_2_f
 sa_2 * y # b11

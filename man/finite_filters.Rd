@@ -2,22 +2,6 @@
 % Please edit documentation in R/2_finite_filters.R, R/print.R
 \name{finite_filters}
 \alias{finite_filters}
-\alias{*,finite_filters,moving_average-method}
-\alias{*,moving_average,finite_filters-method}
-\alias{*,finite_filters,numeric-method}
-\alias{*,ANY,finite_filters-method}
-\alias{*,finite_filters,ANY-method}
-\alias{+,numeric,finite_filters-method}
-\alias{+,finite_filters,moving_average-method}
-\alias{+,moving_average,finite_filters-method}
-\alias{+,finite_filters,missing-method}
-\alias{-,finite_filters,missing-method}
-\alias{-,finite_filters,moving_average-method}
-\alias{-,moving_average,finite_filters-method}
-\alias{-,finite_filters,numeric-method}
-\alias{-,numeric,finite_filters-method}
-\alias{/,finite_filters,numeric-method}
-\alias{*,finite_filters,finite_filters-method}
 \alias{show,finite_filters-method}
 \title{Manipulating Finite Filters}
 \usage{
@@ -28,42 +12,11 @@ finite_filters(
   first_to_last = FALSE
 )
 
-\S4method{*}{finite_filters,moving_average}(e1, e2)
-
-\S4method{*}{moving_average,finite_filters}(e1, e2)
-
-\S4method{*}{finite_filters,numeric}(e1, e2)
-
-\S4method{*}{ANY,finite_filters}(e1, e2)
-
-\S4method{*}{finite_filters,ANY}(e1, e2)
-
-\S4method{+}{numeric,finite_filters}(e1, e2)
-
-\S4method{+}{finite_filters,moving_average}(e1, e2)
-
-\S4method{+}{moving_average,finite_filters}(e1, e2)
-
-\S4method{+}{finite_filters,missing}(e1, e2)
-
-\S4method{-}{finite_filters,missing}(e1, e2)
-
-\S4method{-}{finite_filters,moving_average}(e1, e2)
-
-\S4method{-}{moving_average,finite_filters}(e1, e2)
-
-\S4method{-}{finite_filters,numeric}(e1, e2)
-
-\S4method{-}{numeric,finite_filters}(e1, e2)
-
-\S4method{/}{finite_filters,numeric}(e1, e2)
-
-\S4method{*}{finite_filters,finite_filters}(e1, e2)
-
 \S4method{show}{finite_filters}(object)
 }
 \arguments{
-\item{sfilter}{the symmetric filter or a \verb{"FiniteFilter} object.}
+\item{sfilter}{the symmetric filter (\code{\link[=moving_average]{moving_average()}} object) or
+a \code{matrix} or \code{list} with all the coefficients.}
 
 \item{rfilters}{the right filters (used on the last points).}
 
@@ -71,6 +24,8 @@ finite_filters(
 
 \item{first_to_last}{boolean indicating if the first element of \code{rfilters} is the
 first asymmetric filter (when only one observation is missing) or the last one (real-time estimates).}
+
+\item{object}{\code{finite_filters} object.}
 }
 \description{
 Manipulating Finite Filters

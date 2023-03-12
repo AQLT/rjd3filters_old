@@ -10,27 +10,6 @@
 \alias{rev.moving_average}
 \alias{length.moving_average}
 \alias{to_seasonal}
-\alias{sum.moving_average}
-\alias{[,moving_average,numeric-method}
-\alias{[,moving_average,logical-method}
-\alias{[<-,moving_average,ANY,missing,numeric-method}
-\alias{cbind.moving_average}
-\alias{rbind.moving_average}
-\alias{+,moving_average,moving_average-method}
-\alias{+,moving_average,numeric-method}
-\alias{+,numeric,moving_average-method}
-\alias{+,moving_average,missing-method}
-\alias{-,moving_average,missing-method}
-\alias{-,moving_average,moving_average-method}
-\alias{-,moving_average,numeric-method}
-\alias{-,numeric,moving_average-method}
-\alias{*,moving_average,moving_average-method}
-\alias{*,moving_average,numeric-method}
-\alias{*,numeric,moving_average-method}
-\alias{*,ANY,moving_average-method}
-\alias{*,moving_average,ANY-method}
-\alias{/,moving_average,numeric-method}
-\alias{^,moving_average,numeric-method}
 \alias{show,moving_average-method}
 \title{Manipulation of moving averages}
 \usage{
@@ -57,48 +36,6 @@ mirror(x)
 
 to_seasonal(x, s)
 
-\method{sum}{moving_average}(..., na.rm = FALSE)
-
-\S4method{[}{moving_average,numeric}(x, i)
-
-\S4method{[}{moving_average,logical}(x, i)
-
-\S4method{[}{moving_average,ANY,missing,numeric}(x, i) <- value
-
-\method{cbind}{moving_average}(...)
-
-\method{rbind}{moving_average}(...)
-
-\S4method{+}{moving_average,moving_average}(e1, e2)
-
-\S4method{+}{moving_average,numeric}(e1, e2)
-
-\S4method{+}{numeric,moving_average}(e1, e2)
-
-\S4method{+}{moving_average,missing}(e1, e2)
-
-\S4method{-}{moving_average,missing}(e1, e2)
-
-\S4method{-}{moving_average,moving_average}(e1, e2)
-
-\S4method{-}{moving_average,numeric}(e1, e2)
-
-\S4method{-}{numeric,moving_average}(e1, e2)
-
-\S4method{*}{moving_average,moving_average}(e1, e2)
-
-\S4method{*}{moving_average,numeric}(e1, e2)
-
-\S4method{*}{numeric,moving_average}(e1, e2)
-
-\S4method{*}{ANY,moving_average}(e1, e2)
-
-\S4method{*}{moving_average,ANY}(e1, e2)
-
-\S4method{/}{moving_average,numeric}(e1, e2)
-
-\S4method{^}{moving_average,numeric}(e1, e2)
-
 \S4method{show}{moving_average}(object)
 }
 \arguments{
@@ -110,11 +47,7 @@ to_seasonal(x, s)
 
 \item{s}{seasonal period for the \code{to_seasonal()} function.}
 
-\item{..., na.rm}{see \link[base]{mean}}
-
-\item{i, value}{indices specifying elements to extract or replace and the new value}
-
-\item{object, e1, e2}{moving averages}
+\item{object}{\code{moving_average} object.}
 }
 \description{
 Manipulation of moving averages

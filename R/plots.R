@@ -12,6 +12,7 @@
 #' @param legend.pos position of the legend.
 #' @param normalized boolean indicatif if the phase function is normalized by the frequency.
 #' @param zero_as_na boolean indicating if the trailing zero of the coefficients should be plotted (\code{FALSE}) or removed (\code{TRUE}).
+#' @param n number of points used to plot the functions.
 #'
 #' @examples
 #' filter <- lp_filter(6, endpoints = "DAF", kernel = "Henderson")

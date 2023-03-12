@@ -92,6 +92,8 @@ plot_phase(x, nxlab = 7, add = FALSE, xlim = c(0, pi), normalized = FALSE, ...)
 
 \item{xlim}{vector containing x limits.}
 
+\item{n}{number of points used to plot the functions.}
+
 \item{normalized}{boolean indicatif if the phase function is normalized by the frequency.}
 }
 \description{

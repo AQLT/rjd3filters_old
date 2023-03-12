@@ -97,10 +97,10 @@ legend("topleft", legend = c("y","Musgrave", "FST", "RKHS", "Forecasts"),
 The real-time estimates (when no future points are available) can also be compared:
 
 ```{r plot-q0, eval = TRUE}
-trend_henderson<- jfilter(y, musgrave[,"q=6"], lags = 6)
-trend_musgrave_q0 <- jfilter(y, musgrave[,"q=0"], lags = 6)
-trend_fst_q0 <- jfilter(y, fst_notimeliness[[1]], lags = 6)
-trend_rkhs_q0 <- jfilter(y, rkhs_timeliness[,"q=0"], lags = 6)
+trend_henderson<- jfilter(y, musgrave[,"q=6"])
+trend_musgrave_q0 <- jfilter(y, musgrave[,"q=0"])
+trend_fst_q0 <- jfilter(y, fst_notimeliness[,"q=0"])
+trend_rkhs_q0 <- jfilter(y, rkhs_timeliness[,"q=0"])
 plot(window(ts.union(y, trend_musgrave_q0,trend_fst_q0,trend_rkhs_q0),
             start = 2007),
      plot.type = "single",
@@ -114,9 +114,9 @@ legend("topleft", legend = c("y","Musgrave", "FST", "RKHS"),
 
 Different quality criteria from Grun-Rehomme *et al* (2018) and Wildi and McElroy(2019) can also be computed with the function `diagnostic_matrix()`:
 ```{r diagnostic-table, eval = TRUE}
-q_0_coefs = list(Musgrave = musgrave[,"q=0"],
-                 fst_notimeliness = fst_notimeliness[[1]],
-                 rkhs_timeliness = rkhs_timeliness[,"q=0"])
+q_0_coefs <- list(Musgrave = musgrave[,"q=0"],
+                  fst_notimeliness = fst_notimeliness[,"q=0"],
+                  rkhs_timeliness = rkhs_timeliness[,"q=0"])
 
 sapply(q_0_coefs, diagnostic_matrix,
        lags = 6, sweight = musgrave[,"q=6"])
@@ -129,21 +129,21 @@ def.par <- par(no.readonly = TRUE)
 par(mai = c(0.3, 0.3, 0.2, 0))
 layout(matrix(c(1,1,2,3), 2, 2, byrow = TRUE))
 
-plot_coef(fst_notimeliness_filter[[1]], col = "lightblue")
-plot_coef(musgrave_filter, q = 0,add = TRUE, col = "orange")
-plot_coef(rkhs_timeliness_filter, q = 0,add = TRUE, col = "red")
+plot_coef(fst_notimeliness, q = 0, col = "lightblue")
+plot_coef(musgrave, q = 0, add = TRUE, col = "orange")
+plot_coef(rkhs_timeliness, q = 0, add = TRUE, col = "red")
 legend("topleft", legend = c("Musgrave", "FST", "RKHS"),
        col= c("orange", "lightblue", "red"), lty = 1)
 
-plot_gain(fst_notimeliness_filter[[1]], col = "lightblue")
-plot_gain(musgrave_filter, q = 0, col = "orange",add = TRUE)
-plot_gain(rkhs_timeliness_filter, q = 0,add = TRUE, col = "red")
+plot_gain(fst_notimeliness, q = 0, col = "lightblue")
+plot_gain(musgrave, q = 0, col = "orange",add = TRUE)
+plot_gain(rkhs_timeliness, q = 0,add = TRUE, col = "red")
 legend("topright", legend = c("Musgrave", "FST", "RKHS"),
        col= c("orange", "lightblue", "red"), lty = 1)
 
-plot_phase(fst_notimeliness_filter[[1]], col = "lightblue")
-plot_phase(musgrave_filter, q = 0, col = "orange",add = TRUE)
-plot_phase(rkhs_timeliness_filter, q = 0,add = TRUE, col = "red")
+plot_phase(fst_notimeliness, q = 0, col = "lightblue")
+plot_phase(musgrave, q = 0, col = "orange",add = TRUE)
+plot_phase(rkhs_timeliness, q = 0,add = TRUE, col = "red")
 legend("topright", legend = c("Musgrave", "FST", "RKHS"),
        col= c("orange", "lightblue", "red"), lty = 1)
 par(def.par)
@@ -193,8 +193,9 @@ s <- y * s_mm
 `finite_filters` object are a combination of a central filter (used for the final estimates) and different asymmetric filters used for intermediate estimates at the beginning/end of the series when the central filter cannot be applied.
 
 ```{r}
-finite_filters(musgrave)
+musgrave
 M3X3 <- macurves("S3X3")
+musgrave * M3X3
 ```
 
 
