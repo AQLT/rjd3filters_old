@@ -18,51 +18,51 @@
 #' =\sum_{i=-h}^0 (w_i^q-v_i)y_i.
 #' }
 #' Note that this is solved numerically: the solution isn't exact.
-#' @inheritParams jfilter
+#' @inheritParams filter
 #' @examples
-#' y <- retailsa$AllOtherGenMerchandiseStores
+#' x <- retailsa$AllOtherGenMerchandiseStores
 #' ql <- lp_filter(horizon = 6, kernel = "Henderson", endpoints = "QL")
 #' lc <- lp_filter(horizon = 6, kernel = "Henderson", endpoints = "LC")
-#' f_ql <- implicit_forecast(y, ql)
-#' f_lc <- implicit_forecast(y, lc)
+#' f_ql <- implicit_forecast(x, ql)
+#' f_lc <- implicit_forecast(x, lc)
 #'
-#' plot(window(y, start = 2007),
+#' plot(window(x, start = 2007),
 #'      xlim = c(2007,2012))
-#' lines(ts(c(tail(y,1), f_ql), frequency = frequency(y), start = end(y)),
+#' lines(ts(c(tail(x,1), f_ql), frequency = frequency(x), start = end(x)),
 #'       col = "red", lty = 2)
-#' lines(ts(c(tail(y,1), f_lc), frequency = frequency(y), start = end(y)),
+#' lines(ts(c(tail(x,1), f_lc), frequency = frequency(x), start = end(x)),
 #'       col = "blue", lty = 2)
 #' @importFrom stats time
 #' @export
-implicit_forecast <- function(y, coefs){
-  UseMethod("implicit_forecast", y)
+implicit_forecast <- function(x, coefs){
+  UseMethod("implicit_forecast", x)
 }
 #' @importFrom stats deltat
 #' @export
-implicit_forecast.default <- function(y, coefs){
+implicit_forecast.default <- function(x, coefs){
   if (!inherits(coefs, "finite_filters")) {
     coefs <- finite_filters(coefs)
   }
   # rjd3filters:::
   jffilters <- .finite_filters2jd(coefs)
 
-  jy <- .jcall("demetra/data/DoubleSeq",
-               "Ldemetra/data/DoubleSeq;", "of",as.numeric(tail(y,abs(lower_bound(coefs@sfilter))+1)))
+  jx <- .jcall("demetra/data/DoubleSeq",
+               "Ldemetra/data/DoubleSeq;", "of",as.numeric(tail(x,abs(lower_bound(coefs@sfilter))+1)))
   prev <- .jcall("jdplus/math/linearfilters/AsymmetricFiltersFactory",
          "[D","implicitForecasts",
          jffilters$jsymf,
          jffilters$jrasym,
-         jy)
-  if (is.ts(y))
+         jx)
+  if (is.ts(x))
     prev <- ts(prev,
-       frequency = frequency(y),
-       start = time(y)[length(time(y))] + deltat(y))
+       frequency = frequency(x),
+       start = time(x)[length(time(x))] + deltat(x))
 
   prev
 }
 #' @export
-implicit_forecast.matrix <- function(y, coefs){
-  result <- do.call(cbind, lapply(seq_len(ncol(y)), function (i) implicit_forecast(y[,i], coefs = coefs)))
-  colnames(result) <- colnames(y)
+implicit_forecast.matrix <- function(x, coefs){
+  result <- do.call(cbind, lapply(seq_len(ncol(x)), function (i) implicit_forecast(x[,i], coefs = coefs)))
+  colnames(result) <- colnames(x)
   result
 }

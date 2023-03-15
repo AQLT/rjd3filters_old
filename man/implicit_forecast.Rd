@@ -4,10 +4,10 @@
 \alias{implicit_forecast}
 \title{Retrieve implicit forecasts corresponding to the asymmetric filters}
 \usage{
-implicit_forecast(y, coefs)
+implicit_forecast(x, coefs)
 }
 \arguments{
-\item{y}{a univariate or multivariate time series.}
+\item{x}{a univariate or multivariate time series.}
 
 \item{coefs}{a \code{matrix} or a \code{list} that contains all the coefficients of the asymmetric and symmetric filters.
 (from the symmetric filter to the shortest). See details.}
@@ -34,16 +34,16 @@ which is equivalent to
 Note that this is solved numerically: the solution isn't exact.
 }
 \examples{
-y <- retailsa$AllOtherGenMerchandiseStores
+x <- retailsa$AllOtherGenMerchandiseStores
 ql <- lp_filter(horizon = 6, kernel = "Henderson", endpoints = "QL")
 lc <- lp_filter(horizon = 6, kernel = "Henderson", endpoints = "LC")
-f_ql <- implicit_forecast(y, ql)
-f_lc <- implicit_forecast(y, lc)
+f_ql <- implicit_forecast(x, ql)
+f_lc <- implicit_forecast(x, lc)
 
-plot(window(y, start = 2007),
+plot(window(x, start = 2007),
      xlim = c(2007,2012))
-lines(ts(c(tail(y,1), f_ql), frequency = frequency(y), start = end(y)),
+lines(ts(c(tail(x,1), f_ql), frequency = frequency(x), start = end(x)),
       col = "red", lty = 2)
-lines(ts(c(tail(y,1), f_lc), frequency = frequency(y), start = end(y)),
+lines(ts(c(tail(x,1), f_lc), frequency = frequency(x), start = end(x)),
       col = "blue", lty = 2)
 }

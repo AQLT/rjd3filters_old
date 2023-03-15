@@ -5,7 +5,7 @@
 \title{Apply Local Polynomials Filters}
 \usage{
 localpolynomials(
-  y,
+  x,
   horizon = 6,
   degree = 3,
   kernel = c("Henderson", "Uniform", "Biweight", "Trapezoidal", "Triweight", "Tricube",
@@ -17,7 +17,7 @@ localpolynomials(
 )
 }
 \arguments{
-\item{y}{input time-series.}
+\item{x}{input time-series.}
 
 \item{horizon}{horizon (bandwidth) of the symmetric filter.}
 
@@ -40,9 +40,9 @@ the target signal
 Apply Local Polynomials Filters
 }
 \examples{
-y <- retailsa$AllOtherGenMerchandiseStores
-trend <- localpolynomials(y, horizon = 6)
-plot(y)
+x <- retailsa$AllOtherGenMerchandiseStores
+trend <- localpolynomials(x, horizon = 6)
+plot(x)
 lines(trend, col = "red")
 }
 \references{

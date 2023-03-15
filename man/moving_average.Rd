@@ -76,8 +76,8 @@ par(def.par)
 
 # To apply the moving average
 t <- y * M2X12
-# Or use the jfilter() function:
-t <- jfilter(y, M2X12)
+# Or use the filter() function:
+t <- filter(y, M2X12)
 si <- y - t
 s <- si * M3X3_seasonal
 # or equivalently:

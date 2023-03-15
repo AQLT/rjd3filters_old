@@ -1,7 +1,7 @@
 #' X-11 Decomposition With Custom Trend Filters
 #'
 #' Perform the X-11 decomposition using custom trend filter
-#' @param y input time-series.
+#' @param x input time-series.
 #' @param period period.
 #' @param trend.coefs coefficients of the filters used for the trend-cycle extraction from
 #' the real-time asymmetric filter to the symmetric filter. Can be a, object of class \code{"list"},
@@ -10,15 +10,15 @@
 #' @param seas.s0,seas.s1 seasonal filters.
 #' @param extreme.lsig,extreme.usig boundaries used for outlier correction in irregular.
 #' @examples
-#' y <- retailsa$AllOtherGenMerchandiseStores
-#' decomposition_lp <- x11(y, trend.coefs = lp_filter())
-#' decomposition_rkhs <- x11(y, trend.coefs = rkhs_filter())
-#' plot(y)
+#' x <- retailsa$AllOtherGenMerchandiseStores
+#' decomposition_lp <- x11(x, trend.coefs = lp_filter())
+#' decomposition_rkhs <- x11(x, trend.coefs = rkhs_filter())
+#' plot(x)
 #' lines(decomposition_lp$decomposition[,"t"], col = "red")
 #' lines(decomposition_rkhs$decomposition[,"t"], col = "green")
 #' @importFrom stats ts.union
 #' @export
-x11 <- function(y, period = frequency(y),
+x11 <- function(x, period = frequency(x),
                 trend.coefs,  mul=TRUE,
                 seas.s0=c("S3X3", "S3X1", "S3X5", "S3X9", "S3X15")[1],
                 seas.s1=c("S3X5", "S3X3", "S3X1", "S3X9", "S3X15")[1],
@@ -45,10 +45,10 @@ x11 <- function(y, period = frequency(y),
 
   ctrendf = J("demetra.data.DoubleSeq")$of(coef(sym_filter))
   x11decomp = J("demetra/saexperimental/r/X11Decomposition")
-  jrslt = x11decomp$trendX11(as.numeric(y), period, mul,
+  jrslt = x11decomp$trendX11(as.numeric(x), period, mul,
                              ctrendf, ltrendf,
                              seas.s0, seas.s1, extreme.lsig, extreme.usig)
-  decomposition <- cbind(y,
+  decomposition <- cbind(x,
                          rjd3toolkit::.proc_vector(jrslt, "d11"),
                          rjd3toolkit::.proc_vector(jrslt, "d12"),
                          rjd3toolkit::.proc_vector(jrslt, "d10"),

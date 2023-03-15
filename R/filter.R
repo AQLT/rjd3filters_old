@@ -3,7 +3,7 @@
 #' Applies linear filtering to a univariate time series or to each series separately of a multivariate time series using either a moving average (symmetric or asymmetric) or a combination of
 #' symmetric moving average at the center and asymmetric moving averages at the bounds.
 #'
-#' @param y a univariate or multivariate time series.
+#' @param x a univariate or multivariate time series.
 #' @param coefs an object of class \code{"moving_average"} or the coefficients
 #' of a moving average. In that case the argument \code{lags} must be provided.
 #' @param coefs a \code{matrix} or a \code{list} that contains all the coefficients of the asymmetric and symmetric filters.
@@ -14,7 +14,7 @@
 #' @details
 #'
 #'
-#' The functions \code{jfilter} extends \code{\link[stats]{filter}} allowing to apply every kind of moving averages
+#' The functions \code{filter} extends \code{\link[stats]{filter}} allowing to apply every kind of moving averages
 #' (symmetric and asymmetric filters) or to apply aset multiple moving averages
 #' to deal with the boundaries.
 #'
@@ -31,86 +31,86 @@
 #' time series \eqn{y[n-1]} (one future point known)...
 #'
 #' @examples
-#' y <- retailsa$DrinkingPlaces
+#' x <- retailsa$DrinkingPlaces
 #'
 #' lags <- 6
 #' leads <- 2
 #' fst_coef <- fst_filter(lags = lags, leads = leads, smoothness.weight = 0.3, timeliness.weight = 0.3)
 #' lpp_coef <- lp_filter(horizon = lags, kernel = "Henderson", endpoints = "LC")
 #'
-#' fst_ma <- jfilter(y, fst_coef)
-#' lpp_ma <- jfilter(y, lpp_coef[,"q=2"])
+#' fst_ma <- filter(x, fst_coef)
+#' lpp_ma <- filter(x, lpp_coef[,"q=2"])
 #'
-#' plot(ts.union(y, fst_ma, lpp_ma), plot.type = "single", col = c("black","red","blue"))
+#' plot(ts.union(x, fst_ma, lpp_ma), plot.type = "single", col = c("black","red","blue"))
 #'
-#' trend <- jfilter(y, lpp_coef)
+#' trend <- filter(x, lpp_coef)
 #' # This is equivalent to:
-#' trend <- localpolynomials(y, horizon = 6)
+#' trend <- localpolynomials(x, horizon = 6)
 #' @export
-jfilter <- function(y, coefs, remove_missing = TRUE){
-  UseMethod("jfilter", y)
+filter <- function(x, coefs, remove_missing = TRUE){
+  UseMethod("filter", x)
 }
 #' @export
-jfilter.default <- function(y, coefs, remove_missing = TRUE){
+filter.default <- function(x, coefs, remove_missing = TRUE){
   if (is.moving_average(coefs)) {
-    filter_ma(y, coefs)
+    filter_ma(x, coefs)
   } else {
-    ff_ma(y, coefs = coefs, remove_missing = remove_missing)
+    ff_ma(x, coefs = coefs, remove_missing = remove_missing)
   }
 }
 #' @export
-jfilter.matrix <- function(y, coefs, remove_missing = TRUE){
-  result <- y
-  for (i in seq_len(ncol(y))){
-    result[, i] <- jfilter(y[,i], coefs = coefs, remove_missing = remove_missing)
+filter.matrix <- function(x, coefs, remove_missing = TRUE){
+  result <- x
+  for (i in seq_len(ncol(x))){
+    result[, i] <- filter(x[,i], coefs = coefs, remove_missing = remove_missing)
   }
   result
 }
 
-filter_ma <- function(y, coefs){
+filter_ma <- function(x, coefs){
   # if (!is.moving_average(coefs)) {
   #   coefs <- moving_average(coefs, -abs(lags))
   # }
   lb = lower_bound(coefs)
   ub = upper_bound(coefs)
 
-  if (length(y) <= length(coefs))
-    return(y * NA)
+  if (length(x) <= length(coefs))
+    return(x * NA)
 
   DataBlock = J("jdplus.data.DataBlock")
-  jy = DataBlock$of(as.numeric(y))
-  out = DataBlock$of(as.numeric(rep(NA, length(y) - length(coefs)+1)))
-  .ma2jd(coefs)$apply(jy,
+  jx = DataBlock$of(as.numeric(x))
+  out = DataBlock$of(as.numeric(rep(NA, length(x) - length(coefs)+1)))
+  .ma2jd(coefs)$apply(jx,
                      out)
   result = out$toArray()
   result <- c(rep(NA, abs(min(lb, 0))),
               result,
               rep(NA, abs(max(ub, 0))))
 
-  if (is.ts(y))
-    result <- ts(result,start = start(y), frequency = frequency(y))
+  if (is.ts(x))
+    result <- ts(result,start = start(x), frequency = frequency(x))
   result
 }
 
-ff_ma <- function(y, coefs, remove_missing = TRUE) {
+ff_ma <- function(x, coefs, remove_missing = TRUE) {
   if (!inherits(coefs, "finite_filters")) {
     coefs <- finite_filters(coefs)
   }
   jffilters <- .finite_filters2jd(coefs)
 
   if (remove_missing) {
-    data_clean = remove_bound_NA(y)
-    y2 = data_clean$data
+    data_clean <- remove_bound_NA(x)
+    x2 <- data_clean$data
   } else {
-    y2 = y
+    x2 <- x
   }
 
-  jy <- .jcall("demetra/data/DoubleSeq",
-               "Ldemetra/data/DoubleSeq;", "of", as.numeric(y2))
+  jx <- .jcall("demetra/data/DoubleSeq",
+               "Ldemetra/data/DoubleSeq;", "of", as.numeric(x2))
 
   result <- .jcall("jdplus/math/linearfilters/FilterUtility",
                    "Ldemetra/data/DoubleSeq;", "filter",
-                   jy,
+                   jx,
                    jffilters$jsymf,
                    jffilters$jlasym,
                    jffilters$jrasym
@@ -122,8 +122,8 @@ ff_ma <- function(y, coefs, remove_missing = TRUE) {
     result = c(rep(NA, data_clean$leading), result,
                rep(NA, data_clean$trailing))
   }
-  if(is.ts(y))
-    result <- ts(result,start = start(y), frequency = frequency(y))
+  if(is.ts(x))
+    result <- ts(result,start = start(x), frequency = frequency(x))
   result
 }
 

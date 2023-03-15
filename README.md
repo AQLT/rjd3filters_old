@@ -54,9 +54,9 @@ fst_notimeliness <- finite_filters(sfilter = fst_notimeliness_filter[[7]],
 # RKHS filters minimizing timeliness
 rkhs_timeliness <- rkhs_filter(horizon = 6, asymmetricCriterion = "Timeliness")
 
-trend_musgrave <- jfilter(y, musgrave)
-trend_fst <- jfilter(y, fst_notimeliness)
-trend_rkhs <- jfilter(y, rkhs_timeliness)
+trend_musgrave <- filter(y, musgrave)
+trend_fst <- filter(y, fst_notimeliness)
+trend_rkhs <- filter(y, rkhs_timeliness)
 plot(ts.union(y, trend_musgrave,trend_fst,trend_rkhs),plot.type = "single",
      col = c("black","orange", "lightblue", "red"),
      main = "Filtered time series", ylab=NULL)
@@ -102,10 +102,10 @@ The real-time estimates (when no future points are available) can also
 be compared:
 
 ``` r
-trend_henderson<- jfilter(y, musgrave[,"q=6"])
-trend_musgrave_q0 <- jfilter(y, musgrave[,"q=0"])
-trend_fst_q0 <- jfilter(y, fst_notimeliness[,"q=0"])
-trend_rkhs_q0 <- jfilter(y, rkhs_timeliness[,"q=0"])
+trend_henderson<- filter(y, musgrave[,"q=6"])
+trend_musgrave_q0 <- filter(y, musgrave[,"q=0"])
+trend_fst_q0 <- filter(y, fst_notimeliness[,"q=0"])
+trend_rkhs_q0 <- filter(y, rkhs_timeliness[,"q=0"])
 plot(window(ts.union(y, trend_musgrave_q0,trend_fst_q0,trend_rkhs_q0),
             start = 2007),
      plot.type = "single",

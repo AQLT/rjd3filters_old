@@ -178,7 +178,7 @@ setMethod("*",
             if (length(e2) == 1) {
               e1 * moving_average(e2,0)
             } else {
-              jfilter(e2, e1)
+              filter(e2, e1)
             }
           })
 #' @rdname filters_operations
@@ -187,7 +187,7 @@ setMethod("*",
           signature(e1 = "ANY",
                     e2 = "finite_filters"),
           function(e1, e2) {
-            jfilter(e1, e2)
+            filter(e1, e2)
           })
 #' @rdname filters_operations
 #' @export

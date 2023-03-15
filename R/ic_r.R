@@ -128,7 +128,7 @@ cross_validation <- function(x, coef, ...){
   coef <- moving_average(coef, ...)
   if (lower_bound(coef) > 0 || upper_bound(coef) < 0)
     return(NA)
-  sc <- jfilter(x, coef)
+  sc <- filter(x, coef)
   coef0 <- coef(coef)["t"]
   (x-sc)/(1-coef0)
 }
@@ -147,7 +147,7 @@ var_estimator <- function(x, coef, ...) {
   coef <- moving_average(coef, ...)
   if (lower_bound(coef) > 0 || upper_bound(coef) < 0)
     return(NA)
-  sc <- jfilter(x, coef)
+  sc <- filter(x, coef)
   coef0 <- coefficients(coef)["t"]
   sigma2 <-  mean((x - sc)^2,
                  na.rm = TRUE)

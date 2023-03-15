@@ -4,10 +4,10 @@
 \alias{henderson}
 \title{Apply Henderson Linear Filter}
 \usage{
-henderson(y, length, musgrave = TRUE, ic = 4.5)
+henderson(x, length, musgrave = TRUE, ic = 4.5)
 }
 \arguments{
-\item{y}{input time-series.}
+\item{x}{input time-series.}
 
 \item{length}{length of the Henderson filter.}
 
@@ -22,8 +22,8 @@ the target signal.
 Apply Henderson Linear Filter
 }
 \examples{
-y <- retailsa$AllOtherGenMerchandiseStores
-trend <- henderson(y, length = 13)
-plot(y)
+x <- retailsa$AllOtherGenMerchandiseStores
+trend <- henderson(x, length = 13)
+plot(x)
 lines(trend, col = "red")
 }

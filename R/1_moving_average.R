@@ -48,8 +48,8 @@ NULL
 #'
 #' # To apply the moving average
 #' t <- y * M2X12
-#' # Or use the jfilter() function:
-#' t <- jfilter(y, M2X12)
+#' # Or use the filter() function:
+#' t <- filter(y, M2X12)
 #' si <- y - t
 #' s <- si * M3X3_seasonal
 #' # or equivalently:
@@ -327,7 +327,7 @@ setMethod("*",
             if (length(e2) == 1) {
               e1 * moving_average(e2,0)
             } else {
-              jfilter(e2, e1)
+              filter(e2, e1)
             }
           })
 
@@ -340,7 +340,7 @@ setMethod("*",
             if (length(e1) == 1) {
               moving_average(e1,0) * e2
             } else {
-              jfilter(e1, e2)
+              filter(e1, e2)
             }
           })
 #' @rdname filters_operations
@@ -348,14 +348,14 @@ setMethod("*",
 setMethod("*",
           signature(e2 = "moving_average"),
           function(e1, e2) {
-            jfilter(e1,e2)
+            filter(e1,e2)
           })
 #' @rdname filters_operations
 #' @export
 setMethod("*",
           signature(e1 = "moving_average"),
           function(e1, e2) {
-            jfilter(e2, e1)
+            filter(e2, e1)
           })
 #' @rdname filters_operations
 #' @export
