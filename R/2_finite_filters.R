@@ -76,12 +76,7 @@ finite_filters.matrix <- function(sfilter,
                                   rfilters = NULL,
                                   lfilters = NULL,
                                   first_to_last = FALSE){
-  if (first_to_last) {
-    index <- ncol(sfilter):1
-  } else {
-    index <- 1:ncol(sfilter)
-  }
-  coefs <- lapply(index, function(i) sfilter[,i])
+  coefs <- lapply(1:ncol(sfilter), function(i) sfilter[,i])
   finite_filters(coefs, first_to_last = first_to_last)
 }
 .jd2r_finitefilters <- function(jf, first_to_last = TRUE){
