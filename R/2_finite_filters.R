@@ -451,9 +451,20 @@ to_seasonal.finite_filters <- function(x, s){
 #'
 #' @param x a [finite_filters()] object.
 #' @param n integer specifying the number of imputed periods.
+#' By default all the missing moving averages are imputed.
 #' @param nperiod integer specifying how to imput missing date.
 #' `nperiod = 1` means imputation using last filtered data (1 period backward),
-#' `nperiod = 12` with monthly datameans imputation using last year filted data, etc.
+#' `nperiod = 12` with monthly data means imputation using last year filtered data, etc.
+#' @param backward,forward boolean indicating if the imputation should be done backward (on left filters), forward (on right filters).
+#'
+#' @details
+#' When combining finite filters and a moving average, the first and/or the last points cannot be computed.
+#'
+#' For example, using the M2X12 moving average (symmetric moving average with coefficients \eqn{\theta = \begin{pmatrix} 1/24 & 1/12 & 1/12 & 1/12 & 1/12 & 1/12 & 1/12 & 1/12 & 1/12 & 1/12 & 1/12 & 1/12 & 1/24 \end{pmatrix}}), the first and last 6 points cannot be computed.
+#'
+#' `impute_last_obs()` allows to impute the first/last points using the `nperiod` previous filtered data. With `nperiod = 1`, the last filtered data is used for the imputation, with `nperiod = 12` and monthly data, the last year filtered data is used for the imputation, etc.
+#'
+#'
 #' @examples
 #' y <- window(retailsa$AllOtherGenMerchandiseStores, start = 2008)
 #' M3X3 <- macurves("S3X3")
@@ -468,34 +479,45 @@ to_seasonal.finite_filters <- function(x, s){
 #' # or using the filtered data of the same month in previous year
 #' impute_last_obs(composite_ma, n = 6, nperiod = 12) * y
 #' @export
-impute_last_obs <- function(x, n, nperiod = 1) {
+impute_last_obs <- function(x, n, nperiod = 1, backward = TRUE, forward = TRUE) {
   nrfilters <- length(x@rfilters)
   nlfilters <- length(x@lfilters)
   if (missing(n))
     n <- max(nrfilters, nlfilters)
   n_r <- min(upper_bound(x@sfilter) - nrfilters, n)
   n_l <- min(abs(lower_bound(x@sfilter)) - nlfilters, n)
-  new_rfilters <- c(x@rfilters, vector("list", n_r))
-  new_lfilters <- c(vector("list", n_l), x@lfilters)
-  for (i in seq_len(n_r)) {
-    if (nrfilters + i - nperiod < 1) {
-      modified_filter <- x@sfilter
-    } else {
-      modified_filter <- new_rfilters[[nrfilters + i - nperiod]]
+
+  if (backward) {
+    new_lfilters <- c(vector("list", n_l), x@lfilters)
+
+    for (i in rev(seq_len(n_l))) {
+      if (nperiod + i > length(new_lfilters)) {
+        modified_filter <- x@sfilter
+      } else {
+        modified_filter <- new_lfilters[[i + nperiod]]
+      }
+      new_lfilters[[i]] <-
+        modified_filter *
+        moving_average(1, lags = nperiod)
     }
-    new_rfilters[[nrfilters + i]] <-
-      modified_filter *
-      moving_average(1, lags = -nperiod)
+  } else {
+    new_lfilters <- x@lfilters
   }
-  for (i in rev(seq_len(n_l))) {
-    if (nperiod + i > length(new_lfilters)) {
-      modified_filter <- x@sfilter
-    } else {
-      modified_filter <- new_lfilters[[i + nperiod]]
+
+  if (forward) {
+    new_rfilters <- c(x@rfilters, vector("list", n_r))
+    for (i in seq_len(n_r)) {
+      if (nrfilters + i - nperiod < 1) {
+        modified_filter <- x@sfilter
+      } else {
+        modified_filter <- new_rfilters[[nrfilters + i - nperiod]]
+      }
+      new_rfilters[[nrfilters + i]] <-
+        modified_filter *
+        moving_average(1, lags = -nperiod)
     }
-    new_lfilters[[i]] <-
-      modified_filter *
-      moving_average(1, lags = nperiod)
+  } else {
+    new_rfilters <- x@rfilters
   }
   finite_filters(x@sfilter, rfilters = new_rfilters, lfilters = new_lfilters)
 }

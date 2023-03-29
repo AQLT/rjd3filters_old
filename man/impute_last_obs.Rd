@@ -4,19 +4,29 @@
 \alias{impute_last_obs}
 \title{Impute Incomplete Finite Filters}
 \usage{
-impute_last_obs(x, n, nperiod = 1)
+impute_last_obs(x, n, nperiod = 1, backward = TRUE, forward = TRUE)
 }
 \arguments{
 \item{x}{a \code{\link[=finite_filters]{finite_filters()}} object.}
 
-\item{n}{integer specifying the number of imputed periods.}
+\item{n}{integer specifying the number of imputed periods.
+By default all the missing moving averages are imputed.}
 
 \item{nperiod}{integer specifying how to imput missing date.
 \code{nperiod = 1} means imputation using last filtered data (1 period backward),
-\code{nperiod = 12} with monthly datameans imputation using last year filted data, etc.}
+\code{nperiod = 12} with monthly data means imputation using last year filtered data, etc.}
+
+\item{backward, forward}{boolean indicating if the imputation should be done backward (on left filters), forward (on right filters).}
 }
 \description{
 Impute Incomplete Finite Filters
+}
+\details{
+When combining finite filters and a moving average, the first and/or the last points cannot be computed.
+
+For example, using the M2X12 moving average (symmetric moving average with coefficients \eqn{\theta = \begin{pmatrix} 1/24 & 1/12 & 1/12 & 1/12 & 1/12 & 1/12 & 1/12 & 1/12 & 1/12 & 1/12 & 1/12 & 1/12 & 1/24 \end{pmatrix}}), the first and last 6 points cannot be computed.
+
+\code{impute_last_obs()} allows to impute the first/last points using the \code{nperiod} previous filtered data. With \code{nperiod = 1}, the last filtered data is used for the imputation, with \code{nperiod = 12} and monthly data, the last year filtered data is used for the imputation, etc.
 }
 \examples{
 y <- window(retailsa$AllOtherGenMerchandiseStores, start = 2008)
