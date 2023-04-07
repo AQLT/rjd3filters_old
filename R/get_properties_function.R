@@ -88,7 +88,6 @@ get_properties_function.finite_filters <- function(x,
     a_fun
   }
 }
-# TODO finite_filters
 
 #' Compute quality criteria for asymmetric filters
 #'
