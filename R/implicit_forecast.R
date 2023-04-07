@@ -43,7 +43,6 @@ implicit_forecast.default <- function(x, coefs){
   if (!inherits(coefs, "finite_filters")) {
     coefs <- finite_filters(coefs)
   }
-  # rjd3filters:::
   jffilters <- .finite_filters2jd(coefs)
 
   jx <- .jcall("demetra/data/DoubleSeq",
