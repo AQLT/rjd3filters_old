@@ -39,7 +39,7 @@ jasym_filter.default <- function(y, coefs, lags){
   lb = lower_bound(coefs)
   ub = upper_bound(coefs)
 
-  DataBlock = J("jdplus.data.DataBlock")
+  DataBlock = J("jdplus.toolkit.base.core.data.DataBlock")
   jy = DataBlock$of(as.numeric(y))
   out = DataBlock$of(as.numeric(rep(NA, jy$length() - length(coefs)+1)))
   ma2jd(coefs)$apply(jy,
@@ -159,18 +159,18 @@ jfilter.default <- function(y, coefs, remove_missing = TRUE){
     jlasym <- rev(lapply(lfilters, ma2jd))
 
     jsymf <- .jcast(jsymf,
-                    "jdplus/math/linearfilters/IFiniteFilter")
+                    "jdplus/toolkit/base/core/math/linearfilters/IFiniteFilter")
     if (length(jrasym) == 0) {
-      jrasym <- .jnull("[Ljdplus/math/linearfilters/IFiniteFilter;")
+      jrasym <- .jnull("[Ljdplus/toolkit/base/core/math/linearfilters/IFiniteFilter;")
     } else {
       jrasym <- .jarray(jrasym,
-                        "jdplus/math/linearfilters/IFiniteFilter")
+                        "jdplus/toolkit/base/core/math/linearfilters/IFiniteFilter")
     }
     if (length(jlasym) == 0) {
-      jlasym <- .jnull("[Ljdplus/math/linearfilters/IFiniteFilter;")
+      jlasym <- .jnull("[Ljdplus/toolkit/base/core/math/linearfilters/IFiniteFilter;")
     } else {
       jlasym <- .jarray(jlasym,
-                        "jdplus/math/linearfilters/IFiniteFilter")
+                        "jdplus/toolkit/base/core/math/linearfilters/IFiniteFilter")
     }
   } else {
     if(is.matrix(coefs)){
@@ -178,14 +178,14 @@ jfilter.default <- function(y, coefs, remove_missing = TRUE){
     }
     lags <- length(coefs)-1
     scoef <- coefs[[lags+1]]
-    jsymf <- .jcast(ma2jd(moving_average(scoef, -lags)), "jdplus/math/linearfilters/IFiniteFilter")
+    jsymf <- .jcast(ma2jd(moving_average(scoef, -lags)), "jdplus/toolkit/base/core/math/linearfilters/IFiniteFilter")
     jrasym <- lapply(lags:1,
                      function(i){
                        ma2jd(moving_average(rm_trailing_zero_or_na(coefs[[i]]), -lags))
                      }
     )
     jrasym <- .jarray(jrasym,
-                      "jdplus/math/linearfilters/IFiniteFilter")
+                      "jdplus/toolkit/base/core/math/linearfilters/IFiniteFilter")
     jlasym <- lapply(lags:1,
                      function(i){
                        x = rm_trailing_zero_or_na(coefs[[i]])
@@ -194,7 +194,7 @@ jfilter.default <- function(y, coefs, remove_missing = TRUE){
                      }
     )
     jlasym <- .jarray(jlasym,
-                      "jdplus/math/linearfilters/IFiniteFilter")
+                      "jdplus/toolkit/base/core/math/linearfilters/IFiniteFilter")
   }
 
   if (remove_missing) {
@@ -205,11 +205,11 @@ jfilter.default <- function(y, coefs, remove_missing = TRUE){
   }
 
 
-  jy <- .jcall("demetra/data/DoubleSeq",
-               "Ldemetra/data/DoubleSeq;", "of", as.numeric(y2))
+  jy <- .jcall("jdplus/toolkit/base/api/data/DoubleSeq",
+               "Ljdplus/toolkit/base/api/data/DoubleSeq;", "of", as.numeric(y2))
 
-  result <- .jcall("jdplus/math/linearfilters/FilterUtility",
-                   "Ldemetra/data/DoubleSeq;", "filter",
+  result <- .jcall("jdplus/toolkit/base/core/math/linearfilters/FilterUtility",
+                   "Ljdplus/toolkit/base/api/data/DoubleSeq;", "filter",
                    jy,
                    jsymf,
                    jlasym,

@@ -45,22 +45,22 @@ implicit_forecast.default <- function(y, coefs){
   lags <- length(coefs)-1
   scoef <- coefs[[lags+1]]
 
-  jsymf <- .jcall("jdplus/math/linearfilters/FiniteFilter",
-                  "Ljdplus/math/linearfilters/FiniteFilter;",
+  jsymf <- .jcall("jdplus/toolkit/base/core/math/linearfilters/FiniteFilter",
+                  "Ljdplus/toolkit/base/core/math/linearfilters/FiniteFilter;",
                   "of", scoef, as.integer(-lags))
-  jsymf <- .jcast(jsymf, "jdplus/math/linearfilters/IFiniteFilter")
+  jsymf <- .jcast(jsymf, "jdplus/toolkit/base/core/math/linearfilters/IFiniteFilter")
   jasym <- lapply(lags:1,
                   function(i){
-                    .jcall("jdplus/math/linearfilters/FiniteFilter",
-                           "Ljdplus/math/linearfilters/FiniteFilter;",
+                    .jcall("jdplus/toolkit/base/core/math/linearfilters/FiniteFilter",
+                           "Ljdplus/toolkit/base/core/math/linearfilters/FiniteFilter;",
                            "of", coefs[[i]],as.integer(-lags))
                   }
   )
   jasym <- .jarray(jasym,
-                   "jdplus/math/linearfilters/IFiniteFilter")
-  jy <- .jcall("demetra/data/DoubleSeq",
-               "Ldemetra/data/DoubleSeq;", "of",as.numeric(tail(y,lags+1)))
-  prev <- .jcall("jdplus/math/linearfilters/AsymmetricFiltersFactory",
+                   "jdplus/toolkit/base/core/math/linearfilters/IFiniteFilter")
+  jy <- .jcall("jdplus/toolkit/base/api/data/DoubleSeq",
+               "Ljdplus/toolkit/base/api/data/DoubleSeq;", "of",as.numeric(tail(y,lags+1)))
+  prev <- .jcall("jdplus/toolkit/base/core/math/linearfilters/AsymmetricFiltersFactory",
          "[D","implicitForecasts",
          jsymf, jasym, jy)
   ts(prev,

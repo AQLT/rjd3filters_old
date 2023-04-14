@@ -32,7 +32,7 @@ rkhs_filter <- function(horizon = 6, degree = 2,
   kernel = match.arg(kernel)
   asymmetricCriterion = match.arg(asymmetricCriterion)
   density = match.arg(density)
-  rkhs_filter = J("demetra/saexperimental/r/RKHSFilters")$filterProperties(
+  rkhs_filter = J("jdplus/experimentalsa/base/r/RKHSFilters")$filterProperties(
     as.integer(horizon), as.integer(degree), kernel,
     optimalbw, asymmetricCriterion, density=="rw", passband,
     bandwidth, optimal.minBandwidth, optimal.maxBandwidth
@@ -73,7 +73,7 @@ rkhs_optimization_fun <- function(horizon = 6, leads = 0,  degree = 2,
   kernel = match.arg(kernel)
   asymmetricCriterion = match.arg(asymmetricCriterion)
   density = match.arg(density)
-  optimalFunCriteria = J("demetra/saexperimental/r/RKHSFilters")$optimalCriteria(
+  optimalFunCriteria = J("jdplus/experimentalsa/base/r/RKHSFilters")$optimalCriteria(
     as.integer(horizon), as.integer(leads), as.integer(degree), kernel,
     asymmetricCriterion, density=="rw", passband
   )$applyAsDouble
@@ -100,7 +100,7 @@ rkhs_optimal_bw <- function(horizon = 6,  degree = 2,
   kernel = match.arg(kernel)
   asymmetricCriterion = match.arg(asymmetricCriterion)
   density = match.arg(density)
-  optimalBw= J("demetra/saexperimental/r/RKHSFilters")$optimalBandwidth(
+  optimalBw= J("jdplus/experimentalsa/base/r/RKHSFilters")$optimalBandwidth(
     as.integer(horizon), as.integer(degree), kernel,
     asymmetricCriterion, density=="rw", passband, optimal.minBandwidth, optimal.maxBandwidth
   )
@@ -121,7 +121,7 @@ rkhs_kernel <- function(kernel = c("Biweight", "Henderson", "Epanechnikov", "Tri
     "epanechnikov" = "Epanechnikov",
     "henderson" = "Henderson"
   )
-  kernel_fun = J("demetra/saexperimental/r/RKHSFilters")$kernel(
+  kernel_fun = J("jdplus/experimentalsa/base/r/RKHSFilters")$kernel(
     kernel, as.integer(degree), as.integer(horizon)
   )$applyAsDouble
 

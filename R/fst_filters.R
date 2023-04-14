@@ -26,7 +26,7 @@
 fst_filter<-function(lags = 6, leads = 0, pdegree = 2,
                     smoothness.weight = 1, smoothness.degree = 3, timeliness.weight = 0,
                     timeliness.passband = pi/6, timeliness.antiphase = TRUE){
-  jobj<-.jcall("demetra/saexperimental/r/FiltersToolkit", "Ldemetra/saexperimental/r/FiltersToolkit$FSTResult;",
+  jobj<-.jcall("jdplus/experimentalsa/base/r/FiltersToolkit", "Ljdplus/experimentalsa/base/r/FiltersToolkit$FSTResult;",
                "fstfilter", as.integer(lags), as.integer(leads), as.integer(pdegree), smoothness.weight, as.integer(smoothness.degree),
                timeliness.weight, timeliness.passband, as.logical(timeliness.antiphase))
   return(fstresult(jobj))
@@ -68,7 +68,7 @@ fstresult<-function(jobj){
 fst<-function(weights, lags, passband=pi/6){
   if (lags >=0)
     lags <- -lags
-  jobj<-.jcall("demetra/saexperimental/r/FiltersToolkit", "Ldemetra/saexperimental/r/FiltersToolkit$FSTResult;", "fst",
+  jobj<-.jcall("jdplus/experimentalsa/base/r/FiltersToolkit", "Ljdplus/experimentalsa/base/r/FiltersToolkit$FSTResult;", "fst",
                weights, as.integer(lags), passband)
   return(fstresult(jobj))
 }
@@ -96,7 +96,7 @@ mse<-function(sweights, aweights, density=c("uniform", "rw"), passband = pi/6){
     sweights <- sweights[-seq_len(n)]
   }
   spectral = match.arg(density)
-  rslt<-.jcall("demetra/saexperimental/r/FiltersToolkit", "[D", "mseDecomposition",
+  rslt<-.jcall("jdplus/experimentalsa/base/r/FiltersToolkit", "[D", "mseDecomposition",
                sweights, aweights, spectral, passband)
   return (c(accuracy=rslt[1], smoothness=rslt[2], timeliness=rslt[3], residual=rslt[4]))
 }

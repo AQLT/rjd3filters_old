@@ -17,7 +17,7 @@ dfa_filter <- function(horizon = 6, degree = 0,
   density = match.arg(density)
   if(length(targetfilter) != 2*horizon + 1)
     stop("The symmetric targetfilter must be of length 2*horizon+1")
-  dfa_filter = J("demetra/saexperimental/r/DFAFilters")$filterProperties(
+  dfa_filter = J("jdplus/experimentalsa/base/r/DFAFilters")$filterProperties(
     rev(targetfilter[seq_len(horizon+1)]),
     as.integer(horizon), as.integer(degree), density=="rw",
     passband,

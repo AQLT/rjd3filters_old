@@ -80,8 +80,8 @@ ma2jd <- function(x){
   if (length(x) == 1){
     coefs <- .jarray(coefs)
   }
-  .jcall("jdplus/math/linearfilters/FiniteFilter",
-         "Ljdplus/math/linearfilters/FiniteFilter;",
+  .jcall("jdplus/toolkit/base/core/math/linearfilters/FiniteFilter",
+         "Ljdplus/toolkit/base/core/math/linearfilters/FiniteFilter;",
          "of", coefs,
          as.integer(lags))
 }
@@ -116,7 +116,7 @@ lower_bound <- function(x){
 #' @rdname moving_average
 #' @export
 mirror <- function(x){
-  jd2ma(.jcall(ma2jd(x), "Ljdplus/math/linearfilters/FiniteFilter;", "mirror"))
+  jd2ma(.jcall(ma2jd(x), "Ljdplus/toolkit/base/core/math/linearfilters/FiniteFilter;", "mirror"))
 }
 #' @method rev moving_average
 #' @rdname moving_average
@@ -218,12 +218,12 @@ setMethod("+",
           signature(e1 = "moving_average",
                     e2 = "moving_average"),
           function(e1, e2) {
-            finiteFilter <- J("jdplus.math.linearfilters.FiniteFilter")
+            finiteFilter <- J("jdplus.toolkit.base.core.math.linearfilters.FiniteFilter")
             jobj <- .jcall(finiteFilter,
-                           "Ljdplus/math/linearfilters/FiniteFilter;",
+                           "Ljdplus/toolkit/base/core/math/linearfilters/FiniteFilter;",
                            "add",
-                           .jcast(ma2jd(e1), "jdplus/math/linearfilters/IFiniteFilter"),
-                           .jcast(ma2jd(e2), "jdplus/math/linearfilters/IFiniteFilter"))
+                           .jcast(ma2jd(e1), "jdplus/toolkit/base/core/math/linearfilters/IFiniteFilter"),
+                           .jcast(ma2jd(e2), "jdplus/toolkit/base/core/math/linearfilters/IFiniteFilter"))
 
             jd2ma(jobj)
           })
@@ -252,11 +252,11 @@ setMethod("-",
           signature(e1 = "moving_average",
                     e2 = "missing"),
           function(e1, e2) {
-            finiteFilter <- J("jdplus.math.linearfilters.FiniteFilter")
+            finiteFilter <- J("jdplus.toolkit.base.core.math.linearfilters.FiniteFilter")
             jobj <- .jcall(finiteFilter,
-                           "Ljdplus/math/linearfilters/FiniteFilter;",
+                           "Ljdplus/toolkit/base/core/math/linearfilters/FiniteFilter;",
                            "negate",
-                           .jcast(ma2jd(e1), "jdplus/math/linearfilters/IFiniteFilter"))
+                           .jcast(ma2jd(e1), "jdplus/toolkit/base/core/math/linearfilters/IFiniteFilter"))
             jd2ma(jobj)
           })
 #' @rdname moving_average
@@ -265,12 +265,12 @@ setMethod("-",
           signature(e1 = "moving_average",
                     e2 = "moving_average"),
           function(e1, e2) {
-            finiteFilter <- J("jdplus.math.linearfilters.FiniteFilter")
+            finiteFilter <- J("jdplus.toolkit.base.core.math.linearfilters.FiniteFilter")
             jobj <- .jcall(finiteFilter,
-                           "Ljdplus/math/linearfilters/FiniteFilter;",
+                           "Ljdplus/toolkit/base/core/math/linearfilters/FiniteFilter;",
                            "subtract",
-                           .jcast(ma2jd(e1), "jdplus/math/linearfilters/IFiniteFilter"),
-                           .jcast(ma2jd(e2), "jdplus/math/linearfilters/IFiniteFilter"))
+                           .jcast(ma2jd(e1), "jdplus/toolkit/base/core/math/linearfilters/IFiniteFilter"),
+                           .jcast(ma2jd(e2), "jdplus/toolkit/base/core/math/linearfilters/IFiniteFilter"))
             jd2ma(jobj)
           })
 #' @rdname moving_average
@@ -295,12 +295,12 @@ setMethod("*",
           signature(e1 = "moving_average",
                     e2 = "moving_average"),
           function(e1, e2) {
-            finiteFilter <- J("jdplus.math.linearfilters.FiniteFilter")
+            finiteFilter <- J("jdplus.toolkit.base.core.math.linearfilters.FiniteFilter")
             jobj <- .jcall(finiteFilter,
-                           "Ljdplus/math/linearfilters/FiniteFilter;",
+                           "Ljdplus/toolkit/base/core/math/linearfilters/FiniteFilter;",
                            "multiply",
-                           .jcast(ma2jd(e1), "jdplus/math/linearfilters/IFiniteFilter"),
-                           .jcast(ma2jd(e2), "jdplus/math/linearfilters/IFiniteFilter"))
+                           .jcast(ma2jd(e1), "jdplus/toolkit/base/core/math/linearfilters/IFiniteFilter"),
+                           .jcast(ma2jd(e2), "jdplus/toolkit/base/core/math/linearfilters/IFiniteFilter"))
             jd2ma(jobj)
           })
 #' @rdname moving_average

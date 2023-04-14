@@ -29,7 +29,7 @@ setMethod("dictionary", "JD3_ProcResults", function(object){
   if (is.null(object@internal)){
     NULL
   }else{
-    proc_dictionary(.jclass(object@internal))
+    .proc_dictionary(.jclass(object@internal))
   }
 
 })
@@ -38,6 +38,6 @@ setMethod("result", signature = c(object="JD3_ProcResults", id="character"), fun
   if (is.null(object@internal)){
     NULL
   }else{
-    proc_data(object@internal, id)}
+    .proc_data(object@internal, id)}
 })
 
