@@ -25,8 +25,8 @@ dfa_filter <- function(horizon = 6, degree = 0,
       targetfilter <- coef(targetfilter)
     }
   }
-  dfa_filter = J("demetra/saexperimental/r/DFAFilters")$filterProperties(
-    targetfilter,
+  dfa_filter = J("jdplus/experimentalsa/base/r/DFAFilters")$filterProperties(
+    rev(targetfilter[seq_len(horizon+1)]),
     as.integer(horizon), as.integer(degree), density=="rw",
     passband,
     accuracy.weight, smoothness.weight, timeliness.weight

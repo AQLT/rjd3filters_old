@@ -77,7 +77,7 @@ filter_ma <- function(x, coefs){
   if (length(x) <= length(coefs))
     return(x * NA)
 
-  DataBlock = J("jdplus.data.DataBlock")
+  DataBlock = J("jdplus.toolkit.base.core.data.DataBlock")
   jx = DataBlock$of(as.numeric(x))
   out = DataBlock$of(as.numeric(rep(NA, length(x) - length(coefs)+1)))
   .ma2jd(coefs)$apply(jx,
@@ -105,11 +105,12 @@ ff_ma <- function(x, coefs, remove_missing = TRUE) {
     x2 <- x
   }
 
-  jx <- .jcall("demetra/data/DoubleSeq",
-               "Ldemetra/data/DoubleSeq;", "of", as.numeric(x2))
+  jx <- .jcall("jdplus/toolkit/base/api/data/DoubleSeq",
+               "Ljdplus/toolkit/base/api/data/DoubleSeq;",
+               "of", as.numeric(x2))
 
-  result <- .jcall("jdplus/math/linearfilters/FilterUtility",
-                   "Ldemetra/data/DoubleSeq;", "filter",
+  result <- .jcall("jdplus/toolkit/base/core/math/linearfilters/FilterUtility",
+                   "Ljdplus/toolkit/base/api/data/DoubleSeq;", "filter",
                    jx,
                    jffilters$jsymf,
                    jffilters$jlasym,
@@ -145,18 +146,18 @@ ff_ma <- function(x, coefs, remove_missing = TRUE) {
   jlasym <- rev(lapply(lfilters, .ma2jd))
 
   jsymf <- .jcast(jsymf,
-                  "jdplus/math/linearfilters/IFiniteFilter")
+                  "jdplus/toolkit/base/core/math/linearfilters/IFiniteFilter")
   if (length(jrasym) == 0) {
-    jrasym <- .jnull("[Ljdplus/math/linearfilters/IFiniteFilter;")
+    jrasym <- .jnull("[Ljdplus/toolkit/base/core/math/linearfilters/IFiniteFilter;")
   } else {
     jrasym <- .jarray(jrasym,
-                      "jdplus/math/linearfilters/IFiniteFilter")
+                      "jdplus/toolkit/base/core/math/linearfilters/IFiniteFilter")
   }
   if (length(jlasym) == 0) {
-    jlasym <- .jnull("[Ljdplus/math/linearfilters/IFiniteFilter;")
+    jlasym <- .jnull("[Ljdplus/toolkit/base/core/math/linearfilters/IFiniteFilter;")
   } else {
     jlasym <- .jarray(jlasym,
-                      "jdplus/math/linearfilters/IFiniteFilter")
+                      "jdplus/toolkit/base/core/math/linearfilters/IFiniteFilter")
   }
   list(jsymf = jsymf,
        jrasym = jrasym,

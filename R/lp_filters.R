@@ -17,7 +17,7 @@ NULL
 #' @importFrom stats is.ts na.omit start
 #' @export
 henderson<-function(x, length, musgrave=TRUE, ic=4.5){
-  result <- .jcall("demetra/saexperimental/r/X11Decomposition", "[D", "henderson",
+  result <- .jcall("jdplus/experimentalsa/base/r/X11Decomposition", "[D", "henderson",
                    as.numeric(x), as.integer(length), musgrave, ic)
 
   if(is.ts(x))
@@ -57,9 +57,9 @@ localpolynomials<-function(x,
   d<-2/(sqrt(pi)*ic)
   kernel=match.arg(kernel)
   endpoints=match.arg(endpoints)
-  result <- .jcall("demetra/saexperimental/r/LocalPolynomialFilters", "[D", "filter",
-                   as.numeric(x), as.integer(horizon), as.integer(degree), kernel, endpoints, d
-                   , tweight, passband)
+  result <- .jcall("jdplus/experimentalsa/base/r/LocalPolynomialFilters", "[D", "filter",
+                   as.numeric(x), as.integer(horizon), as.integer(degree), kernel, endpoints, d,
+                   tweight, passband)
   if(is.ts(x))
     result <- ts(result,start = start(x), frequency = frequency(x))
   result
@@ -100,8 +100,8 @@ lp_filter <- function(horizon = 6, degree = 3,
   d<-2/(sqrt(pi)*ic)
   kernel=match.arg(kernel)
   endpoints=match.arg(endpoints)
-  jprops<-.jcall("demetra/saexperimental/r/LocalPolynomialFilters",
-                 "Ldemetra/saexperimental/r/FiltersToolkit$FiniteFilters;",
+  jprops<-.jcall("jdplus/experimentalsa/base/r/LocalPolynomialFilters",
+                 "Ljdplus/experimentalsa/base/r/FiltersToolkit$FiniteFilters;",
                  "filterProperties", as.integer(horizon),
                  as.integer(degree), kernel, endpoints, d,
                  tweight, passband)

@@ -45,9 +45,10 @@ implicit_forecast.default <- function(x, coefs){
   }
   jffilters <- .finite_filters2jd(coefs)
 
-  jx <- .jcall("demetra/data/DoubleSeq",
-               "Ldemetra/data/DoubleSeq;", "of",as.numeric(tail(x,abs(lower_bound(coefs@sfilter))+1)))
-  prev <- .jcall("jdplus/math/linearfilters/AsymmetricFiltersFactory",
+  jx <- .jcall("jdplus/toolkit/base/api/data/DoubleSeq",
+               "Ljdplus/toolkit/base/api/data/DoubleSeq;", "of",
+               as.numeric(tail(x,abs(lower_bound(coefs@sfilter))+1)))
+  prev <- .jcall("jdplus/toolkit/base/core/math/linearfilters/AsymmetricFiltersFactory",
          "[D","implicitForecasts",
          jffilters$jsymf,
          jffilters$jrasym,

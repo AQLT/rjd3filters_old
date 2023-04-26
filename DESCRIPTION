@@ -20,17 +20,18 @@ Description: This package provides functions to build and apply symmetric
   the seasonal adjustment software officially recommended to the members 
   of the European Statistical System (ESS) and the European System of Central Banks.
 Depends:
-    R (>= 3.1.1)
+  R (>= 3.6.0)
 Imports:
-    rJava (>= 0.9-8),
-    rjd3toolkit (>= 0.8.0),
+  rJava (>= 1.0-6),
+  rjd3toolkit (>= 2.9.0),
    methods,
    MASS,
    graphics,
    stats
+SystemRequirements: Java (>= 17)
 License: EUPL
 LazyData: TRUE
-URL: https://github.com/palatej/rjdfilters
+URL: https://github.com/palatej/rjd3filters
 Suggests:
     knitr,
     rmarkdown

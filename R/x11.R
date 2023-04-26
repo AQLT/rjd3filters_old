@@ -43,8 +43,10 @@ x11 <- function(x, period = frequency(x),
   }
   ltrendf = rjd3toolkit::.r2jd_matrix(leftTrendFilter)
 
-  ctrendf = J("demetra.data.DoubleSeq")$of(coef(sym_filter))
-  x11decomp = J("demetra/saexperimental/r/X11Decomposition")
+  ctrendf = .jcall("jdplus/toolkit/base/api/data/DoubleSeq",
+                   "Ljdplus/toolkit/base/api/data/DoubleSeq;",
+                   "of", coef(sym_filter))
+  x11decomp = J("jdplus/experimentalsa/base/r/X11Decomposition")
   jrslt = x11decomp$trendX11(as.numeric(x), period, mul,
                              ctrendf, ltrendf,
                              seas.s0, seas.s1, extreme.lsig, extreme.usig)

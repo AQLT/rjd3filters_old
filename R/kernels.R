@@ -21,11 +21,11 @@ get_kernel <- function(kernel = c("Henderson","Uniform", "Triangular",
     kernel = "Epanechnikov"
   h <- as.integer(horizon)
   if(kernel == "Gaussian"){
-    jkernel <- .jcall("jdplus/data/analysis/DiscreteKernel",
+    jkernel <- .jcall("jdplus/toolkit/base/core/data/analysis/DiscreteKernel",
                       "Ljava/util/function/IntToDoubleFunction;",
                       tolower(kernel), h, sd_gauss)
   }else{
-    jkernel <- .jcall("jdplus/data/analysis/DiscreteKernel",
+    jkernel <- .jcall("jdplus/toolkit/base/core/data/analysis/DiscreteKernel",
                       "Ljava/util/function/IntToDoubleFunction;",
                       tolower(kernel), h)
   }
