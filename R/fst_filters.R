@@ -20,7 +20,6 @@
 #' @examples
 #' filter <- fst_filter(lags = 6, leads = 0)
 #' filter
-#' fst(filter)
 #' @references Grun-Rehomme, Michel, Fabien Guggemos, and Dominique Ladiray (2018). “Asymmetric Moving Averages Minimizing Phase Shift”. In: Handbook on Seasonal Adjustment.
 #' @export
 fst_filter<-function(lags = 6, leads = 0, pdegree = 2,
@@ -47,6 +46,7 @@ fst_filter<-function(lags = 6, leads = 0, pdegree = 2,
 #' filter <- lp_filter(horizon = 6, kernel = "Henderson", endpoints = "LC")
 #' fst(filter[, "q=0"])
 #' @references Grun-Rehomme, Michel, Fabien Guggemos, and Dominique Ladiray (2018). “Asymmetric Moving Averages Minimizing Phase Shift”. In: Handbook on Seasonal Adjustment.
+#'
 #' @export
 fst<-function(weights, lags, passband=pi/6){
   if (is.moving_average(weights)) {

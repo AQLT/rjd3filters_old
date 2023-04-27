@@ -5,7 +5,7 @@
 #' @param mul boolean indicating if the decomposition is multiplicative or additive.
 #'
 #' @examples
-#' x = retailsa$AllOtherGenMerchandiseStores
+#' x <- retailsa$AllOtherGenMerchandiseStores
 #' sc <- henderson(x, length = 13, musgrave = FALSE)
 #' ic_ratio(x, sc)
 #'
@@ -63,7 +63,14 @@ ic_ratio <- function(x, sc, mul = FALSE){
 #'    * if \eqn{icr < 1} then the selected length is 9 for monthly data and 5 otherwise;
 #'    * if \eqn{1 \leq icr < 3.5} then the selected length is \eqn{freq + 1} where \eqn{freq} is the frequency of data (12 for monthly data, 4 for quarterly data...).
 #'    * if \eqn{icr \geq 3.5} then the selected length is 23 for monthly data and 7 otherwise.
-#'
+#' @examples
+#' # example code
+#' x <- retailsa$AllOtherGenMerchandiseStores
+#' sc <- henderson(x, length = 13, musgrave = FALSE)
+#' icr <- ic_ratio(x, sc)
+#' select_trend_filter(icr, freq = 12)
+#' # Because Henderson filter is used, this is equivalent to:
+#' select_trend_filter(x)
 #' @export
 select_trend_filter <- function(x, ...){
   UseMethod("select_trend_filter")

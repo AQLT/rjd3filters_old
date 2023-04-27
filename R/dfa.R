@@ -7,6 +7,9 @@
 #' optimisation. The weight associated to the residual is derived so that the sum of
 #' the four weights are equal to 1.
 #' @export
+#' @examples
+#' dfa_filter(horizon = 6, degree = 0)
+#' dfa_filter(horizon = 6, degree = 2)
 dfa_filter <- function(horizon = 6, degree = 0,
                        density = c("uniform", "rw"),
                        targetfilter = lp_filter(horizon = horizon)[,1],

@@ -33,3 +33,7 @@ the four weights are equal to 1.}
 \description{
 Direct Filter Approach
 }
+\examples{
+dfa_filter(horizon = 6, degree = 0)
+dfa_filter(horizon = 6, degree = 2)
+}

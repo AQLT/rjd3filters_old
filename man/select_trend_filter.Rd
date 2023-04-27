@@ -36,3 +36,12 @@ The following procedure is used in X-11 to select the length of the trend filter
 }
 }
 }
+\examples{
+# example code
+x <- retailsa$AllOtherGenMerchandiseStores
+sc <- henderson(x, length = 13, musgrave = FALSE)
+icr <- ic_ratio(x, sc)
+select_trend_filter(icr, freq = 12)
+# Because Henderson filter is used, this is equivalent to:
+select_trend_filter(x)
+}
