@@ -100,6 +100,13 @@ finite_filters.matrix <- function(sfilter,
     sfilter <- .jd2ma(jsfilter)
     rfilters <- lapply(jrfilter, .jd2ma)
     lfilters <- NULL
+  } else if (.jinstanceof(jf, "jdplus/experimentalsa/base/core/filters/Filtering")) {
+    jsfilter <- .jcall(jf, "Ljdplus/toolkit/base/core/math/linearfilters/IFiniteFilter;", "centralFilter")
+    jrfilter <- .jcall(jf, "[Ljdplus/toolkit/base/core/math/linearfilters/IFiniteFilter;", "rightEndPointsFilters")
+
+    sfilter <- .jd2ma(jsfilter)
+    rfilters <- lapply(jrfilter, .jd2ma)
+    lfilters <- NULL
   }
   finite_filters(sfilter = sfilter,
                  rfilters = rfilters,
