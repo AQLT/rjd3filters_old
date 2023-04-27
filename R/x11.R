@@ -9,6 +9,7 @@
 #' @param mul boolean indicating if the decomposition mode is multiplicative.
 #' @param seas.s0,seas.s1 seasonal filters.
 #' @param extreme.lsig,extreme.usig boundaries used for outlier correction in irregular.
+#' @param userdefined a vector containing the additional output variables.
 #' @examples
 #' x <- retailsa$AllOtherGenMerchandiseStores
 #' decomposition_lp <- x11(x, trend.coefs = lp_filter())
@@ -20,11 +21,11 @@
 #' @export
 x11 <- function(x, period = frequency(x),
                 trend.coefs,  mul=TRUE,
-                seas.s0=c("S3X3", "S3X1", "S3X5", "S3X9", "S3X15")[1],
-                seas.s1=c("S3X5", "S3X3", "S3X1", "S3X9", "S3X15")[1],
-                extreme.lsig=1.5, extreme.usig=2.5){
-  seas.s0=match.arg(seas.s0)
-  seas.s1=match.arg(seas.s1)
+                seas.s0=c("S3X3", "S3X1", "S3X5", "S3X9", "S3X15"),
+                seas.s1=c("S3X5", "S3X3", "S3X1", "S3X9", "S3X15"),
+                extreme.lsig=1.5, extreme.usig=2.5, userdefined = NULL){
+  seas.s0<-match.arg(toupper(seas.s0)[1], choices = c("S3X3", "S3X1", "S3X5", "S3X9", "S3X15"))
+  seas.s1<-match.arg(toupper(seas.s1)[1], choices = c("S3X3", "S3X1", "S3X5", "S3X9", "S3X15"))
 
   if (!inherits(trend.coefs, "finite_filters")) {
     trend.coefs <- finite_filters(trend.coefs)
@@ -35,19 +36,25 @@ x11 <- function(x, period = frequency(x),
   leftTrendFilter <- do.call(cbind, lapply(asy_filter, function(x){
     c(coef(x), rep(0, 2*length(asy_filter)- length(x)))
   }))
-
+  leftTrendFilter <- leftTrendFilter[,seq(ncol(leftTrendFilter), 1)]
   if(length(sym_filter) != 2*ncol(leftTrendFilter)+1){
     stop(sprintf("The symmetric filter is of length %i but only %i asymmetric filters provided",
                  length(sym_filter),
                  2*ncol(leftTrendFilter)+1))
   }
-  ltrendf = rjd3toolkit::.r2jd_matrix(leftTrendFilter)
+  ltrendf <- rjd3toolkit::.r2jd_matrix(leftTrendFilter)
 
-  ctrendf = .jcall("jdplus/toolkit/base/api/data/DoubleSeq",
+  ctrendf <- .jcall("jdplus/toolkit/base/api/data/DoubleSeq",
                    "Ljdplus/toolkit/base/api/data/DoubleSeq;",
                    "of", coef(sym_filter))
-  x11decomp = J("jdplus/experimentalsa/base/r/X11Decomposition")
-  jrslt = x11decomp$trendX11(as.numeric(x), period, mul,
+  # # check :
+  # jf <- J("jdplus.experimentalsa.base.core.filters.Filtering")$of(ctrendf, ltrendf)
+  # .jd2r_finitefilters(jf)
+  # trend.coefs
+
+  x11decomp <- J("jdplus/experimentalsa/base/r/X11Decomposition")
+
+  jrslt <- x11decomp$trendX11(as.numeric(x), period, mul,
                              ctrendf, ltrendf,
                              seas.s0, seas.s1, extreme.lsig, extreme.usig)
   decomposition <- cbind(x,
@@ -56,9 +63,11 @@ x11 <- function(x, period = frequency(x),
                          rjd3toolkit::.proc_vector(jrslt, "d10"),
                          rjd3toolkit::.proc_vector(jrslt, "d13"))
   colnames(decomposition) <- c("y", "sa", "t", "s", "i")
-  return(structure(list(
-    java=jrslt,
+  res <- structure(list(
     decomposition=decomposition),
-    class="X11_RSLT"))
-}
+    class="X11_RSLT")
 
+  res$user_defined <- rjd3toolkit::user_defined(rjd3toolkit::.jd3_object(jrslt, result = TRUE),
+                                               userdefined = userdefined)
+  return(res)
+}

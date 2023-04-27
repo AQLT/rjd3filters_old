@@ -9,10 +9,11 @@ x11(
   period = frequency(x),
   trend.coefs,
   mul = TRUE,
-  seas.s0 = c("S3X3", "S3X1", "S3X5", "S3X9", "S3X15")[1],
-  seas.s1 = c("S3X5", "S3X3", "S3X1", "S3X9", "S3X15")[1],
+  seas.s0 = c("S3X3", "S3X1", "S3X5", "S3X9", "S3X15"),
+  seas.s1 = c("S3X5", "S3X3", "S3X1", "S3X9", "S3X15"),
   extreme.lsig = 1.5,
-  extreme.usig = 2.5
+  extreme.usig = 2.5,
+  userdefined = NULL
 )
 }
 \arguments{
@@ -29,6 +30,8 @@ the real-time asymmetric filter to the symmetric filter. Can be a, object of cla
 \item{seas.s0, seas.s1}{seasonal filters.}
 
 \item{extreme.lsig, extreme.usig}{boundaries used for outlier correction in irregular.}
+
+\item{userdefined}{a vector containing the additional output variables.}
 }
 \description{
 Perform the X-11 decomposition using custom trend filter
