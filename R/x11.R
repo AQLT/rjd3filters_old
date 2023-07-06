@@ -44,9 +44,7 @@ x11 <- function(x, period = frequency(x),
   }
   ltrendf <- rjd3toolkit::.r2jd_matrix(leftTrendFilter)
 
-  ctrendf <- .jcall("jdplus/toolkit/base/api/data/DoubleSeq",
-                   "Ljdplus/toolkit/base/api/data/DoubleSeq;",
-                   "of", coef(sym_filter))
+  ctrendf <- .r2jd_doubleseq(coef(sym_filter))
   # # check :
   # jf <- J("jdplus.experimentalsa.base.core.filters.Filtering")$of(ctrendf, ltrendf)
   # .jd2r_finitefilters(jf)
