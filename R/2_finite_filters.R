@@ -487,6 +487,8 @@ to_seasonal.finite_filters <- function(x, s){
 #' impute_last_obs(composite_ma, n = 6, nperiod = 12) * y
 #' @export
 impute_last_obs <- function(x, n, nperiod = 1, backward = TRUE, forward = TRUE) {
+  if (is.moving_average(x))
+    x <- finite_filters(sfilter = x)
   nrfilters <- length(x@rfilters)
   nlfilters <- length(x@lfilters)
   if (missing(n))
